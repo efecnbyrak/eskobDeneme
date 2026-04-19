@@ -3,25 +3,26 @@ import { KATEGORILER } from '@/lib/constants'
 
 export function Footer() {
   return (
-    <footer className="bg-[#15232A] text-[#B0C4CC] mt-auto font-body border-t border-[var(--color-primary)]/20">
+    <footer className="bg-[#15232A] text-[#B0C4CC] mt-auto">
       <div className="container-main py-20 lg:py-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-12">
           
-          {/* Brand - Span 4 columns on large */}
-          <div className="sm:col-span-2 lg:col-span-5 pr-0 lg:pr-12">
-            <div className="flex items-center gap-3 mb-6">
+          {/* Brand */}
+          <div className="sm:col-span-2 lg:col-span-5">
+            <div className="flex items-center gap-3 mb-8">
               <span className="w-12 h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-lg shadow-sm">
                 EV
               </span>
               <span className="font-bold text-2xl text-white font-display tracking-tight">Esnaf Vitrin</span>
             </div>
-            <p className="text-base text-[#90A8B2] leading-relaxed mb-8 max-w-sm">
+            <p className="text-base text-[#90A8B2] leading-[1.8] mb-10 max-w-sm">
               Türkiye&apos;nin esnaf ve KOBİ&apos;leri için yeni nesil dijital vitrin platformu. İşletmeni bugün dijitale taşı, hizmetlerini tanıt ve randevularını kolayca yönet.
             </p>
-            <div className="flex items-center gap-4">
+            {/* Social icons — proper gap */}
+            <div className="flex items-center gap-5">
               <a
                 href="#"
-                className="w-12 h-12 rounded-full bg-[#1F333D] flex items-center justify-center text-white hover:bg-[var(--color-accent)] hover:text-[#15232A] transition-all duration-300"
+                className="w-12 h-12 rounded-xl bg-[#1F333D] flex items-center justify-center text-[#90A8B2] hover:bg-[var(--color-accent)] hover:text-[#15232A] transition-all duration-300 hover:scale-105"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -30,7 +31,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="w-12 h-12 rounded-full bg-[#1F333D] flex items-center justify-center text-white hover:bg-[var(--color-accent)] hover:text-[#15232A] transition-all duration-300"
+                className="w-12 h-12 rounded-xl bg-[#1F333D] flex items-center justify-center text-[#90A8B2] hover:bg-[var(--color-accent)] hover:text-[#15232A] transition-all duration-300 hover:scale-105"
                 aria-label="Twitter"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -40,51 +41,47 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Keşfet - Span 3 columns */}
+          {/* Keşfet */}
           <div className="lg:col-span-3">
-            <h3 className="font-bold text-lg mb-6 text-white tracking-wide font-display">Keşfet</h3>
-            <ul className="space-y-4 text-base">
+            <h3 className="font-bold text-base mb-8 text-white tracking-wide font-display uppercase">Keşfet</h3>
+            <ul className="space-y-5">
               <li>
-                <Link href="/ara" className="group flex items-center text-[#90A8B2] hover:text-white transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <Link href="/ara" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
                   Tüm Esnaflar
                 </Link>
               </li>
               {KATEGORILER.slice(0, 5).map((k) => (
                 <li key={k.slug}>
-                  <Link href={`/kategori/${k.slug}`} className="group flex items-center text-[#90A8B2] hover:text-white transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    <span className="mr-2 opacity-50 group-hover:opacity-100">{k.ikon}</span> {k.ad}
+                  <Link href={`/kategori/${k.slug}`} className="flex items-center gap-3 text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
+                    <span className="opacity-60">{k.ikon}</span>
+                    <span>{k.ad}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* İşletmenizi Büyütün - Span 4 columns */}
+          {/* İşletmeni Büyüt */}
           <div className="lg:col-span-4">
-            <h3 className="font-bold text-lg mb-6 text-white tracking-wide font-display">İşletmeni Büyüt</h3>
-            <ul className="space-y-4 text-base">
+            <h3 className="font-bold text-base mb-8 text-white tracking-wide font-display uppercase">İşletmeni Büyüt</h3>
+            <ul className="space-y-5">
               <li>
-                <Link href="/kayit" className="group flex items-center text-[var(--color-accent)] hover:text-white transition-colors font-semibold bg-[#1F333D]/50 w-fit px-4 py-2 rounded-lg border border-[var(--color-accent)]/20 hover:bg-[#1F333D]">
+                <Link href="/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-[15px] font-semibold leading-relaxed">
                   ✨ Hemen Ücretsiz Kaydol
                 </Link>
               </li>
               <li>
-                <Link href="/giris" className="group flex items-center text-[#90A8B2] hover:text-white transition-colors mt-2">
-                  <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <Link href="/giris" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
                   Giriş Yap
                 </Link>
               </li>
               <li>
-                <Link href="/panel" className="group flex items-center text-[#90A8B2] hover:text-white transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
                   Yönetim Paneli
                 </Link>
               </li>
               <li>
-                <Link href="#" className="group flex items-center text-[#90A8B2] hover:text-white transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <Link href="#" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
                   Nasıl Çalışır?
                 </Link>
               </li>
@@ -94,12 +91,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-20 pt-8 border-t border-[#1F333D] flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-[#90A8B2]">
+        <div className="mt-20 pt-10 border-t border-[#1F333D] flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-[#7A9AA6]">
           <p>© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</p>
           <div className="flex flex-wrap justify-center gap-8 font-medium">
-            <Link href="/gizlilik" className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded">Gizlilik Politikası</Link>
-            <Link href="/kullanim" className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded">Kullanım Şartları</Link>
-            <Link href="/iletisim" className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded">İletişim</Link>
+            <Link href="/gizlilik" className="hover:text-white transition-colors">Gizlilik Politikası</Link>
+            <Link href="/kullanim" className="hover:text-white transition-colors">Kullanım Şartları</Link>
+            <Link href="/iletisim" className="hover:text-white transition-colors">İletişim</Link>
           </div>
         </div>
       </div>

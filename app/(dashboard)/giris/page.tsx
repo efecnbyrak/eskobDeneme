@@ -47,16 +47,16 @@ export default function GirisSayfasi() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-primary)] blur-[150px] opacity-20 pointer-events-none rounded-full" />
       
       <div className="w-full max-w-[440px] relative z-10">
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-            <span className="w-12 h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xl shadow-[0_0_20px_rgba(242,122,26,0.3)] group-hover:scale-105 transition-transform">EV</span>
+        <div className="text-center mb-12">
+          <Link href="/" className="inline-flex items-center gap-3 mb-8 group">
+            <span className="w-12 h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xl shadow-sm group-hover:scale-105 transition-transform">EV</span>
           </Link>
-          <h1 className="text-3xl font-extrabold font-display mb-2 text-[var(--color-text)]">Tekrar Hoş Geldiniz</h1>
-          <p className="text-[var(--color-text-secondary)] font-medium">Lütfen işletmenize giriş yapın</p>
+          <h1 className="text-3xl font-extrabold font-display mb-3 text-[var(--color-text)]">Tekrar Hoş Geldiniz</h1>
+          <p className="text-[var(--color-text-secondary)] font-medium text-base leading-relaxed">Lütfen işletmenize giriş yapın</p>
         </div>
 
-        <div className="card-elite p-8 sm:p-10 !rounded-[2rem] bg-white/90 backdrop-blur-xl border border-white">
-          <form onSubmit={onSubmit} className="space-y-6">
+        <div className="card-elite p-8 sm:p-10 !rounded-3xl bg-white/90 backdrop-blur-xl border border-[var(--color-border)]">
+          <form onSubmit={onSubmit} className="space-y-7">
             <div className="space-y-1">
               <Input
                 label="Telefon Numarası"
@@ -94,13 +94,14 @@ export default function GirisSayfasi() {
             <Button
               type="submit"
               loading={yukleniyor}
-              className="w-full h-14 text-lg font-bold bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-[0_4px_14px_0_rgba(242,122,26,0.39)] hover:shadow-[0_6px_20px_rgba(242,122,26,0.23)] transition-all hover:-translate-y-0.5 rounded-2xl"
+              size="lg"
+              className="w-full h-14 text-lg font-bold bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 rounded-2xl"
             >
               Giriş Yap
             </Button>
           </form>
 
-          <div className="mt-8 text-center text-[var(--color-text-secondary)] font-medium">
+          <div className="mt-10 text-center text-[var(--color-text-secondary)] font-medium text-base leading-relaxed">
             Henüz hesabınız yok mu?{' '}
             <Link href="/kayit" className="text-[var(--color-primary)] hover:underline font-bold">
               Ücretsiz Kaydol

@@ -9,7 +9,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { KATEGORILER, SEHIRLER } from '@/lib/constants'
 
 const inputCls =
-  'px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] bg-white transition-all duration-200 placeholder:text-[var(--color-text-secondary)]'
+  'px-4 py-3.5 text-sm border border-[var(--color-border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] bg-white transition-all duration-200 placeholder:text-[var(--color-text-secondary)] min-h-[48px]'
 
 export default function AraSayfasi() {
   const [sehir, setSehir] = useState('')
@@ -30,31 +30,31 @@ export default function AraSayfasi() {
   }
 
   return (
-    <div className="container-main py-8 lg:py-10">
+    <div className="container-main py-12 lg:py-16">
       {/* Başlık */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold font-display">Esnaf Ara</h1>
-        <p className="text-[var(--color-text-secondary)] mt-1 text-sm">
+      <div className="mb-10">
+        <h1 className="text-2xl md:text-3xl font-bold font-display mb-3">Esnaf Ara</h1>
+        <p className="text-[var(--color-text-secondary)] text-base leading-relaxed">
           Yakınındaki işletmeleri keşfet, randevu al
         </p>
       </div>
 
       {/* Filtreler */}
-      <div className="bg-white border border-[var(--color-border)] rounded-lg p-4 mb-6 shadow-[var(--shadow-xs)]">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 sm:p-6 mb-8 shadow-[var(--shadow-card)]">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
               placeholder="Esnaf adı veya hizmet ara..."
-              className={`${inputCls} w-full pl-10`}
+              className={`${inputCls} w-full pl-12`}
               value={arama}
               onChange={(e) => { setArama(e.target.value); setSayfa(1) }}
             />
           </div>
           <select
-            className={`${inputCls} sm:w-44`}
+            className={`${inputCls} sm:w-48`}
             value={sehir}
             onChange={(e) => { setSehir(e.target.value); setSayfa(1) }}
           >
@@ -62,7 +62,7 @@ export default function AraSayfasi() {
             {SEHIRLER.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <select
-            className={`${inputCls} sm:w-52`}
+            className={`${inputCls} sm:w-56`}
             value={kategori}
             onChange={(e) => { setKategori(e.target.value); setSayfa(1) }}
           >
@@ -78,16 +78,14 @@ export default function AraSayfasi() {
       </div>
 
       {/* Sonuç sayısı */}
-      {!yukleniyor && (
-        <p className="text-sm text-[var(--color-text-secondary)] mb-4">
-          {esnaflar.length > 0
-            ? `${esnaflar.length} işletme bulundu`
-            : null}
+      {!yukleniyor && esnaflar.length > 0 && (
+        <p className="text-sm text-[var(--color-text-secondary)] mb-6 font-medium">
+          {esnaflar.length} işletme bulundu
         </p>
       )}
 
       {/* Sonuçlar */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-6">
         {yukleniyor
           ? Array.from({ length: 10 }).map((_, i) => <EsnafKartSkeleton key={i} />)
           : esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
@@ -96,14 +94,14 @@ export default function AraSayfasi() {
 
       {/* Boş durum */}
       {!yukleniyor && esnaflar.length === 0 && (
-        <div className="text-center py-20">
-          <div className="text-5xl mb-4">🔍</div>
-          <h3 className="font-semibold font-display text-lg mb-2">Sonuç bulunamadı</h3>
-          <p className="text-[var(--color-text-secondary)] text-sm mb-6">
-            Arama kriterlerinize uygun esnaf bulunamadı.
+        <div className="text-center py-24">
+          <div className="text-5xl mb-6">🔍</div>
+          <h3 className="font-bold font-display text-xl mb-3">Sonuç bulunamadı</h3>
+          <p className="text-[var(--color-text-secondary)] text-base mb-8 leading-relaxed max-w-md mx-auto">
+            Arama kriterlerinize uygun esnaf bulunamadı. Farklı filtreler deneyebilirsiniz.
           </p>
           {filtreAktif && (
-            <Button variant="secondary" size="sm" onClick={filtreleriTemizle}>
+            <Button variant="secondary" onClick={filtreleriTemizle}>
               Filtreleri Temizle
             </Button>
           )}
@@ -112,7 +110,7 @@ export default function AraSayfasi() {
 
       {/* Sayfalama */}
       {toplamSayfa > 1 && (
-        <div className="flex justify-center items-center gap-3 mt-10">
+        <div className="flex justify-center items-center gap-4 mt-14">
           <Button
             variant="secondary"
             size="sm"

@@ -19,22 +19,22 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
   return (
     <Link
       href={`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
-      className="group block card-elite rounded-[1.5rem] overflow-hidden"
+      className="group block card-elite rounded-2xl overflow-hidden"
     >
       {/* Image */}
       <div className="relative w-full overflow-hidden" style={{ paddingBottom: '80%' }}>
-        <div className="absolute inset-0 bg-[#F5F5F5]">
+        <div className="absolute inset-0 bg-[var(--color-bg-muted)]">
           <Image
             src={esnaf.kapakFoto || `https://picsum.photos/seed/${esnaf.id}/400/400`}
             alt={esnaf.isletmeAdi}
             fill
-            className="object-cover group-hover:scale-[1.08] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            className="object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
           />
         </div>
 
-        {/* Floating gradient overlay for badges */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-80" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent opacity-80" />
 
         {/* Badges */}
         <div className="absolute top-3 left-3 z-10">
@@ -52,17 +52,17 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-3">
-        <h3 className="font-semibold text-sm text-[var(--color-text)] line-clamp-2 leading-snug mb-1 font-display">
+      {/* Content — improved spacing */}
+      <div className="p-4">
+        <h3 className="font-semibold text-sm text-[var(--color-text)] line-clamp-2 leading-snug mb-2 font-display">
           {esnaf.isletmeAdi}
         </h3>
-        <p className="text-xs text-[var(--color-text-secondary)] mb-2 truncate">
+        <p className="text-xs text-[var(--color-text-secondary)] mb-3 truncate leading-relaxed">
           📍 {esnaf.ilce}, {esnaf.sehir}
         </p>
 
         {/* Rating */}
-        <div className="flex items-center gap-1 mb-2">
+        <div className="flex items-center gap-1.5 mb-3">
           <YildizPuan puan={puan} boyut="sm" />
           <span className="text-xs text-[var(--color-text-secondary)]">
             ({esnaf.yorumlar?.length || 0})
@@ -71,11 +71,11 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
 
         {/* Price */}
         {minFiyat !== null && (
-          <div className="pt-2 border-t border-[var(--color-border)]">
+          <div className="pt-3 border-t border-[var(--color-border)]">
             <span className="text-sm font-bold text-[var(--color-primary)]">
               {formatFiyat(minFiyat)}
             </span>
-            <span className="text-[10px] text-[var(--color-text-secondary)] ml-1">
+            <span className="text-[11px] text-[var(--color-text-secondary)] ml-1.5">
               &apos;den başlayan
             </span>
           </div>

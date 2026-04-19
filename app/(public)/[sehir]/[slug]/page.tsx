@@ -94,12 +94,12 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
-      <div className="container-main py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="container-main py-12 lg:py-16">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
           {/* Ana içerik */}
           <div className="flex-1 min-w-0">
             {/* Başlık */}
-            <div className="flex items-start gap-4 mb-6">
+            <div className="flex items-start gap-5 mb-8">
               {esnaf.logoUrl && (
                 <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0 -mt-10 relative">
                   <Image src={esnaf.logoUrl} alt="Logo" fill className="object-cover" />
@@ -107,7 +107,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
               )}
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+                  <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                     {esnaf.isletmeAdi}
                   </h1>
                   <Badge
@@ -120,12 +120,12 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
                     {acik ? '🟢 Açık' : '⚫ Kapalı'}
                   </Badge>
                 </div>
-                <p className="text-[var(--color-text-secondary)] mt-1">
+                <p className="text-[var(--color-text-secondary)] mt-2 text-base leading-relaxed">
                   📍 {esnaf.ilce}, {esnaf.sehir}
                   {esnaf.adres && ` — ${esnaf.adres}`}
                 </p>
                 {esnaf.yorumlar.length > 0 && (
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2 mt-3">
                     <YildizPuan puan={puan} />
                     <span className="text-sm text-[var(--color-text-secondary)]">
                       {puan.toFixed(1)} ({esnaf.yorumlar.length} yorum)
@@ -136,20 +136,20 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
             </div>
 
             {esnaf.aciklama && (
-              <p className="text-[var(--color-text-secondary)] mb-8">{esnaf.aciklama}</p>
+              <p className="text-[var(--color-text-secondary)] mb-10 text-base leading-[1.8]">{esnaf.aciklama}</p>
             )}
 
             {/* Hizmetler */}
-            <section className="mb-8">
-              <h2 className="font-semibold text-lg mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+            <section className="mb-12">
+              <h2 className="font-bold text-xl mb-6" style={{ fontFamily: 'var(--font-display)' }}>
                 Hizmetler
               </h2>
               <HizmetListesi hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
             </section>
 
             {/* Yorumlar */}
-            <section className="mb-8">
-              <h2 className="font-semibold text-lg mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+            <section className="mb-12">
+              <h2 className="font-bold text-xl mb-6" style={{ fontFamily: 'var(--font-display)' }}>
                 Yorumlar
               </h2>
               <YorumListesi yorumlar={esnaf.yorumlar as unknown as import('@/types').Yorum[]} />
@@ -158,7 +158,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
             {/* Harita */}
             {esnaf.enlem && esnaf.boylam && (
               <section>
-                <h2 className="font-semibold text-lg mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+                <h2 className="font-bold text-xl mb-6" style={{ fontFamily: 'var(--font-display)' }}>
                   Konum
                 </h2>
                 <HaritaWidget enlem={esnaf.enlem} boylam={esnaf.boylam} baslik={esnaf.isletmeAdi} />
@@ -167,9 +167,9 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
           </div>
 
           {/* Sağ panel sticky */}
-          <div className="lg:w-80 shrink-0">
-            <div className="sticky top-20 space-y-4">
-              <div className="bg-white border border-[var(--color-border)] rounded-xl p-6 shadow-[var(--shadow-sm)]">
+          <div className="lg:w-[340px] shrink-0">
+            <div className="sticky top-24 space-y-6">
+              <div className="bg-white border border-[var(--color-border)] rounded-2xl p-7 shadow-[var(--shadow-card)]">
                 <RandevuWidget
                   esnafId={esnaf.id}
                   hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]}
@@ -183,14 +183,14 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
               {esnaf.telefon && (
                 <a
                   href={`tel:${esnaf.telefon}`}
-                  className="flex items-center justify-center gap-2 w-full px-5 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-bg-muted)] transition-colors"
+                  className="flex items-center justify-center gap-2.5 w-full px-6 py-4 border border-[var(--color-border)] rounded-2xl text-sm font-medium hover:bg-[var(--color-bg-muted)] transition-colors min-h-[48px]"
                 >
                   📞 {esnaf.telefon}
                 </a>
               )}
 
               {/* QR */}
-              <div className="bg-white border border-[var(--color-border)] rounded-lg p-4 flex justify-center">
+              <div className="bg-white border border-[var(--color-border)] rounded-2xl p-6 flex justify-center">
                 <QRKodWidget url={sayfaUrl} />
               </div>
             </div>
