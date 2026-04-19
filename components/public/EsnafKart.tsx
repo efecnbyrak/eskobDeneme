@@ -19,71 +19,68 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
   return (
     <Link
       href={`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
-      className="group block bg-white border border-[var(--color-border)] rounded-md overflow-hidden hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-md)] transition-all duration-200"
+      className="group block bg-white rounded-lg overflow-hidden border border-[var(--color-border)] hover:shadow-[var(--shadow-card-hover)] transition-all duration-200"
     >
-      <div className="relative w-full" style={{ aspectRatio: '1/1' }}>
+      {/* Image */}
+      <div className="relative w-full" style={{ paddingBottom: '75%' }}>
         {esnaf.kapakFoto ? (
           <Image
             src={esnaf.kapakFoto}
             alt={esnaf.isletmeAdi}
             fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
         ) : (
-          <div className="w-full h-full bg-[var(--color-bg-muted)] flex items-center justify-center text-4xl">
-            {esnaf.kategori.ikon}
+          <div className="absolute inset-0 bg-[var(--color-bg-muted)] flex items-center justify-center">
+            <span className="text-4xl">{esnaf.kategori.ikon}</span>
           </div>
         )}
 
+        {/* Badges */}
         <div className="absolute top-2 left-2">
           <Badge
-            className="text-white"
+            className="text-white text-[10px] px-2 py-0.5"
             style={{ backgroundColor: esnaf.kategori.renk }}
           >
             {esnaf.kategori.ikon} {esnaf.kategori.ad}
           </Badge>
         </div>
-
         <div className="absolute top-2 right-2">
-          <Badge variant={acik ? 'success' : 'default'}>
+          <Badge variant={acik ? 'success' : 'default'} className="text-[10px] px-2 py-0.5">
             {acik ? 'Açık' : 'Kapalı'}
           </Badge>
         </div>
       </div>
 
-      <div className="p-3 flex flex-col h-[130px]">
-        <h3
-          className="font-semibold text-sm text-[var(--color-text)] line-clamp-2 leading-tight mb-1"
-          title={esnaf.isletmeAdi}
-        >
+      {/* Content */}
+      <div className="p-3">
+        <h3 className="font-semibold text-sm text-[var(--color-text)] line-clamp-2 leading-snug mb-1 font-display">
           {esnaf.isletmeAdi}
         </h3>
-        <p className="text-[11px] text-[var(--color-text-secondary)] mb-2 truncate">
+        <p className="text-xs text-[var(--color-text-secondary)] mb-2 truncate">
           📍 {esnaf.ilce}, {esnaf.sehir}
         </p>
 
+        {/* Rating */}
         <div className="flex items-center gap-1 mb-2">
           <YildizPuan puan={puan} boyut="sm" />
-          <span className="text-[11px] text-[var(--color-text-secondary)]">
+          <span className="text-xs text-[var(--color-text-secondary)]">
             ({esnaf.yorumlar?.length || 0})
           </span>
         </div>
 
-        <div className="mt-auto pt-2 border-t border-[var(--color-border)]/50">
-          {minFiyat !== null ? (
-            <div className="flex items-baseline gap-1">
-              <span className="text-sm font-bold text-[var(--color-primary)]">
-                {formatFiyat(minFiyat)}
-              </span>
-              <span className="text-[10px] text-[var(--color-text-secondary)]">
-                'den başlayan fiyatlarla
-              </span>
-            </div>
-          ) : (
-            <span className="text-[11px] font-medium text-[var(--color-success)]">Fiyat Alın</span>
-          )}
-        </div>
+        {/* Price */}
+        {minFiyat !== null && (
+          <div className="pt-2 border-t border-[var(--color-border)]">
+            <span className="text-sm font-bold text-[var(--color-primary)]">
+              {formatFiyat(minFiyat)}
+            </span>
+            <span className="text-[10px] text-[var(--color-text-secondary)] ml-1">
+              &apos;den başlayan
+            </span>
+          </div>
+        )}
       </div>
     </Link>
   )

@@ -17,7 +17,7 @@ async function onecikarilan(): Promise<Esnaf[]> {
         hizmetler: { where: { aktif: true }, take: 3 },
       },
       orderBy: { olusturmaT: 'desc' },
-      take: 12,
+      take: 10,
     })
     return esnaflar as unknown as Esnaf[]
   } catch {
@@ -30,79 +30,95 @@ export default async function AnaSayfa() {
 
   return (
     <div>
-      {/* Hero */}
-      <section
-        className="py-24 px-4 text-center relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, var(--color-primary-light) 0%, #FFFFFF 100%)' }}
-      >
-        {/* Nokta deseni */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, var(--color-primary) 1px, transparent 0)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-        {/* Dekoratif şekil */}
-        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full opacity-10"
+      {/* ─── HERO ─── */}
+      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(165deg, #FFF7F0 0%, #FFFFFF 60%)' }}>
+        {/* Decorative blobs */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-[0.07] -translate-y-1/2 translate-x-1/4"
           style={{ background: 'radial-gradient(circle, var(--color-primary) 0%, transparent 70%)' }}
         />
-        <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, var(--color-success) 0%, transparent 70%)' }}
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-[0.05] translate-y-1/2 -translate-x-1/4"
+          style={{ background: 'radial-gradient(circle, #0BC15C 0%, transparent 70%)' }}
         />
 
-        <div className="relative max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 text-xs font-medium text-[var(--color-primary)] mb-6 border border-[var(--color-border)]">
+        <div className="container-main relative py-16 sm:py-20 lg:py-24 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-xs font-medium text-[var(--color-primary)] mb-6 border border-[var(--color-border)] shadow-[var(--shadow-xs)]">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
             3.200+ esnaf zaten dijitalde
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-[var(--color-text)] mb-5 leading-tight font-display">
+
+          {/* Heading */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--color-text)] mb-4 leading-tight font-display">
             İşletmeni 5 Dakikada<br />
             <span className="text-[var(--color-primary)]">Dijitale Taşı</span>
           </h1>
-          <p className="text-lg text-[var(--color-text-secondary)] mb-10 max-w-xl mx-auto leading-relaxed">
+
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg text-[var(--color-text-secondary)] mb-8 max-w-lg mx-auto leading-relaxed">
             Türkiye&apos;nin esnaf ve KOBİ&apos;leri için dijital vitrin platformu.
             Ücretsiz kaydol, vitrinini kur, müşteri kazan.
           </p>
+
+          {/* Search */}
           <HeroArama />
+
           <p className="text-xs text-[var(--color-text-secondary)] mt-4">
             Kredi kartı gerekmez · Ücretsiz başla
           </p>
         </div>
       </section>
 
-      {/* Güven Logoları */}
-      <section className="py-6 bg-white border-b border-[var(--color-border)]">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="grid grid-cols-3 gap-4 text-center">
+      {/* ─── STATS ─── */}
+      <section className="border-b border-[var(--color-border)] bg-white">
+        <div className="container-main py-5">
+          <div className="grid grid-cols-3 divide-x divide-[var(--color-border)]">
             {[
               { sayi: '3.200+', label: 'Aktif Esnaf' },
               { sayi: '47', label: 'Şehir' },
               { sayi: '150.000+', label: 'Aylık Ziyaretçi' },
             ].map((s) => (
-              <div key={s.label} className="py-3">
-                <p className="text-2xl font-bold text-[var(--color-primary)] font-display">{s.sayi}</p>
-                <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{s.label}</p>
+              <div key={s.label} className="text-center py-2">
+                <p className="text-xl sm:text-2xl font-bold text-[var(--color-primary)] font-display">{s.sayi}</p>
+                <p className="text-[11px] sm:text-xs text-[var(--color-text-secondary)] mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Kategori Şeridi */}
-      <section className="py-8 bg-white border-b border-[var(--color-border)]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-4 sm:gap-6 overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible pb-4 pt-2 scrollbar-hide snap-x">
+      {/* ─── KATEGORİLER ─── */}
+      <section className="bg-white border-b border-[var(--color-border)]">
+        <div className="container-main py-6">
+          {/* Mobile: horizontal scroll */}
+          <div className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide lg:hidden">
             {KATEGORILER.map((k) => (
               <Link
                 key={k.slug}
                 href={`/kategori/${k.slug}`}
-                className="flex-none flex flex-col items-center gap-2 group snap-start w-20"
+                className="flex-none flex flex-col items-center gap-1.5 group w-16"
               >
-                <div className="w-16 h-16 rounded-full bg-white border border-[var(--color-border)] flex items-center justify-center shadow-sm group-hover:border-[var(--color-primary)] group-hover:shadow-md transition-all duration-200 group-hover:-translate-y-1">
+                <div className="w-14 h-14 rounded-full bg-[var(--color-bg-muted)] flex items-center justify-center group-hover:bg-[var(--color-primary-light)] transition-colors">
+                  <span className="text-xl">{k.ikon}</span>
+                </div>
+                <span className="text-[11px] font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] text-center leading-tight transition-colors">
+                  {k.ad}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop: centered grid */}
+          <div className="hidden lg:flex flex-wrap justify-center gap-6">
+            {KATEGORILER.map((k) => (
+              <Link
+                key={k.slug}
+                href={`/kategori/${k.slug}`}
+                className="flex flex-col items-center gap-2 group w-20"
+              >
+                <div className="w-16 h-16 rounded-full bg-[var(--color-bg-muted)] flex items-center justify-center group-hover:bg-[var(--color-primary-light)] group-hover:shadow-sm transition-all duration-200">
                   <span className="text-2xl">{k.ikon}</span>
                 </div>
-                <span className="text-[11px] font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] text-center leading-tight">
+                <span className="text-xs font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] text-center leading-tight transition-colors">
                   {k.ad}
                 </span>
               </Link>
@@ -111,77 +127,83 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* Öne Çıkan Esnaflar */}
-      <section className="py-14 px-4 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold font-display">Öne Çıkan Esnaflar</h2>
-            <p className="text-sm text-[var(--color-text-secondary)] mt-1">Yakınındaki popüler işletmeler</p>
+      {/* ─── ÖNE ÇIKAN ESNAFLAR ─── */}
+      <section className="bg-white">
+        <div className="container-main py-10 lg:py-14">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold font-display">Öne Çıkan Esnaflar</h2>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">Yakınındaki popüler işletmeler</p>
+            </div>
+            <Link href="/ara">
+              <Button variant="ghost" size="sm" className="text-[var(--color-primary)] hover:!bg-[var(--color-primary-light)]">
+                Tümünü Gör →
+              </Button>
+            </Link>
           </div>
-          <Link href="/ara">
-            <Button variant="secondary" size="sm">Tümünü Gör →</Button>
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-5">
-          {esnaflar.length > 0
-            ? esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
-            : Array.from({ length: 12 }).map((_, i) => <EsnafKartSkeleton key={i} />)
-          }
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+            {esnaflar.length > 0
+              ? esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
+              : Array.from({ length: 10 }).map((_, i) => <EsnafKartSkeleton key={i} />)
+            }
+          </div>
         </div>
       </section>
 
-      {/* Nasıl Çalışır */}
-      <section className="py-20 bg-[var(--color-warm)]">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-primary-light)] text-xs font-semibold text-[var(--color-primary)] mb-4">
+      {/* ─── NASIL ÇALIŞIR ─── */}
+      <section className="bg-[var(--color-bg-section)]">
+        <div className="container-main py-14 lg:py-20 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-xs font-semibold text-[var(--color-primary)] mb-4 border border-[var(--color-border)]">
             Basit · Hızlı · Etkili
           </div>
-          <h2 className="text-3xl font-bold font-display mb-3">Nasıl Çalışır?</h2>
-          <p className="text-[var(--color-text-secondary)] mb-12 max-w-md mx-auto">Sadece 3 adımda işletmeni dijitale taşı ve müşteri kazanmaya başla.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            {/* Bağlantı çizgisi */}
-            <div className="hidden md:block absolute top-10 left-[calc(33%-40px)] right-[calc(33%-40px)] h-0.5 bg-[var(--color-warm-dark)]" />
+          <h2 className="text-2xl sm:text-3xl font-bold font-display mb-3">Nasıl Çalışır?</h2>
+          <p className="text-[var(--color-text-secondary)] mb-10 max-w-md mx-auto text-sm sm:text-base">
+            Sadece 3 adımda işletmeni dijitale taşı ve müşteri kazanmaya başla.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto relative">
+            {/* Connection line — desktop only */}
+            <div className="hidden sm:block absolute top-8 left-[20%] right-[20%] h-px bg-[var(--color-border)]" />
+
             {[
-              { ikon: '📝', adim: '01', baslik: 'Kaydol', aciklama: 'Ücretsiz hesap oluştur, kişisel bilgilerini gir. 2 dakika sürer.' },
-              { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini ekle, fotoğraflarını yükle, çalışma saatlerini ayarla.' },
-              { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Müşteriler seni bulsun, randevu alsın, yorum yapsın.' },
+              { ikon: '📝', adim: '01', baslik: 'Kaydol', aciklama: 'Ücretsiz hesap oluştur, kişisel bilgilerini gir.' },
+              { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini ekle, fotoğraflarını yükle.' },
+              { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Müşteriler seni bulsun, randevu alsın.' },
             ].map((item) => (
               <div key={item.adim} className="flex flex-col items-center relative">
-                <div
-                  className="w-20 h-20 rounded-[var(--radius-xl)] flex items-center justify-center text-4xl mb-5 shadow-[var(--shadow-sm)] relative z-10"
-                  style={{ backgroundColor: 'white' }}
-                >
+                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-3xl mb-4 shadow-[var(--shadow-sm)] border border-[var(--color-border)] relative z-10">
                   {item.ikon}
                 </div>
-                <span className="text-xs font-bold text-[var(--color-primary)] mb-2 tracking-widest">{item.adim}</span>
-                <p className="font-semibold text-base font-display mb-2">{item.baslik}</p>
-                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed max-w-xs">{item.aciklama}</p>
+                <span className="text-[10px] font-bold text-[var(--color-primary)] mb-1 tracking-widest uppercase">{item.adim}</span>
+                <p className="font-semibold text-sm font-display mb-1">{item.baslik}</p>
+                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed max-w-[200px]">{item.aciklama}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 px-4 text-center relative overflow-hidden bg-gradient-to-tr from-[var(--color-primary)] to-[var(--color-primary-hover)]">
-        <div className="absolute inset-0 opacity-10"
+      {/* ─── CTA ─── */}
+      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)' }}>
+        <div className="absolute inset-0 opacity-[0.06]"
           style={{
             backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '24px 24px',
+            backgroundSize: '20px 20px',
           }}
         />
-        <div className="relative max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-4 font-display">
+        <div className="container-main relative py-14 lg:py-20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 font-display">
             Sen de Platformumuza Katıl
           </h2>
-          <p className="text-white/75 mb-8 text-lg">
+          <p className="text-white/70 mb-8 text-sm sm:text-lg max-w-md mx-auto">
             Binlerce esnaf zaten dijitalde. Sıra sende!
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/kayit">
               <Button
                 size="lg"
-                className="bg-white !text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold"
+                className="bg-white !text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold w-full sm:w-auto"
               >
                 Ücretsiz Başla
               </Button>
@@ -190,7 +212,7 @@ export default async function AnaSayfa() {
               <Button
                 size="lg"
                 variant="secondary"
-                className="!border-white/40 !text-white hover:!bg-white/10"
+                className="!border-white/30 !text-white hover:!bg-white/10 w-full sm:w-auto"
               >
                 Esnafları Keşfet
               </Button>

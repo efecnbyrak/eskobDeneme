@@ -5,37 +5,54 @@
   --color-primary-hover: #D96812;
   --color-primary-light: #FFF5EE;
 
-  --color-bg: #F8F9FA;
+  --color-bg: #FFFFFF;
   --color-bg-card: #FFFFFF;
-  --color-bg-muted: #F3F4F6;
+  --color-bg-muted: #F5F5F5;
+  --color-bg-section: #FAFAFA;
 
   --color-text: #333333;
-  --color-text-secondary: #666666;
+  --color-text-secondary: #999999;
   --color-text-inverse: #FFFFFF;
 
   --color-success: #0BC15C;
   --color-success-light: #E6F8ED;
   --color-turquoise: #2BD4E0;
   --color-turquoise-light: #E9FAFB;
-  --color-warm: #FFF0E6;
-  --color-warm-dark: #FFD6BB;
+  --color-warm: #FFF8F3;
+  --color-warm-dark: #FFE4D1;
 
-  --color-border: #E5E7EB;
+  --color-border: #EEEEEE;
   --color-border-focus: #F27A1A;
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.1);
 
-  --font-display: 'Plus Jakarta Sans', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
+
+  --container-max: 1260px;
+  --container-padding: 16px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --container-padding: 24px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: 32px;
+  }
 }
 
 * {
@@ -51,6 +68,8 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -58,10 +77,26 @@ a {
   text-decoration: none;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Utility: container */
+.container-main {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
 .font-display {
   font-family: var(--font-display);
 }
 
+/* Scrollbar hide */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -70,6 +105,11 @@ a {
   display: none;
 }
 
+/* Line clamp utilities */
+.line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+.line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -84,4 +124,12 @@ a {
 }
 .animate-slide-in {
   animation: slideIn 0.25s ease forwards;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }

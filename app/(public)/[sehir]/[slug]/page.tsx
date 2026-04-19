@@ -94,14 +94,14 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="container-main py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Ana içerik */}
           <div className="flex-1 min-w-0">
             {/* Başlık */}
             <div className="flex items-start gap-4 mb-6">
               {esnaf.logoUrl && (
-                <div className="w-16 h-16 rounded-[var(--radius-lg)] overflow-hidden border-2 border-white shadow-md shrink-0 -mt-10 relative">
+                <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0 -mt-10 relative">
                   <Image src={esnaf.logoUrl} alt="Logo" fill className="object-cover" />
                 </div>
               )}
@@ -169,7 +169,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
           {/* Sağ panel sticky */}
           <div className="lg:w-80 shrink-0">
             <div className="sticky top-20 space-y-4">
-              <div className="bg-white border border-[var(--color-border)] rounded-[var(--radius-xl)] p-6 shadow-[var(--shadow-sm)]">
+              <div className="bg-white border border-[var(--color-border)] rounded-xl p-6 shadow-[var(--shadow-sm)]">
                 <RandevuWidget
                   esnafId={esnaf.id}
                   hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]}
@@ -183,14 +183,14 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
               {esnaf.telefon && (
                 <a
                   href={`tel:${esnaf.telefon}`}
-                  className="flex items-center justify-center gap-2 w-full px-5 py-2.5 border border-[var(--color-border)] rounded-[var(--radius-full)] text-sm hover:bg-[var(--color-bg-muted)] transition-colors"
+                  className="flex items-center justify-center gap-2 w-full px-5 py-2.5 border border-[var(--color-border)] rounded-lg text-sm hover:bg-[var(--color-bg-muted)] transition-colors"
                 >
                   📞 {esnaf.telefon}
                 </a>
               )}
 
               {/* QR */}
-              <div className="bg-white border border-[var(--color-border)] rounded-[var(--radius-lg)] p-4 flex justify-center">
+              <div className="bg-white border border-[var(--color-border)] rounded-lg p-4 flex justify-center">
                 <QRKodWidget url={sayfaUrl} />
               </div>
             </div>

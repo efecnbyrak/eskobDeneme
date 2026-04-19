@@ -30,7 +30,7 @@ export default function AraSayfasi() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="container-main py-8 lg:py-10">
       {/* Başlık */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold font-display">Esnaf Ara</h1>
@@ -40,7 +40,7 @@ export default function AraSayfasi() {
       </div>
 
       {/* Filtreler */}
-      <div className="bg-white border border-[var(--color-border)] rounded-[var(--radius-lg)] p-4 mb-8 shadow-[var(--shadow-sm)]">
+      <div className="bg-white border border-[var(--color-border)] rounded-lg p-4 mb-6 shadow-[var(--shadow-xs)]">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,9 +87,9 @@ export default function AraSayfasi() {
       )}
 
       {/* Sonuçlar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {yukleniyor
-          ? Array.from({ length: 6 }).map((_, i) => <EsnafKartSkeleton key={i} />)
+          ? Array.from({ length: 10 }).map((_, i) => <EsnafKartSkeleton key={i} />)
           : esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
         }
       </div>
