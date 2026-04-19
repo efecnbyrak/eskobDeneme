@@ -9,9 +9,8 @@ import { HaritaWidget } from '@/components/public/HaritaWidget'
 import { WhatsAppButon } from '@/components/shared/WhatsAppButon'
 import { YildizPuan } from '@/components/shared/YildizPuan'
 import { QRKodWidget } from '@/components/shared/QRKodWidget'
-import { ortalamaPuan, isletmeAcikMi, formatTarih } from '@/lib/utils'
+import { ortalamaPuan, isletmeAcikMi } from '@/lib/utils'
 import type { Metadata } from 'next'
-import type { Esnaf } from '@/types'
 
 interface Props {
   params: Promise<{ sehir: string; slug: string }>
@@ -86,48 +85,46 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Kapak */}
-      <div className="relative h-64 md:h-80 bg-[var(--color-bg-muted)]">
+      {/* Cover Image */}
+      <div className="relative" style={{ height: '320px', background: 'var(--color-bg-muted)' }}>
         {esnaf.kapakFoto && (
           <Image src={esnaf.kapakFoto} alt={esnaf.isletmeAdi} fill className="object-cover" priority />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
       </div>
 
-      <div className="container-main py-12 lg:py-16">
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
-          {/* Ana içerik */}
-          <div className="flex-1 min-w-0">
-            {/* Başlık */}
-            <div className="flex items-start gap-5 mb-8">
+      {/* Content */}
+      <div className="container-main" style={{ paddingTop: '48px', paddingBottom: '64px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }} className="lg:flex-row">
+          {/* Main Content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginBottom: '32px' }}>
               {esnaf.logoUrl && (
-                <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md shrink-0 -mt-10 relative">
+                <div className="relative" style={{ width: 64, height: 64, borderRadius: 12, overflow: 'hidden', border: '2px solid white', boxShadow: 'var(--shadow-md)', flexShrink: 0, marginTop: '-40px' }}>
                   <Image src={esnaf.logoUrl} alt="Logo" fill className="object-cover" />
                 </div>
               )}
               <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                  <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700 }}>
                     {esnaf.isletmeAdi}
                   </h1>
-                  <Badge
-                    className="text-white"
-                    style={{ backgroundColor: esnaf.kategori.renk }}
-                  >
+                  <Badge className="text-white" style={{ backgroundColor: esnaf.kategori.renk }}>
                     {esnaf.kategori.ikon} {esnaf.kategori.ad}
                   </Badge>
                   <Badge variant={acik ? 'success' : 'default'}>
                     {acik ? '🟢 Açık' : '⚫ Kapalı'}
                   </Badge>
                 </div>
-                <p className="text-[var(--color-text-secondary)] mt-2 text-base leading-relaxed">
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '15px', lineHeight: 1.6, marginBottom: '12px' }}>
                   📍 {esnaf.ilce}, {esnaf.sehir}
                   {esnaf.adres && ` — ${esnaf.adres}`}
                 </p>
                 {esnaf.yorumlar.length > 0 && (
-                  <div className="flex items-center gap-2 mt-3">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <YildizPuan puan={puan} />
-                    <span className="text-sm text-[var(--color-text-secondary)]">
+                    <span style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
                       {puan.toFixed(1)} ({esnaf.yorumlar.length} yorum)
                     </span>
                   </div>
@@ -136,20 +133,20 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
             </div>
 
             {esnaf.aciklama && (
-              <p className="text-[var(--color-text-secondary)] mb-10 text-base leading-[1.8]">{esnaf.aciklama}</p>
+              <p style={{ color: 'var(--color-text-secondary)', marginBottom: '40px', fontSize: '15px', lineHeight: 1.8 }}>{esnaf.aciklama}</p>
             )}
 
             {/* Hizmetler */}
-            <section className="mb-12">
-              <h2 className="font-bold text-xl mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+            <section style={{ marginBottom: '48px' }}>
+              <h2 className="font-display" style={{ fontWeight: 700, fontSize: '20px', marginBottom: '24px' }}>
                 Hizmetler
               </h2>
               <HizmetListesi hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
             </section>
 
             {/* Yorumlar */}
-            <section className="mb-12">
-              <h2 className="font-bold text-xl mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+            <section style={{ marginBottom: '48px' }}>
+              <h2 className="font-display" style={{ fontWeight: 700, fontSize: '20px', marginBottom: '24px' }}>
                 Yorumlar
               </h2>
               <YorumListesi yorumlar={esnaf.yorumlar as unknown as import('@/types').Yorum[]} />
@@ -158,7 +155,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
             {/* Harita */}
             {esnaf.enlem && esnaf.boylam && (
               <section>
-                <h2 className="font-bold text-xl mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+                <h2 className="font-display" style={{ fontWeight: 700, fontSize: '20px', marginBottom: '24px' }}>
                   Konum
                 </h2>
                 <HaritaWidget enlem={esnaf.enlem} boylam={esnaf.boylam} baslik={esnaf.isletmeAdi} />
@@ -166,10 +163,10 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
             )}
           </div>
 
-          {/* Sağ panel sticky */}
-          <div className="lg:w-[340px] shrink-0">
-            <div className="sticky top-24 space-y-6">
-              <div className="bg-white border border-[var(--color-border)] rounded-2xl p-7 shadow-[var(--shadow-card)]">
+          {/* Sidebar */}
+          <div style={{ width: '340px', flexShrink: 0 }} className="hidden lg:block">
+            <div className="sticky" style={{ top: '96px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '28px', boxShadow: 'var(--shadow-card)' }}>
                 <RandevuWidget
                   esnafId={esnaf.id}
                   hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]}
@@ -183,17 +180,50 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
               {esnaf.telefon && (
                 <a
                   href={`tel:${esnaf.telefon}`}
-                  className="flex items-center justify-center gap-2.5 w-full px-6 py-4 border border-[var(--color-border)] rounded-2xl text-sm font-medium hover:bg-[var(--color-bg-muted)] transition-colors min-h-[48px]"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                    width: '100%', padding: '16px 24px',
+                    border: '1px solid var(--color-border)', borderRadius: '16px',
+                    fontSize: '14px', fontWeight: 500, minHeight: '48px',
+                    transition: 'background 0.2s',
+                  }}
                 >
                   📞 {esnaf.telefon}
                 </a>
               )}
 
-              {/* QR */}
-              <div className="bg-white border border-[var(--color-border)] rounded-2xl p-6 flex justify-center">
+              <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '24px', display: 'flex', justifyContent: 'center' }}>
                 <QRKodWidget url={sayfaUrl} />
               </div>
             </div>
+          </div>
+
+          {/* Mobile sidebar content */}
+          <div className="lg:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '28px', boxShadow: 'var(--shadow-card)' }}>
+              <RandevuWidget
+                esnafId={esnaf.id}
+                hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]}
+              />
+            </div>
+
+            {esnaf.whatsapp && (
+              <WhatsAppButon telefon={esnaf.whatsapp} className="w-full justify-center" />
+            )}
+
+            {esnaf.telefon && (
+              <a
+                href={`tel:${esnaf.telefon}`}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                  width: '100%', padding: '16px 24px',
+                  border: '1px solid var(--color-border)', borderRadius: '16px',
+                  fontSize: '14px', fontWeight: 500, minHeight: '48px',
+                }}
+              >
+                📞 {esnaf.telefon}
+              </a>
+            )}
           </div>
         </div>
       </div>

@@ -20,7 +20,6 @@ async function onecikarilan(): Promise<Esnaf[]> {
       take: 10,
     })
     if (esnaflar.length === 0) {
-      // Mock data for visual presentation since DB is empty
       return [
         {
           id: '1', slug: 'ozkan-berber', isletmeAdi: 'Özkan Erkek Kuaförü', aktif: true, onaylı: true,
@@ -59,7 +58,6 @@ async function onecikarilan(): Promise<Esnaf[]> {
         }
       ] as unknown as Esnaf[]
     }
-
     return esnaflar as unknown as Esnaf[]
   } catch {
     return []
@@ -70,16 +68,18 @@ export default async function AnaSayfa() {
   const esnaflar = await onecikarilan()
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
-      {/* ═══════════════════════════════════════════════════
-          HERO SECTION
-      ═══════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden pt-32 pb-28 lg:pt-44 lg:pb-36 bg-[var(--color-bg)]">
-        {/* Subtle dot grid */}
+      {/* ═══ HERO ═══ */}
+      <section
+        className="relative overflow-hidden bg-[var(--color-bg)]"
+        style={{ paddingTop: '140px', paddingBottom: '100px' }}
+      >
+        {/* Grid BG */}
         <div 
-          className="absolute inset-0 z-0 pointer-events-none opacity-[0.25]"
+          className="absolute inset-0 z-0 pointer-events-none"
           style={{
+            opacity: 0.2,
             backgroundImage: `
               linear-gradient(to right, var(--color-border) 1px, transparent 1px),
               linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)
@@ -90,86 +90,109 @@ export default async function AnaSayfa() {
           }}
         />
         
-        {/* Soft background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[var(--color-primary-light)] blur-[120px] rounded-[100%] opacity-50 pointer-events-none" />
+        {/* Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: 800, height: 500, background: 'var(--color-primary-light)', filter: 'blur(120px)', borderRadius: '100%', opacity: 0.5 }} />
 
-        <div className="container-main relative z-10 flex flex-col items-center text-center">
+        <div className="container-main relative" style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           {/* Badge */}
-          <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-md border border-[var(--color-border)] shadow-sm text-sm font-semibold text-[var(--color-primary)] mb-10 transition-transform hover:scale-105">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-success)] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-success)]"></span>
+          <div
+            className="backdrop-blur-md"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '10px',
+              padding: '10px 20px', borderRadius: '9999px',
+              background: 'rgba(255,255,255,0.8)', border: '1px solid var(--color-border)',
+              boxShadow: 'var(--shadow-sm)', fontSize: '14px', fontWeight: 600,
+              color: 'var(--color-primary)', marginBottom: '40px'
+            }}
+          >
+            <span style={{ position: 'relative', display: 'flex', width: 8, height: 8 }}>
+              <span className="animate-ping" style={{ position: 'absolute', display: 'inline-flex', width: '100%', height: '100%', borderRadius: '9999px', background: 'var(--color-success)', opacity: 0.75 }} />
+              <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '9999px', width: 8, height: 8, background: 'var(--color-success)' }} />
             </span>
             Platformda 3.200+ Aktif İşletme
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 font-display leading-[1.15] max-w-4xl mx-auto">
-            <span className="text-[var(--color-text)]">İşletmeni Dakikalar İçinde </span>
-            <span className="text-[var(--color-primary)]">Dijitale Taşı</span>
+          <h1
+            className="font-display"
+            style={{
+              fontSize: 'clamp(2.25rem, 5vw, 4.5rem)',
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              maxWidth: '900px',
+              marginBottom: '32px'
+            }}
+          >
+            <span style={{ color: 'var(--color-text)' }}>İşletmeni Dakikalar İçinde </span>
+            <span style={{ color: 'var(--color-primary)' }}>Dijitale Taşı</span>
           </h1>
 
-          {/* Subtitle — increased spacing */}
-          <p className="text-lg md:text-xl text-[var(--color-text-secondary)] mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+          {/* Subtitle */}
+          <p style={{
+            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+            color: 'var(--color-text-secondary)',
+            maxWidth: '640px',
+            lineHeight: 1.7,
+            fontWeight: 500,
+            marginBottom: '48px'
+          }}>
             Yeni nesil dijital vitrin çözümü ile hizmetlerini tanıt, online randevu al ve müşteri tabanını bugün büyütmeye başla.
           </p>
 
-          {/* Search Bar */}
-          <div className="w-full max-w-2xl mb-8">
+          {/* Search */}
+          <div style={{ width: '100%', maxWidth: '640px', marginBottom: '32px' }}>
             <HeroArama />
           </div>
 
-          <p className="text-sm text-[var(--color-text-secondary)]/70 font-medium mt-2 tracking-wide">
+          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500, letterSpacing: '0.02em', marginTop: '8px' }}>
             Kredi kartı gerekmez · Modern altyapı · 7/24 randevu
           </p>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          STATS
-      ═══════════════════════════════════════════════════ */}
-      <section className="bg-white py-14 border-b border-t border-[var(--color-border)]">
+      {/* ═══ STATS ═══ */}
+      <section style={{ background: 'white', paddingTop: '56px', paddingBottom: '56px', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-[var(--color-border)]">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', textAlign: 'center' }}>
             {[
               { sayi: '3.200+', label: 'Aktif Esnaf' },
               { sayi: '47', label: 'Şehir' },
               { sayi: '150.000+', label: 'Aylık Ziyaretçi' },
             ].map((s) => (
-              <div key={s.label} className="text-center pt-10 sm:pt-0 first:pt-0">
-                <p className="text-3xl md:text-4xl font-bold text-[var(--color-text)] font-display mb-3">{s.sayi}</p>
-                <p className="text-sm md:text-base font-medium text-[var(--color-text-secondary)]">{s.label}</p>
+              <div key={s.label}>
+                <p className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '8px' }}>{s.sayi}</p>
+                <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          KATEGORİLER
-      ═══════════════════════════════════════════════════ */}
-      <section className="bg-[var(--color-bg-muted)] py-20 lg:py-28 border-b border-[var(--color-border)]">
+      {/* ═══ KATEGORİLER ═══ */}
+      <section style={{ background: 'var(--color-bg-muted)', paddingTop: '80px', paddingBottom: '80px', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          <div className="text-center mb-14 lg:mb-16">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-4 text-[var(--color-text)]">
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '16px' }}>
               Popüler Kategoriler
             </h2>
-            <p className="text-base md:text-lg text-[var(--color-text-secondary)] leading-relaxed max-w-xl mx-auto">
+            <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', lineHeight: 1.7, maxWidth: '500px', margin: '0 auto' }}>
               İhtiyacın olan hizmeti kolayca bul, en iyisi ile çalış.
             </p>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5 md:gap-6">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
             {KATEGORILER.slice(0, 12).map((k) => (
               <Link
                 key={k.slug}
                 href={`/kategori/${k.slug}`}
-                className="group card-elite p-8 flex flex-col items-center justify-center text-center hover:border-[var(--color-primary)]/30"
+                className="card-elite group"
+                style={{ padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
               >
-                <div className="w-16 h-16 rounded-2xl bg-[var(--color-bg)] flex items-center justify-center mb-5 transition-all duration-300 group-hover:bg-[var(--color-primary-light)] group-hover:scale-105">
-                  <span className="text-2xl">{k.ikon}</span>
+                <div style={{ width: 64, height: 64, borderRadius: 16, background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', transition: 'all 0.3s' }} className="group-hover:scale-105">
+                  <span style={{ fontSize: '28px' }}>{k.ikon}</span>
                 </div>
-                <span className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors leading-snug">
+                <span className="group-hover:text-[var(--color-primary)]" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text)', transition: 'color 0.2s', lineHeight: 1.4 }}>
                   {k.ad}
                 </span>
               </Link>
@@ -178,28 +201,26 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          ÖNE ÇIKAN ESNAFLAR
-      ═══════════════════════════════════════════════════ */}
-      <section className="bg-white py-20 lg:py-28">
+      {/* ═══ ÖNE ÇIKAN ESNAFLAR ═══ */}
+      <section style={{ background: 'white', paddingTop: '80px', paddingBottom: '80px' }}>
         <div className="container-main">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px', marginBottom: '48px' }}>
             <div>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-display mb-4 text-[var(--color-text)]">
+              <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '12px' }}>
                 Öne Çıkan Esnaflar
               </h2>
-              <p className="text-base md:text-lg text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
+              <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', lineHeight: 1.7, maxWidth: '600px' }}>
                 Yakınındaki en popüler ve yüksek puanlı işletmeleri keşfet, hemen randevunu oluştur.
               </p>
             </div>
-            <Link href="/ara" className="shrink-0">
+            <Link href="/ara">
               <Button variant="secondary" size="sm">
                 Tümünü İncele →
               </Button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
             {esnaflar.length > 0
               ? esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
               : Array.from({ length: 5 }).map((_, i) => <EsnafKartSkeleton key={i} />)
@@ -208,26 +229,31 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          NASIL ÇALIŞIR — Steps Section
-      ═══════════════════════════════════════════════════ */}
-      <section className="bg-[var(--color-bg)] py-24 lg:py-36 border-t border-[var(--color-border)]">
+      {/* ═══ NASIL ÇALIŞIR ═══ */}
+      <section style={{ background: 'var(--color-bg)', paddingTop: '100px', paddingBottom: '100px', borderTop: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          {/* Header — centered */}
-          <div className="text-center mb-16 lg:mb-20">
-            <div className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white text-xs md:text-sm font-bold tracking-wider uppercase text-[var(--color-primary)] mb-8 shadow-sm border border-[var(--color-border)]">
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '72px' }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '10px',
+              padding: '10px 24px', borderRadius: '9999px',
+              background: 'white', fontSize: '13px', fontWeight: 700,
+              letterSpacing: '0.05em', textTransform: 'uppercase' as const,
+              color: 'var(--color-primary)', boxShadow: 'var(--shadow-sm)',
+              border: '1px solid var(--color-border)', marginBottom: '32px'
+            }}>
               Basit · Hızlı · Etkili
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-display mb-6 tracking-tight text-[var(--color-text)]">
+            <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 3rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '24px', letterSpacing: '-0.01em' }}>
               Nasıl Çalışır?
             </h2>
-            <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto text-base md:text-lg leading-relaxed font-medium">
+            <p style={{ color: 'var(--color-text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '17px', lineHeight: 1.7, fontWeight: 500 }}>
               Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla. Kodlama gerektirmez.
             </p>
           </div>
 
-          {/* Steps grid — perfectly centered */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 max-w-5xl mx-auto">
+          {/* Steps */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px', maxWidth: '1000px', margin: '0 auto' }}>
             {[
               { ikon: '📝', adim: '01', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni detaylıca tanımla.' },
               { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve işletmene ait harika fotoğrafları yükle.' },
@@ -235,25 +261,22 @@ export default async function AnaSayfa() {
             ].map((item) => (
               <div
                 key={item.adim}
-                className="flex flex-col items-center text-center bg-white p-10 lg:p-12 rounded-3xl border border-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-all duration-300 hover:-translate-y-1"
+                className="card-elite"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+                  padding: '48px 32px', borderRadius: '24px',
+                }}
               >
-                {/* Step number */}
-                <span className="text-xs font-black text-[var(--color-primary)] tracking-widest uppercase mb-6">
+                <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: '24px' }}>
                   Aşama {item.adim}
                 </span>
-
-                {/* Icon */}
-                <div className="w-20 h-20 rounded-2xl bg-[var(--color-primary-light)] flex items-center justify-center text-4xl mb-8">
+                <div style={{ width: 80, height: 80, borderRadius: 16, background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', marginBottom: '32px' }}>
                   {item.ikon}
                 </div>
-
-                {/* Title */}
-                <h3 className="font-bold text-xl md:text-2xl font-display mb-4 text-[var(--color-text)]">
+                <h3 className="font-display" style={{ fontWeight: 700, fontSize: '22px', color: 'var(--color-text)', marginBottom: '16px' }}>
                   {item.baslik}
                 </h3>
-
-                {/* Description */}
-                <p className="text-base text-[var(--color-text-secondary)] leading-relaxed font-medium">
+                <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.7, fontWeight: 500 }}>
                   {item.aciklama}
                 </p>
               </div>
@@ -262,42 +285,50 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          CTA SECTION
-      ═══════════════════════════════════════════════════ */}
-      <section className="py-24 lg:py-40 bg-[var(--color-primary)] relative overflow-hidden">
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0d_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0d_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-        {/* Decorative blobs */}
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-white opacity-[0.07] rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-48 -left-32 w-[500px] h-[500px] bg-[var(--color-accent)] opacity-[0.08] rounded-full blur-3xl pointer-events-none"></div>
+      {/* ═══ CTA ═══ */}
+      <section className="relative overflow-hidden" style={{ background: 'var(--color-primary)', paddingTop: '100px', paddingBottom: '100px' }}>
+        {/* Pattern */}
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+        <div className="absolute pointer-events-none" style={{ top: -128, right: -128, width: 384, height: 384, background: 'white', opacity: 0.07, borderRadius: '50%', filter: 'blur(80px)' }} />
 
-        <div className="container-main relative z-10 text-center flex flex-col items-center">
-          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-8 font-display tracking-tight leading-tight max-w-4xl mx-auto">
+        <div className="container-main relative" style={{ zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 4vw, 3.5rem)', fontWeight: 700, color: 'white', marginBottom: '32px', lineHeight: 1.15, maxWidth: '800px', letterSpacing: '-0.01em' }}>
             Sen de Kurumsal Platformumuza Katıl
           </h2>
-          <p className="text-white/70 mb-14 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '56px', fontSize: 'clamp(1rem, 2vw, 1.25rem)', maxWidth: '600px', fontWeight: 500, lineHeight: 1.7 }}>
             3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen şimdi ulaş!
           </p>
-          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center w-full max-w-xl">
-            {/* PRIMARY CTA — white bg + dark text for full contrast */}
-            <Link href="/kayit" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-16 px-12 text-base bg-white !text-[var(--color-primary)] hover:bg-[var(--color-bg)] font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
+            {/* CTA PRIMARY — guaranteed visible */}
+            <Link href="/kayit">
+              <button
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  height: '60px', padding: '0 40px',
+                  fontSize: '16px', fontWeight: 700,
+                  background: 'white', color: 'var(--color-primary)',
+                  borderRadius: '16px', border: 'none',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                }}
               >
                 Hemen Ücretsiz Başla
-              </Button>
+              </button>
             </Link>
-            {/* SECONDARY CTA */}
-            <Link href="/ara" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="ghost"
-                className="w-full sm:w-auto h-16 px-12 text-base border-2 border-white/25 !text-white hover:bg-white/10 hover:border-white/40 rounded-2xl font-semibold transition-all backdrop-blur-sm"
+            {/* CTA SECONDARY */}
+            <Link href="/ara">
+              <button
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  height: '60px', padding: '0 40px',
+                  fontSize: '16px', fontWeight: 600,
+                  background: 'transparent', color: 'white',
+                  borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
               >
                 Esnafları İncele
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

@@ -16,16 +16,9 @@ export default async function HesabimPage() {
     redirect('/giris?callbackUrl=/hesabim')
   }
 
-  // Fetch bookings associated with this user
   const randevular = await prisma.randevu.findMany({
     where: {
-      // Here we assume randevular are linked by phone or we need to add a relation to standard Users.
-      // Since schema uses musteriTelefon/musteriAd, let's match by the user's phone if possible, 
-      // or we can just fetch all if we add a kullaniciId relation to Randevu.
-      // Wait, currently Randevu schema only has musteriAd, musteriTelefon. It doesn't formally link to Kullanici ID.
-      // If the user is logged in, we should theoretically search by their phone number from the user profile.
-      // Let's get the user's phone first.
-      musteriAd: session.user.name || undefined, // Fallback logic since no strict relation is built yet
+      musteriAd: session.user.name || undefined,
     },
     include: {
       esnaf: { select: { isletmeAdi: true, sehir: true, ilce: true, slug: true } },
@@ -38,32 +31,34 @@ export default async function HesabimPage() {
   const past = randevular.filter(r => new Date(r.tarih) < new Date() || r.durum === 'IPTAL')
 
   return (
-    <div className="container-main py-12 lg:py-16 min-h-[60vh]">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-2xl md:text-3xl font-bold font-display text-[var(--color-text)]">Hesabım</h1>
+    <div className="container-main" style={{ paddingTop: '48px', paddingBottom: '48px', minHeight: '60vh' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
+          <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700 }}>Hesabım</h1>
           <Link href="/panel">
             <Button variant="ghost" size="sm">İşletme Paneline Git</Button>
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-[var(--shadow-card)] border border-[var(--color-border)] overflow-hidden">
-          <div className="p-6 sm:p-8 border-b border-[var(--color-border)]">
-            <h2 className="text-xl font-bold font-display mb-2">Yaklaşan Randevularım</h2>
-            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">Aktif ve onaylanmış randevularınızı buradan takip edebilirsiniz.</p>
+        {/* Upcoming */}
+        <div style={{ background: 'white', borderRadius: '16px', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+          <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--color-border)' }}>
+            <h2 className="font-display" style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Yaklaşan Randevularım</h2>
+            <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>Aktif ve onaylanmış randevularınızı buradan takip edebilirsiniz.</p>
           </div>
           
-          <div className="p-6 sm:p-8">
+          <div style={{ padding: '24px 32px' }}>
             {upcoming.length > 0 ? (
-              <div className="space-y-5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {upcoming.map((randevu) => (
-                  <div key={randevu.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 border border-[var(--color-border)] rounded-2xl hover:shadow-[var(--shadow-card)] transition-all">
+                  <div key={randevu.id} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '20px', border: '1px solid var(--color-border)', borderRadius: '16px', gap: '16px', transition: 'box-shadow 0.2s' }}>
                     <div>
-                      <h3 className="font-bold text-lg mb-1">{randevu.esnaf.isletmeAdi}</h3>
-                      <p className="text-sm text-[var(--color-text-secondary)] mb-1.5">{randevu.hizmet?.ad} - {randevu.hizmet?.fiyat ? `₺${randevu.hizmet.fiyat.toString()}` : ''}</p>
-                      <p className="text-sm text-[var(--color-primary)] font-medium">{formatTarih(randevu.tarih)}</p>
+                      <h3 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '6px' }}>{randevu.esnaf.isletmeAdi}</h3>
+                      <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>{randevu.hizmet?.ad} - {randevu.hizmet?.fiyat ? `₺${randevu.hizmet.fiyat.toString()}` : ''}</p>
+                      <p style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600 }}>{formatTarih(randevu.tarih)}</p>
                     </div>
-                    <div className="mt-4 sm:mt-0 flex items-center gap-4">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                       <Badge variant={randevu.durum === 'ONAYLANDI' ? 'success' : 'default'}>
                         {randevu.durum}
                       </Badge>
@@ -75,12 +70,12 @@ export default async function HesabimPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <div className="w-20 h-20 bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)] rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ width: 80, height: 80, background: 'var(--color-bg-muted)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', margin: '0 auto 24px' }}>
                   🗓️
                 </div>
-                <h3 className="text-xl font-bold mb-3">Yaklaşan Randevunuz Yok</h3>
-                <p className="text-[var(--color-text-secondary)] mb-8 text-base leading-relaxed max-w-md mx-auto">Hemen işletmeleri keşfedin ve ilk randevunuzu oluşturun.</p>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>Yaklaşan Randevunuz Yok</h3>
+                <p style={{ color: 'var(--color-text-secondary)', marginBottom: '32px', fontSize: '15px', lineHeight: 1.7, maxWidth: '400px', margin: '0 auto 32px' }}>Hemen işletmeleri keşfedin ve ilk randevunuzu oluşturun.</p>
                 <Link href="/ara">
                   <Button>Esnaf Keşfet</Button>
                 </Link>
@@ -89,25 +84,24 @@ export default async function HesabimPage() {
           </div>
         </div>
 
+        {/* Past */}
         {past.length > 0 && (
-          <div className="mt-10 bg-white rounded-2xl shadow-[var(--shadow-card)] border border-[var(--color-border)] overflow-hidden">
-            <div className="p-6 sm:p-8 border-b border-[var(--color-border)]">
-              <h2 className="text-xl font-bold font-display">Geçmiş Randevular</h2>
+          <div style={{ marginTop: '40px', background: 'white', borderRadius: '16px', boxShadow: 'var(--shadow-card)', border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--color-border)' }}>
+              <h2 className="font-display" style={{ fontSize: '20px', fontWeight: 700 }}>Geçmiş Randevular</h2>
             </div>
-            <div className="p-6 sm:p-8">
-              <div className="space-y-5">
+            <div style={{ padding: '24px 32px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {past.map((randevu) => (
-                  <div key={randevu.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 border border-[var(--color-border)] rounded-2xl opacity-70 hover:opacity-100 transition-opacity">
+                  <div key={randevu.id} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '20px', border: '1px solid var(--color-border)', borderRadius: '16px', gap: '16px', opacity: 0.7 }}>
                     <div>
-                      <h3 className="font-medium text-base mb-1">{randevu.esnaf.isletmeAdi}</h3>
-                      <p className="text-sm text-[var(--color-text-secondary)] mb-1">{randevu.hizmet?.ad}</p>
-                      <p className="text-xs text-[var(--color-text-secondary)]">{formatTarih(randevu.tarih)}</p>
+                      <h3 style={{ fontWeight: 500, fontSize: '15px', marginBottom: '4px' }}>{randevu.esnaf.isletmeAdi}</h3>
+                      <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>{randevu.hizmet?.ad}</p>
+                      <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>{formatTarih(randevu.tarih)}</p>
                     </div>
-                    <div className="mt-2 sm:mt-0">
-                      <Badge variant={randevu.durum === 'IPTAL' ? 'danger' : 'default'}>
-                        {randevu.durum}
-                      </Badge>
-                    </div>
+                    <Badge variant={randevu.durum === 'IPTAL' ? 'danger' : 'default'}>
+                      {randevu.durum}
+                    </Badge>
                   </div>
                 ))}
               </div>

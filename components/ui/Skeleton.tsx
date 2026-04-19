@@ -9,27 +9,24 @@ interface SkeletonProps {
 export function Skeleton({ className, style }: SkeletonProps) {
   return (
     <div
-      className={cn(
-        'animate-pulse bg-[var(--color-bg-muted)] rounded-md',
-        className
-      )}
-      style={style}
+      className={cn('animate-pulse', className)}
+      style={{ background: 'var(--color-bg-muted)', borderRadius: '8px', ...style }}
     />
   )
 }
 
 export function EsnafKartSkeleton() {
   return (
-    <div className="bg-white border border-[var(--color-border)] rounded-2xl overflow-hidden">
+    <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', overflow: 'hidden' }}>
       <div className="relative w-full" style={{ paddingBottom: '80%' }}>
         <div className="absolute inset-0">
-          <Skeleton className="w-full h-full rounded-none" />
+          <Skeleton className="w-full h-full" style={{ borderRadius: 0 }} />
         </div>
       </div>
-      <div className="p-4 space-y-3">
-        <Skeleton className="h-4 w-4/5" />
-        <Skeleton className="h-3 w-3/5" />
-        <Skeleton className="h-3 w-2/5" />
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <Skeleton style={{ height: '16px', width: '80%' }} />
+        <Skeleton style={{ height: '12px', width: '60%' }} />
+        <Skeleton style={{ height: '12px', width: '40%' }} />
       </div>
     </div>
   )

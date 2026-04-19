@@ -19,11 +19,19 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
   return (
     <Link
       href={`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
-      className="group block card-elite rounded-2xl overflow-hidden"
+      className="group block"
+      style={{
+        background: 'white',
+        borderRadius: '16px',
+        border: '1px solid var(--color-border)',
+        boxShadow: 'var(--shadow-card)',
+        overflow: 'hidden',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
     >
       {/* Image */}
       <div className="relative w-full overflow-hidden" style={{ paddingBottom: '80%' }}>
-        <div className="absolute inset-0 bg-[var(--color-bg-muted)]">
+        <div className="absolute inset-0" style={{ background: 'var(--color-bg-muted)' }}>
           <Image
             src={esnaf.kapakFoto || `https://picsum.photos/seed/${esnaf.id}/400/400`}
             alt={esnaf.isletmeAdi}
@@ -33,49 +41,55 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
           />
         </div>
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent opacity-80" />
+        {/* Gradient */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent, transparent)' }} />
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 z-10">
+        <div className="absolute" style={{ top: 12, left: 12, zIndex: 10 }}>
           <Badge
-            className="text-white backdrop-blur-sm bg-white/20 border-white/30 text-[10px] px-2.5 py-1 rounded-full shadow-sm"
-            style={{ backgroundColor: `${esnaf.kategori.renk}dd` }}
+            className="text-white backdrop-blur-sm"
+            style={{ backgroundColor: `${esnaf.kategori.renk}dd`, fontSize: '10px', padding: '4px 10px', borderRadius: '9999px', boxShadow: 'var(--shadow-sm)' }}
           >
-            {esnaf.kategori.ikon} <span className="ml-1 font-medium">{esnaf.kategori.ad}</span>
+            {esnaf.kategori.ikon} <span style={{ marginLeft: 4, fontWeight: 500 }}>{esnaf.kategori.ad}</span>
           </Badge>
         </div>
-        <div className="absolute top-3 right-3 z-10">
-          <Badge variant={acik ? 'success' : 'default'} className="text-[10px] px-2.5 py-1 rounded-full shadow-sm font-semibold capitalize tracking-wide">
+        <div className="absolute" style={{ top: 12, right: 12, zIndex: 10 }}>
+          <Badge 
+            variant={acik ? 'success' : 'default'} 
+            style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '9999px', boxShadow: 'var(--shadow-sm)', fontWeight: 600, letterSpacing: '0.02em' }}
+          >
             {acik ? '• Açık' : 'Kapalı'}
           </Badge>
         </div>
       </div>
 
-      {/* Content — improved spacing */}
-      <div className="p-4">
-        <h3 className="font-semibold text-sm text-[var(--color-text)] line-clamp-2 leading-snug mb-2 font-display">
+      {/* Content */}
+      <div style={{ padding: '16px 16px 20px' }}>
+        <h3
+          className="font-display line-clamp-2"
+          style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-text)', lineHeight: 1.4, marginBottom: '8px' }}
+        >
           {esnaf.isletmeAdi}
         </h3>
-        <p className="text-xs text-[var(--color-text-secondary)] mb-3 truncate leading-relaxed">
+        <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginBottom: '12px', lineHeight: 1.5 }}>
           📍 {esnaf.ilce}, {esnaf.sehir}
         </p>
 
         {/* Rating */}
-        <div className="flex items-center gap-1.5 mb-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
           <YildizPuan puan={puan} boyut="sm" />
-          <span className="text-xs text-[var(--color-text-secondary)]">
+          <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
             ({esnaf.yorumlar?.length || 0})
           </span>
         </div>
 
         {/* Price */}
         {minFiyat !== null && (
-          <div className="pt-3 border-t border-[var(--color-border)]">
-            <span className="text-sm font-bold text-[var(--color-primary)]">
+          <div style={{ paddingTop: '12px', borderTop: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-primary)' }}>
               {formatFiyat(minFiyat)}
             </span>
-            <span className="text-[11px] text-[var(--color-text-secondary)] ml-1.5">
+            <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginLeft: '6px' }}>
               &apos;den başlayan
             </span>
           </div>

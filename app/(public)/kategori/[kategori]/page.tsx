@@ -40,25 +40,25 @@ export default async function KategoriSayfasi({ params }: Props) {
     : []
 
   return (
-    <div className="container-main py-12 lg:py-16">
-      <div className="mb-12">
-        <div className="flex items-center gap-4 mb-3">
-          <span className="text-4xl">{kat.ikon}</span>
-          <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+    <div className="container-main" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+      <div style={{ marginBottom: '48px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+          <span style={{ fontSize: '40px' }}>{kat.ikon}</span>
+          <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700 }}>
             {kat.ad}
           </h1>
         </div>
-        <p className="text-base text-[var(--color-text-secondary)] leading-relaxed">
+        <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
           {esnaflar.length} esnaf bulundu
         </p>
       </div>
 
       {esnaflar.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
           {esnaflar.map((e: typeof esnaflar[0]) => <EsnafKart key={e.id} esnaf={e as unknown as Esnaf} />)}
         </div>
       ) : (
-        <p className="text-center text-[var(--color-text-secondary)] py-20 text-base">
+        <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '80px 20px', fontSize: '15px' }}>
           Bu kategoride henüz esnaf bulunmuyor.
         </p>
       )}
