@@ -5,7 +5,7 @@
 Stack: Next.js 16 (App Router) + Neon PostgreSQL + Prisma 7 + NextAuth v5
 
 ## Önemli Next.js 16 Değişiklikleri
-- `middleware.ts` → `proxy.ts` olarak yeniden adlandırıldı
+- Middleware dosyası standart `middleware.ts` adını kullanır, fonksiyon adı `middleware` olmalı
 - Turbopack varsayılan olarak aktif
 
 ## Önemli Prisma 7 Değişiklikleri
