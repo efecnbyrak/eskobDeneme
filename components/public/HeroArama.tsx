@@ -19,7 +19,7 @@ export function HeroArama() {
       {/* Decorative Glow Behind Search */}
       <div className="absolute -inset-1 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
       
-      <div className="relative flex items-center glass-panel rounded-full overflow-hidden transition-all duration-300 group-focus-within:ring-2 group-focus-within:ring-white/50 group-focus-within:bg-white/90">
+      <div className="relative flex items-center bg-white rounded-full overflow-hidden transition-all duration-300 group-focus-within:ring-2 group-focus-within:ring-[var(--color-primary-light)] shadow-sm border border-[var(--color-border)]">
         <div className="flex items-center pl-6 pr-3 text-[var(--color-text-secondary)] group-focus-within:text-[var(--color-primary)] transition-colors">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -33,7 +33,7 @@ export function HeroArama() {
         />
         <button
           type="submit"
-          className="bg-[#2F2F2F] hover:bg-black text-white text-base font-semibold px-8 py-4 mr-1.5 rounded-full transition-all duration-300 cursor-pointer shrink-0 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-base font-semibold px-8 py-4 mr-1.5 rounded-full transition-all duration-300 cursor-pointer shrink-0 shadow-sm hover:shadow-md hover:-translate-y-0.5"
         >
           Ara
         </button>

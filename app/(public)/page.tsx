@@ -70,29 +70,29 @@ export default async function AnaSayfa() {
   const esnaflar = await onecikarilan()
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {/* ─── ELITE HERO ─── */}
-      <section className="relative overflow-hidden pt-28 pb-24 lg:pt-36 lg:pb-32 bg-[var(--color-bg)]">
-        {/* Subtle grid background (Vercel/Stripe style) */}
+      <section className="relative overflow-hidden pt-32 pb-24 lg:pt-44 lg:pb-32 bg-[var(--color-bg)]">
+        {/* Subtle grid background (SaaS style) */}
         <div 
-          className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]"
+          className="absolute inset-0 z-0 pointer-events-none opacity-[0.3]"
           style={{
             backgroundImage: `
               linear-gradient(to right, var(--color-border) 1px, transparent 1px),
               linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)
             `,
-            backgroundSize: '40px 40px',
-            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)'
+            backgroundSize: '48px 48px',
+            maskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)'
           }}
         />
         
-        {/* Intense background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[var(--color-primary-light)] blur-[100px] rounded-[100%] opacity-70 pointer-events-none" />
+        {/* Soft background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[var(--color-primary-light)] blur-[100px] rounded-[100%] opacity-60 pointer-events-none" />
 
         <div className="container-main relative z-10 flex flex-col items-center text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white shadow-soft text-sm font-semibold text-[var(--color-primary)] mb-8 transition-transform hover:scale-105">
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/80 backdrop-blur-md border border-[var(--color-border)] shadow-sm text-sm font-semibold text-[var(--color-primary)] mb-8 transition-transform hover:scale-105">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-success)] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-success)]"></span>
@@ -101,39 +101,39 @@ export default async function AnaSayfa() {
           </div>
 
           {/* Epic Heading */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tight mb-6 font-display leading-[1.1] max-w-4xl mx-auto">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tight mb-8 font-display leading-[1.15] max-w-4xl mx-auto">
             <span className="text-[var(--color-text)]">İşletmeni Dakikalar İçinde </span>
-            <span className="text-gradient-primary">Dijitale Taşı</span>
+            <span className="text-[var(--color-primary)]">Dijitale Taşı</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg sm:text-xl text-[var(--color-text-secondary)] mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-lg md:text-xl text-[var(--color-text-secondary)] mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
             Yeni nesil dijital vitrin çözümü ile hizmetlerini tanıt, online randevu al ve müşteri tabanını bugün büyütmeye başla.
           </p>
 
           {/* Search Bar - Elite */}
-          <div className="w-full max-w-3xl mb-4">
+          <div className="w-full max-w-3xl mb-6">
             <HeroArama />
           </div>
 
-          <p className="text-sm text-[var(--color-text-secondary)] font-medium mt-4">
+          <p className="text-sm text-[var(--color-text-secondary)] font-medium mt-2">
             Kredi kartı gerekmez · Modern altyapı · 7/24 randevu
           </p>
         </div>
       </section>
 
       {/* ─── STATS ─── */}
-      <section className="border-b border-[var(--color-border)] bg-white">
-        <div className="container-main py-5">
-          <div className="grid grid-cols-3 divide-x divide-[var(--color-border)]">
+      <section className="bg-white py-12 border-b border-t border-[var(--color-border)]">
+        <div className="container-main">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 divide-y sm:divide-y-0 sm:divide-x divide-[var(--color-border)]">
             {[
               { sayi: '3.200+', label: 'Aktif Esnaf' },
               { sayi: '47', label: 'Şehir' },
               { sayi: '150.000+', label: 'Aylık Ziyaretçi' },
             ].map((s) => (
-              <div key={s.label} className="text-center py-2">
-                <p className="text-xl sm:text-2xl font-bold text-[var(--color-primary)] font-display">{s.sayi}</p>
-                <p className="text-[11px] sm:text-xs text-[var(--color-text-secondary)] mt-0.5">{s.label}</p>
+              <div key={s.label} className="text-center pt-8 sm:pt-0">
+                <p className="text-3xl md:text-4xl font-bold text-[var(--color-text)] font-display mb-2">{s.sayi}</p>
+                <p className="text-sm md:text-base font-medium text-[var(--color-text-secondary)]">{s.label}</p>
               </div>
             ))}
           </div>
@@ -141,38 +141,24 @@ export default async function AnaSayfa() {
       </section>
 
       {/* ─── KATEGORİLER ─── */}
-      <section className="bg-white border-b border-[var(--color-border)]">
-        <div className="container-main py-6">
-          {/* Mobile: horizontal scroll */}
-          <div className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide lg:hidden">
-            {KATEGORILER.map((k) => (
-              <Link
-                key={k.slug}
-                href={`/kategori/${k.slug}`}
-                className="flex-none flex flex-col items-center gap-1.5 group w-16"
-              >
-                <div className="w-14 h-14 rounded-full bg-[var(--color-bg-muted)] flex items-center justify-center group-hover:bg-[var(--color-primary-light)] transition-colors">
-                  <span className="text-xl">{k.ikon}</span>
-                </div>
-                <span className="text-[11px] font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] text-center leading-tight transition-colors">
-                  {k.ad}
-                </span>
-              </Link>
-            ))}
+      <section className="bg-[var(--color-bg-muted)] py-16 lg:py-24 border-b border-[var(--color-border)]">
+        <div className="container-main">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-4xl font-bold font-display mb-3 text-[var(--color-text)]">Popüler Kategoriler</h2>
+            <p className="text-base text-[var(--color-text-secondary)]">İhtiyacın olan hizmeti kolayca bul</p>
           </div>
-
-          {/* Desktop: centered grid */}
-          <div className="hidden lg:flex flex-wrap justify-center gap-6">
-            {KATEGORILER.map((k) => (
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8">
+            {KATEGORILER.slice(0, 12).map((k) => (
               <Link
                 key={k.slug}
                 href={`/kategori/${k.slug}`}
-                className="flex flex-col items-center gap-2 group w-20"
+                className="group card-elite p-6 flex flex-col items-center justify-center text-center hover:border-[var(--color-primary-light)] h-40"
               >
-                <div className="w-16 h-16 rounded-full bg-[var(--color-bg-muted)] flex items-center justify-center group-hover:bg-[var(--color-primary-light)] group-hover:shadow-sm transition-all duration-200">
-                  <span className="text-2xl">{k.ikon}</span>
+                <div className="w-16 h-16 rounded-2xl bg-[var(--color-bg)] flex items-center justify-center mb-4 transition-colors group-hover:bg-[var(--color-primary-light)] shadow-xs">
+                  <span className="text-2xl transition-transform duration-300 group-hover:scale-110">{k.ikon}</span>
                 </div>
-                <span className="text-xs font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] text-center leading-tight transition-colors">
+                <span className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
                   {k.ad}
                 </span>
               </Link>
@@ -182,61 +168,59 @@ export default async function AnaSayfa() {
       </section>
 
       {/* ─── ÖNE ÇIKAN ESNAFLAR ─── */}
-      <section className="bg-white">
-        <div className="container-main py-10 lg:py-14">
-          <div className="flex items-center justify-between mb-6">
+      <section className="bg-white py-20 lg:py-28">
+        <div className="container-main">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold font-display">Öne Çıkan Esnaflar</h2>
-              <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">Yakınındaki popüler işletmeler</p>
+              <h2 className="text-2xl md:text-4xl font-bold font-display mb-3 text-[var(--color-text)]">Öne Çıkan Esnaflar</h2>
+              <p className="text-base text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
+                Yakınındaki en popüler ve yüksek puanlı işletmeleri keşfet, hemen randevunu oluştur.
+              </p>
             </div>
-            <Link href="/ara">
-              <Button variant="ghost" size="sm" className="text-[var(--color-primary)] hover:!bg-[var(--color-primary-light)]">
-                Tümünü Gör →
+            <Link href="/ara" className="shrink-0">
+              <Button variant="outline" className="border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] shadow-sm">
+                Tümünü İncele →
               </Button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {esnaflar.length > 0
               ? esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
-              : Array.from({ length: 10 }).map((_, i) => <EsnafKartSkeleton key={i} />)
+              : Array.from({ length: 5 }).map((_, i) => <EsnafKartSkeleton key={i} />)
             }
           </div>
         </div>
       </section>
 
       {/* ─── NASIL ÇALIŞIR ─── */}
-      <section className="bg-white py-16 lg:py-28 text-center relative overflow-hidden">
-        {/* Glow Effects */}
-        <div className="absolute left-[-10%] top-[20%] w-[400px] h-[400px] bg-[var(--color-primary-light)] blur-[100px] rounded-[100%] pointer-events-none opacity-40"></div>
-        <div className="absolute right-[-10%] bottom-[-10%] w-[300px] h-[300px] bg-[var(--color-primary)] blur-[120px] rounded-[100%] pointer-events-none opacity-10"></div>
-        
-        <div className="container-main relative z-10">
-          <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-[var(--color-bg-muted)] text-[11px] font-bold tracking-widest uppercase text-[var(--color-text-secondary)] mb-6 shadow-sm border border-[var(--color-border)]">
+      <section className="bg-[var(--color-bg)] py-20 lg:py-32 text-center border-t border-[var(--color-border)]">
+        <div className="container-main">
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white text-[11px] md:text-sm font-bold tracking-wider uppercase text-[var(--color-primary)] mb-8 shadow-sm border border-[var(--color-border)]">
             Basit · Hızlı · Etkili
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display mb-4 tracking-tight">Nasıl <span className="text-gradient-primary">Çalışır?</span></h2>
-          <p className="text-[var(--color-text-secondary)] mb-14 lg:mb-20 max-w-xl mx-auto text-base sm:text-lg font-medium">
-            Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla. Çok basit, kodlama gerektirmez.
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-display mb-6 tracking-tight text-[var(--color-text)]">
+            Nasıl Çalışır?
+          </h2>
+          <p className="text-[var(--color-text-secondary)] mb-16 lg:mb-24 max-w-2xl mx-auto text-base md:text-xl font-medium leading-relaxed">
+            Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla. Kodlama gerektirmez.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-10 max-w-5xl mx-auto relative">
-            {/* Desktop Connection line */}
-            <div className="hidden sm:block absolute top-[45px] left-[20%] right-[20%] h-[2px] bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent pointer-events-none" />
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 max-w-5xl mx-auto">
             {[
-              { ikon: '📝', adim: '01', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni tanımla.' },
-              { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve harika fotoğraflarını yükle.' },
-              { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Arama sonuçlarında üstte çık, randevuları 7/24 yönet.' },
+              { ikon: '📝', adim: 'Aşama 1', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni detaylıca tanımla.' },
+              { ikon: '🏪', adim: 'Aşama 2', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve işletmene ait harika fotoğrafları yükle.' },
+              { ikon: '🎯', adim: 'Aşama 3', baslik: 'Müşteri Kazan', aciklama: 'Arama sonuçlarında üstte çık, randevuları 7/24 otomatik olarak yönet.' },
             ].map((item) => (
-              <div key={item.adim} className="flex flex-col items-center relative group p-6 sm:p-2">
-                <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] bg-white flex items-center justify-center text-3xl lg:text-4xl mb-6 shadow-soft border border-[var(--color-border)] relative z-10 transition-transform duration-300 group-hover:scale-105 group-hover:shadow-[0_8px_30px_rgba(242,122,26,0.15)]">
+              <div key={item.adim} className="flex flex-col items-center bg-white p-10 rounded-3xl border border-[var(--color-border)] shadow-sm hover:shadow-md transition-shadow relative">
+                <span className="absolute top-6 left-6 text-xs font-black text-[var(--color-text-secondary)]/50 tracking-widest uppercase">{item.adim}</span>
+                <div className="w-20 h-20 rounded-2xl bg-[var(--color-primary-light)] flex items-center justify-center text-4xl mb-8 mt-4 text-[var(--color-primary)]">
                   {item.ikon}
-                  <div className="absolute -inset-1 rounded-[1.5rem] border border-[var(--color-primary)] opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 pointer-events-none"></div>
                 </div>
-                <span className="text-xs font-black text-[var(--color-primary)] mb-2 tracking-widest uppercase">{item.adim}</span>
-                <p className="font-extrabold text-lg lg:text-xl font-display mb-3 text-[var(--color-text)]">{item.baslik}</p>
-                <p className="text-sm lg:text-base text-[var(--color-text-secondary)] leading-relaxed max-w-[280px] font-medium">{item.aciklama}</p>
+                <h3 className="font-bold text-xl md:text-2xl font-display mb-4 text-[var(--color-text)]">{item.baslik}</h3>
+                <p className="text-base text-[var(--color-text-secondary)] leading-relaxed font-medium">
+                  {item.aciklama}
+                </p>
               </div>
             ))}
           </div>
@@ -244,23 +228,23 @@ export default async function AnaSayfa() {
       </section>
 
       {/* ─── ELITE CTA ─── */}
-      <section className="relative py-20 lg:py-32 overflow-hidden bg-black">
-        {/* Glow / Pattern Effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] h-[300px] bg-[var(--color-primary)] blur-[150px] opacity-20 pointer-events-none rounded-full"></div>
+      <section className="py-24 lg:py-40 bg-[var(--color-primary)] relative overflow-hidden">
+        {/* Soft background patterns over primary background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff1a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff1a_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="container-main relative z-10 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold text-white mb-6 font-display tracking-tight leading-tight max-w-3xl mx-auto">
-            Sen de Kurumsal Platformumuza <span className="text-[var(--color-primary)] underline decoration-[var(--color-primary)] decoration-4 underline-offset-8">Katıl</span>
+        <div className="container-main relative z-10 text-center flex flex-col items-center">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-8 font-display tracking-tight leading-tight max-w-4xl mx-auto">
+            Sen de Kurumsal Platformumuza Katıl
           </h2>
-          <p className="text-gray-400 mb-10 text-lg lg:text-2xl max-w-2xl mx-auto font-medium">
-            3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen ulaş.
+          <p className="text-white/80 mb-14 text-lg md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
+            3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen şimdi ulaş!
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center w-full max-w-2xl">
             <Link href="/kayit" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-14 px-10 text-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] font-bold rounded-full shadow-[0_0_30px_rgba(242,122,26,0.3)] hover:shadow-[0_0_40px_rgba(242,122,26,0.6)] transition-all transform hover:-translate-y-1"
+                className="w-full sm:w-auto h-16 px-10 text-lg bg-white text-[var(--color-primary)] hover:bg-gray-50 font-bold rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
               >
                 Hemen Ücretsiz Başla
               </Button>
@@ -268,8 +252,8 @@ export default async function AnaSayfa() {
             <Link href="/ara" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                variant="secondary"
-                className="w-full sm:w-auto h-14 px-10 text-lg border-white/20 text-white hover:bg-white/10 hover:border-white/40 backdrop-blur-md rounded-full font-semibold transition-all"
+                variant="outline"
+                className="w-full sm:w-auto h-16 px-10 text-lg border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full font-semibold transition-all backdrop-blur-sm bg-transparent"
               >
                 Esnafları İncele
               </Button>
