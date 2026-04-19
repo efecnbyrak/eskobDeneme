@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Kullanici {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  telefon         String?
+  sifreHash       String
+  ad              String
+  soyad           String
+  avatarUrl       String?
+  emailOnay       Boolean   @default(false)
+  plan            Plan      @default(UCRETSIZ)
+  planBitisTarihi DateTime?
+  olusturmaT      DateTime  @default(now())
+  guncelleT       DateTime  @updatedAt
+
+  esnaf     Esnaf?
+  oturumlar Oturum[]
+
+  @@map("kullaniciler")
+}
+
+enum Plan {
+  UCRETSIZ
+  STARTER
+  PRO
+}
+
+model Esnaf {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  isletmeAdi  String
+  aciklama    String?  @db.Text
+  kategori    Kategori @relation(fields: [kategoriId], references: [id])
+  kategoriId  String
+  kapakFoto   String?
+  logoUrl     String?
+  fotograflar String[]
+
+  sehir  String
+  ilce   String
+  adres  String?
+  enlem  Float?
+  boylam Float?
+
+  telefon   String?
+  whatsapp  String?
+  website   String?
+  instagram String?
+
+  calismaS Json?
+
+  aktif      Boolean  @default(true)
+  onaylı     Boolean  @default(false)
+  olusturmaT DateTime @default(now())
+  guncelleT  DateTime @updatedAt
+
+  sahip         Kullanici    @relation(fields: [kullaniciId], references: [id])
+  kullaniciId   String       @unique
+  hizmetler     Hizmet[]
+  randevular    Randevu[]
+  yorumlar      Yorum[]
+  istatistikler Istatistik[]
+
+  @@index([sehir, kategoriId])
+  @@index([slug])
+  @@map("esnaflar")
+}
+
+model Kategori {
+  id   String @id @default(cuid())
+  ad   String @unique
+  slug String @unique
+  ikon String
+  renk String
+  sira Int    @default(0)
+
+  esnaflar Esnaf[]
+
+  @@map("kategoriler")
+}
+
+model Hizmet {
+  id         String   @id @default(cuid())
+  ad         String
+  aciklama   String?
+  fiyat      Decimal  @db.Decimal(10, 2)
+  sure       Int?
+  kategori   String?
+  fotoUrl    String?
+  aktif      Boolean  @default(true)
+  sira       Int      @default(0)
+  olusturmaT DateTime @default(now())
+
+  esnaf      Esnaf     @relation(fields: [esnafId], references: [id], onDelete: Cascade)
+  esnafId    String
+  randevular Randevu[]
+
+  @@map("hizmetler")
+}
+
+model Randevu {
+  id             String       @id @default(cuid())
+  tarih          DateTime
+  sure           Int
+  durum          RandevuDurum @default(BEKLIYOR)
+  musteriAd      String
+  musteriTelefon String
+  musteriNot     String?
+  olusturmaT     DateTime     @default(now())
+  guncelleT      DateTime     @updatedAt
+
+  esnaf    Esnaf   @relation(fields: [esnafId], references: [id])
+  esnafId  String
+  hizmet   Hizmet? @relation(fields: [hizmetId], references: [id])
+  hizmetId String?
+
+  @@index([esnafId, tarih])
+  @@map("randevular")
+}
+
+enum RandevuDurum {
+  BEKLIYOR
+  ONAYLANDI
+  IPTAL
+  TAMAMLANDI
+}
+
+model Yorum {
+  id         String   @id @default(cuid())
+  puan       Int
+  yorum      String?  @db.Text
+  musteriAd  String
+  yanitlar   String?  @db.Text
+  onaylı     Boolean  @default(false)
+  olusturmaT DateTime @default(now())
+
+  esnaf   Esnaf  @relation(fields: [esnafId], references: [id])
+  esnafId String
+
+  @@map("yorumlar")
+}
+
+model Oturum {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
+  kullaniciId String
+  sonT        DateTime
+  olusturmaT  DateTime  @default(now())
+
+  @@map("oturumlar")
+}
+
+model Istatistik {
+  id           String   @id @default(cuid())
+  tarih        DateTime @default(now()) @db.Date
+  goruntulenme Int      @default(0)
+  tiklanma     Int      @default(0)
+  randevuSay   Int      @default(0)
+  whatsappT    Int      @default(0)
+
+  esnaf   Esnaf  @relation(fields: [esnafId], references: [id])
+  esnafId String
+
+  @@unique([esnafId, tarih])
+  @@map("istatistikler")
+}
