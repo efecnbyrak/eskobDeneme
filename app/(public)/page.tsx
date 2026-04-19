@@ -17,7 +17,7 @@ async function onecikarilan(): Promise<Esnaf[]> {
         hizmetler: { where: { aktif: true }, take: 3 },
       },
       orderBy: { olusturmaT: 'desc' },
-      take: 6,
+      take: 12,
     })
     return esnaflar as unknown as Esnaf[]
   } catch {
@@ -92,7 +92,7 @@ export default async function AnaSayfa() {
       {/* Kategori Şeridi */}
       <section className="py-8 bg-white border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide snap-x">
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible pb-4 pt-2 scrollbar-hide snap-x">
             {KATEGORILER.map((k) => (
               <Link
                 key={k.slug}
@@ -122,10 +122,10 @@ export default async function AnaSayfa() {
             <Button variant="secondary" size="sm">Tümünü Gör →</Button>
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-5">
           {esnaflar.length > 0
             ? esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
-            : Array.from({ length: 6 }).map((_, i) => <EsnafKartSkeleton key={i} />)
+            : Array.from({ length: 12 }).map((_, i) => <EsnafKartSkeleton key={i} />)
           }
         </div>
       </section>
