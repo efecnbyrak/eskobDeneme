@@ -12,13 +12,13 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link
             href="/"
-            className="font-bold text-xl text-[var(--color-primary)] font-display flex items-center gap-2"
+            className="font-bold text-2xl text-[var(--color-primary)] font-display flex items-center gap-2.5"
           >
-            <span className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-bold">EV</span>
+            <span className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-white flex items-center justify-center text-lg font-bold shadow-sm">EV</span>
             Esnaf Vitrin
           </Link>
 
@@ -67,10 +67,10 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <Link href="/giris">
-              <Button variant="ghost" size="sm">Giriş Yap</Button>
+              <span className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors cursor-pointer px-2">Giriş Yap</span>
             </Link>
             <Link href="/kayit">
-              <Button size="sm">Ücretsiz Başla</Button>
+              <Button size="md" className="font-semibold shadow-sm hover:shadow-md transition-shadow">Ücretsiz Başla</Button>
             </Link>
           </div>
 

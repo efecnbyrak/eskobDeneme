@@ -33,22 +33,22 @@ export default async function AnaSayfa() {
       {/* Hero */}
       <section
         className="py-24 px-4 text-center relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-turquoise-light) 100%)' }}
+        style={{ background: 'linear-gradient(135deg, var(--color-primary-light) 0%, #FFFFFF 100%)' }}
       >
         {/* Nokta deseni */}
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: 'radial-gradient(circle at 2px 2px, var(--color-primary) 1px, transparent 0)',
-            backgroundSize: '28px 28px',
+            backgroundSize: '24px 24px',
           }}
         />
         {/* Dekoratif şekil */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, var(--color-turquoise) 0%, transparent 70%)' }}
-        />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-15"
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full opacity-10"
           style={{ background: 'radial-gradient(circle, var(--color-primary) 0%, transparent 70%)' }}
+        />
+        <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full opacity-10"
+          style={{ background: 'radial-gradient(circle, var(--color-success) 0%, transparent 70%)' }}
         />
 
         <div className="relative max-w-3xl mx-auto">
@@ -92,15 +92,17 @@ export default async function AnaSayfa() {
       {/* Kategori Şeridi */}
       <section className="py-8 bg-white border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide snap-x">
             {KATEGORILER.map((k) => (
               <Link
                 key={k.slug}
                 href={`/kategori/${k.slug}`}
-                className="flex-none flex flex-col items-center gap-1.5 px-4 py-3 rounded-[var(--radius-lg)] hover:bg-[var(--color-primary-light)] hover:text-[var(--color-primary)] transition-all group border border-transparent hover:border-[var(--color-border)]"
+                className="flex-none flex flex-col items-center gap-2 group snap-start w-20"
               >
-                <span className="text-2xl">{k.ikon}</span>
-                <span className="text-xs font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] whitespace-nowrap">
+                <div className="w-16 h-16 rounded-full bg-white border border-[var(--color-border)] flex items-center justify-center shadow-sm group-hover:border-[var(--color-primary)] group-hover:shadow-md transition-all duration-200 group-hover:-translate-y-1">
+                  <span className="text-2xl">{k.ikon}</span>
+                </div>
+                <span className="text-[11px] font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] text-center leading-tight">
                   {k.ad}
                 </span>
               </Link>
@@ -161,7 +163,7 @@ export default async function AnaSayfa() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 text-center relative overflow-hidden" style={{ backgroundColor: 'var(--color-primary)' }}>
+      <section className="py-20 px-4 text-center relative overflow-hidden bg-gradient-to-tr from-[var(--color-primary)] to-[var(--color-primary-hover)]">
         <div className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',

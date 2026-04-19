@@ -44,7 +44,7 @@ export function Button({
         base,
         variantStyles[variant],
         sizeStyles[size],
-        'rounded-[var(--radius-full)]',
+        'rounded-[var(--radius-md)]',
         className
       )}
     >

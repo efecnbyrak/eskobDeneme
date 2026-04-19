@@ -19,9 +19,9 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
   return (
     <Link
       href={`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
-      className="group block bg-white border border-[var(--color-border)] rounded-[var(--radius-lg)] overflow-hidden hover:shadow-[var(--shadow-md)] hover:scale-[1.01] transition-all duration-200"
+      className="group block bg-white border border-[var(--color-border)] rounded-md overflow-hidden hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-md)] transition-all duration-200"
     >
-      <div className="relative" style={{ aspectRatio: '4/3' }}>
+      <div className="relative w-full" style={{ aspectRatio: '1/1' }}>
         {esnaf.kapakFoto ? (
           <Image
             src={esnaf.kapakFoto}
@@ -52,28 +52,36 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-3 flex flex-col h-[130px]">
         <h3
-          className="font-semibold text-base text-[var(--color-text)] truncate mb-1"
-          style={{ fontFamily: 'var(--font-display)' }}
+          className="font-semibold text-sm text-[var(--color-text)] line-clamp-2 leading-tight mb-1"
+          title={esnaf.isletmeAdi}
         >
           {esnaf.isletmeAdi}
         </h3>
-        <p className="text-xs text-[var(--color-text-secondary)] mb-2">
+        <p className="text-[11px] text-[var(--color-text-secondary)] mb-2 truncate">
           📍 {esnaf.ilce}, {esnaf.sehir}
         </p>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <YildizPuan puan={puan} boyut="sm" />
-            <span className="text-xs text-[var(--color-text-secondary)]">
-              ({esnaf.yorumlar?.length || 0})
-            </span>
-          </div>
-          {minFiyat !== null && (
-            <span className="text-xs font-medium text-[var(--color-primary)]">
-              {formatFiyat(minFiyat)}&apos;den
-            </span>
+        <div className="flex items-center gap-1 mb-2">
+          <YildizPuan puan={puan} boyut="sm" />
+          <span className="text-[11px] text-[var(--color-text-secondary)]">
+            ({esnaf.yorumlar?.length || 0})
+          </span>
+        </div>
+
+        <div className="mt-auto pt-2 border-t border-[var(--color-border)]/50">
+          {minFiyat !== null ? (
+            <div className="flex items-baseline gap-1">
+              <span className="text-sm font-bold text-[var(--color-primary)]">
+                {formatFiyat(minFiyat)}
+              </span>
+              <span className="text-[10px] text-[var(--color-text-secondary)]">
+                'den başlayan fiyatlarla
+              </span>
+            </div>
+          ) : (
+            <span className="text-[11px] font-medium text-[var(--color-success)]">Fiyat Alın</span>
           )}
         </div>
       </div>
