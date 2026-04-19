@@ -1,182 +1,166 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
+import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
-import { OnboardingWizard } from '@/components/dashboard/OnboardingWizard'
+import { Button } from '@/components/ui/Button'
+import { KATEGORILER } from '@/lib/constants'
 
 export default function KayitSayfasi() {
   const router = useRouter()
-  const [adim, setAdim] = useState<'kayit' | 'onboarding'>('kayit')
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
-  const [form, setForm] = useState({ ad: '', soyad: '', email: '', sifre: '' })
 
-  async function handleKayit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setYukleniyor(true)
     setHata('')
+
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      isletmeAdi: formData.get('isletmeAdi'),
+      telefon: (formData.get('telefon') as string).replace(/\s+/g, ''),
+      sifre: formData.get('sifre'),
+      kategoriId: formData.get('kategoriId'),
+      sehir: formData.get('sehir'),
+      ilce: formData.get('ilce'),
+    }
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(data),
       })
+
       if (!res.ok) {
-        const data = await res.json()
-        setHata(data.error || 'Kayıt başarısız.')
-        return
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Kayıt olurken bir hata oluştu')
       }
-      setAdim('onboarding')
+
+      router.push('/giris?kayit=basarili')
+    } catch (err) {
+      setHata(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {
       setYukleniyor(false)
     }
   }
 
-  if (adim === 'onboarding') {
-    return (
-      <div className="min-h-screen bg-[var(--color-bg)] py-12 px-4">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-sm">EV</span>
-              <span className="font-bold text-lg text-[var(--color-primary)] font-display">Esnaf Vitrin</span>
-            </Link>
-            <h1 className="text-2xl font-bold mt-6 font-display">İşletme Profilini Oluştur</h1>
-            <p className="text-sm text-[var(--color-text-secondary)] mt-1">Birkaç adımda vitrinini hazırla</p>
-          </div>
-          <OnboardingWizard />
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen flex">
-      {/* Sol panel - Branding */}
-      <div
-        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: 'linear-gradient(145deg, var(--color-primary) 0%, #2d4a54 100%)' }}
-      >
-        <div className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '32px 32px',
-          }}
-        />
-        <div className="relative">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center font-bold font-display">EV</span>
-            <span className="font-bold text-xl text-white font-display">Esnaf Vitrin</span>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[var(--color-bg)] py-12">
+      {/* Background Epic Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-primary)] blur-[150px] opacity-[0.15] pointer-events-none rounded-full" />
+      
+      <div className="w-full max-w-[500px] relative z-10">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
+            <span className="w-12 h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xl shadow-[0_0_20px_rgba(242,122,26,0.3)] group-hover:scale-105 transition-transform">EV</span>
           </Link>
+          <h1 className="text-3xl font-extrabold font-display mb-2 text-[var(--color-text)]">Dijital Vitrinini Kur</h1>
+          <p className="text-[var(--color-text-secondary)] font-medium">Hemen ücretsiz kayıt olun, müşterilerinizi artırın.</p>
         </div>
-        <div className="relative space-y-8">
-          <div>
-            <h2 className="text-3xl font-bold text-white font-display leading-snug">
-              Dijital vitrinini<br />bugün kur, müşteri kazan
-            </h2>
-            <p className="text-white/70 mt-3 text-base leading-relaxed">
-              5 dakikada işletmeni kuruyorsun. Ücretsiz, risksiz, şartsız.
-            </p>
-          </div>
-          <div className="space-y-4">
-            {[
-              { ikon: '🚀', metin: '5 dakikada hazır vitrin' },
-              { ikon: '📅', metin: 'Online randevu alma sistemi' },
-              { ikon: '⭐', metin: 'Yorum ve değerlendirme yönetimi' },
-              { ikon: '📊', metin: 'Gerçek zamanlı istatistikler' },
-            ].map((m) => (
-              <div key={m.metin} className="flex items-center gap-3 text-white/80">
-                <span className="text-lg shrink-0">{m.ikon}</span>
-                <span className="text-sm">{m.metin}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="relative text-white/40 text-xs">
-          © {new Date().getFullYear()} Esnaf Vitrin
-        </div>
-      </div>
 
-      {/* Sağ panel - Form */}
-      <div className="flex-1 flex items-center justify-center bg-[var(--color-bg)] px-4 py-12">
-        <div className="w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="lg:hidden text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-sm">EV</span>
-              <span className="font-bold text-lg text-[var(--color-primary)] font-display">Esnaf Vitrin</span>
-            </Link>
-          </div>
-
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-[var(--color-text)] font-display">Hesap Oluştur</h1>
-            <p className="text-[var(--color-text-secondary)] text-sm mt-1">Ücretsiz başla, kredi kartı gerekmez</p>
-          </div>
-
-          <form onSubmit={handleKayit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+        <div className="card-elite p-8 sm:p-10 !rounded-[2rem] bg-white/90 backdrop-blur-xl border border-white">
+          <form onSubmit={onSubmit} className="space-y-5">
+            <div className="space-y-1">
               <Input
-                label="Ad"
+                label="İşletme Adı"
+                name="isletmeAdi"
                 required
-                placeholder="Ahmet"
-                value={form.ad}
-                onChange={(e) => setForm((p) => ({ ...p, ad: e.target.value }))}
-              />
-              <Input
-                label="Soyad"
-                required
-                placeholder="Yılmaz"
-                value={form.soyad}
-                onChange={(e) => setForm((p) => ({ ...p, soyad: e.target.value }))}
+                placeholder="Örn: Özkan Kuaför"
+                className="h-12 border-transparent focus:border-[var(--color-primary)] bg-[var(--color-bg-muted)] focus:bg-white"
               />
             </div>
-            <Input
-              label="E-posta"
-              type="email"
-              required
-              placeholder="ornek@email.com"
-              value={form.email}
-              onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-            />
-            <Input
-              label="Şifre"
-              type="password"
-              required
-              placeholder="En az 8 karakter"
-              hint="En az 8 karakter kullanın"
-              value={form.sifre}
-              onChange={(e) => setForm((p) => ({ ...p, sifre: e.target.value }))}
-            />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1 flex flex-col">
+                <label className="text-sm font-semibold text-[var(--color-text)]">Kategori</label>
+                <select
+                  name="kategoriId"
+                  required
+                  className="w-full h-12 px-4 bg-[var(--color-bg-muted)] border-2 border-transparent focus:border-[var(--color-primary)] focus:bg-white rounded-[var(--radius-md)] text-sm transition-colors outline-none cursor-pointer"
+                >
+                  <option value="">Seçiniz</option>
+                  {KATEGORILER.map((k) => (
+                    <option key={k.slug} value={k.slug}>
+                      {k.ikon} {k.ad}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1">
+                <Input
+                  label="Telefon"
+                  name="telefon"
+                  type="tel"
+                  required
+                  placeholder="05XX XXX XX"
+                  className="h-12 border-transparent focus:border-[var(--color-primary)] bg-[var(--color-bg-muted)] focus:bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Input
+                  label="Şehir"
+                  name="sehir"
+                  required
+                  placeholder="İstanbul"
+                  className="h-12 border-transparent focus:border-[var(--color-primary)] bg-[var(--color-bg-muted)] focus:bg-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <Input
+                  label="İlçe"
+                  name="ilce"
+                  required
+                  placeholder="Kadıköy"
+                  className="h-12 border-transparent focus:border-[var(--color-primary)] bg-[var(--color-bg-muted)] focus:bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold text-[var(--color-text)]">Şifre</label>
+              </div>
+              <input
+                name="sifre"
+                type="password"
+                required
+                placeholder="En az 6 karakter"
+                minLength={6}
+                className="w-full h-12 px-4 bg-[var(--color-bg-muted)] border-2 border-transparent focus:border-[var(--color-primary)] focus:bg-white rounded-[var(--radius-md)] text-sm transition-colors outline-none"
+              />
+            </div>
 
             {hata && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-sm text-red-600">
-                <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
+              <div className="p-3 rounded-lg bg-[var(--color-warm-dark)] text-[#991B1B] text-sm font-medium border border-[#FCA5A5] flex items-center gap-2 mt-2">
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
                 {hata}
               </div>
             )}
 
-            <Button type="submit" loading={yukleniyor} className="w-full" size="lg">
-              Devam Et →
+            <Button
+              type="submit"
+              loading={yukleniyor}
+              className="w-full h-14 mt-4 text-lg font-bold bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-[0_4px_14px_0_rgba(242,122,26,0.39)] hover:shadow-[0_6px_20px_rgba(242,122,26,0.23)] transition-all hover:-translate-y-0.5 rounded-2xl"
+            >
+              Ücretsiz Kayıt Ol
             </Button>
+            <p className="text-xs text-center text-[var(--color-text-secondary)] mt-4">
+              Kayıt olarak Kullanım Şartları ve Gizlilik Politikası'nı kabul etmiş olursunuz.
+            </p>
           </form>
 
-          <p className="text-center text-xs text-[var(--color-text-secondary)] mt-4">
-            Kaydolarak{' '}
-            <Link href="/gizlilik" className="underline hover:text-[var(--color-primary)]">Gizlilik Politikası</Link>
-            &apos;nı kabul etmiş olursunuz.
-          </p>
-
-          <p className="text-center text-sm text-[var(--color-text-secondary)] mt-5">
-            Zaten hesabın var mı?{' '}
-            <Link href="/giris" className="text-[var(--color-primary)] font-semibold hover:underline">
+          <div className="mt-6 text-center text-[var(--color-text-secondary)] font-medium">
+            Zaten hesabınız var mı?{' '}
+            <Link href="/giris" className="text-[var(--color-primary)] hover:underline font-bold">
               Giriş Yap
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>

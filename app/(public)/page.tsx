@@ -206,69 +206,72 @@ export default async function AnaSayfa() {
       </section>
 
       {/* ─── NASIL ÇALIŞIR ─── */}
-      <section className="bg-[var(--color-bg-section)]">
-        <div className="container-main py-14 lg:py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-xs font-semibold text-[var(--color-primary)] mb-4 border border-[var(--color-border)]">
+      <section className="bg-white py-16 lg:py-28 text-center relative overflow-hidden">
+        {/* Glow Effects */}
+        <div className="absolute left-[-10%] top-[20%] w-[400px] h-[400px] bg-[var(--color-primary-light)] blur-[100px] rounded-[100%] pointer-events-none opacity-40"></div>
+        <div className="absolute right-[-10%] bottom-[-10%] w-[300px] h-[300px] bg-[var(--color-primary)] blur-[120px] rounded-[100%] pointer-events-none opacity-10"></div>
+        
+        <div className="container-main relative z-10">
+          <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-[var(--color-bg-muted)] text-[11px] font-bold tracking-widest uppercase text-[var(--color-text-secondary)] mb-6 shadow-sm border border-[var(--color-border)]">
             Basit · Hızlı · Etkili
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold font-display mb-3">Nasıl Çalışır?</h2>
-          <p className="text-[var(--color-text-secondary)] mb-10 max-w-md mx-auto text-sm sm:text-base">
-            Sadece 3 adımda işletmeni dijitale taşı ve müşteri kazanmaya başla.
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display mb-4 tracking-tight">Nasıl <span className="text-gradient-primary">Çalışır?</span></h2>
+          <p className="text-[var(--color-text-secondary)] mb-14 lg:mb-20 max-w-xl mx-auto text-base sm:text-lg font-medium">
+            Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla. Çok basit, kodlama gerektirmez.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto relative">
-            {/* Connection line — desktop only */}
-            <div className="hidden sm:block absolute top-8 left-[20%] right-[20%] h-px bg-[var(--color-border)]" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-10 max-w-5xl mx-auto relative">
+            {/* Desktop Connection line */}
+            <div className="hidden sm:block absolute top-[45px] left-[20%] right-[20%] h-[2px] bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent pointer-events-none" />
 
             {[
-              { ikon: '📝', adim: '01', baslik: 'Kaydol', aciklama: 'Ücretsiz hesap oluştur, kişisel bilgilerini gir.' },
-              { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini ekle, fotoğraflarını yükle.' },
-              { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Müşteriler seni bulsun, randevu alsın.' },
+              { ikon: '📝', adim: '01', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni tanımla.' },
+              { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve harika fotoğraflarını yükle.' },
+              { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Arama sonuçlarında üstte çık, randevuları 7/24 yönet.' },
             ].map((item) => (
-              <div key={item.adim} className="flex flex-col items-center relative">
-                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-3xl mb-4 shadow-[var(--shadow-sm)] border border-[var(--color-border)] relative z-10">
+              <div key={item.adim} className="flex flex-col items-center relative group p-6 sm:p-2">
+                <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] bg-white flex items-center justify-center text-3xl lg:text-4xl mb-6 shadow-soft border border-[var(--color-border)] relative z-10 transition-transform duration-300 group-hover:scale-105 group-hover:shadow-[0_8px_30px_rgba(242,122,26,0.15)]">
                   {item.ikon}
+                  <div className="absolute -inset-1 rounded-[1.5rem] border border-[var(--color-primary)] opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 pointer-events-none"></div>
                 </div>
-                <span className="text-[10px] font-bold text-[var(--color-primary)] mb-1 tracking-widest uppercase">{item.adim}</span>
-                <p className="font-semibold text-sm font-display mb-1">{item.baslik}</p>
-                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed max-w-[200px]">{item.aciklama}</p>
+                <span className="text-xs font-black text-[var(--color-primary)] mb-2 tracking-widest uppercase">{item.adim}</span>
+                <p className="font-extrabold text-lg lg:text-xl font-display mb-3 text-[var(--color-text)]">{item.baslik}</p>
+                <p className="text-sm lg:text-base text-[var(--color-text-secondary)] leading-relaxed max-w-[280px] font-medium">{item.aciklama}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── CTA ─── */}
-      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)' }}>
-        <div className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '20px 20px',
-          }}
-        />
-        <div className="container-main relative py-14 lg:py-20 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 font-display">
-            Sen de Platformumuza Katıl
+      {/* ─── ELITE CTA ─── */}
+      <section className="relative py-20 lg:py-32 overflow-hidden bg-black">
+        {/* Glow / Pattern Effect */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] h-[300px] bg-[var(--color-primary)] blur-[150px] opacity-20 pointer-events-none rounded-full"></div>
+
+        <div className="container-main relative z-10 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold text-white mb-6 font-display tracking-tight leading-tight max-w-3xl mx-auto">
+            Sen de Kurumsal Platformumuza <span className="text-[var(--color-primary)] underline decoration-[var(--color-primary)] decoration-4 underline-offset-8">Katıl</span>
           </h2>
-          <p className="text-white/70 mb-8 text-sm sm:text-lg max-w-md mx-auto">
-            Binlerce esnaf zaten dijitalde. Sıra sende!
+          <p className="text-gray-400 mb-10 text-lg lg:text-2xl max-w-2xl mx-auto font-medium">
+            3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen ulaş.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/kayit">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
+            <Link href="/kayit" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="bg-white !text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold w-full sm:w-auto"
+                className="w-full sm:w-auto h-14 px-10 text-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] font-bold rounded-full shadow-[0_0_30px_rgba(242,122,26,0.3)] hover:shadow-[0_0_40px_rgba(242,122,26,0.6)] transition-all transform hover:-translate-y-1"
               >
-                Ücretsiz Başla
+                Hemen Ücretsiz Başla
               </Button>
             </Link>
-            <Link href="/ara">
+            <Link href="/ara" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="secondary"
-                className="!border-white/30 !text-white hover:!bg-white/10 w-full sm:w-auto"
+                className="w-full sm:w-auto h-14 px-10 text-lg border-white/20 text-white hover:bg-white/10 hover:border-white/40 backdrop-blur-md rounded-full font-semibold transition-all"
               >
-                Esnafları Keşfet
+                Esnafları İncele
               </Button>
             </Link>
           </div>

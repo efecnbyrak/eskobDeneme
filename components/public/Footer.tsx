@@ -5,11 +5,11 @@ export function Footer() {
   return (
     <footer className="bg-[#1A1A1A] text-[#E0E0E0] mt-auto">
       <div className="container-main py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 lg:gap-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-16">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="sm:col-span-2 lg:col-span-2 xl:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <span className="w-10 h-10 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-base shadow-lg">EV</span>
+              <span className="w-10 h-10 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-base shadow-[0_0_15px_rgba(242,122,26,0.4)]">EV</span>
               <span className="font-bold text-xl text-white font-display">Esnaf Vitrin</span>
             </div>
             <p className="text-sm text-[#A0A0A0] leading-relaxed mb-6 max-w-[280px]">
@@ -18,7 +18,7 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center text-white hover:bg-[var(--color-primary)] transition-all"
+                className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center text-white hover:bg-[var(--color-primary)] hover:shadow-[0_0_15px_rgba(242,122,26,0.5)] transition-all"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -27,7 +27,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center text-white hover:bg-[var(--color-primary)] transition-all"
+                className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center text-white hover:bg-[var(--color-primary)] hover:shadow-[0_0_15px_rgba(242,122,26,0.5)] transition-all"
                 aria-label="Twitter"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -38,13 +38,13 @@ export function Footer() {
           </div>
 
           {/* Keşfet */}
-          <div>
-            <p className="font-semibold text-base mb-5 text-white">Keşfet</p>
-            <ul className="space-y-3 text-sm text-[#A0A0A0]">
-              <li><Link href="/ara" className="hover:text-white transition-colors">Esnaf Ara</Link></li>
+          <div className="col-span-1 border-t border-[#3333] pt-6 sm:border-0 sm:pt-0">
+            <p className="font-semibold text-lg mb-5 text-white tracking-wide">Keşfet</p>
+            <ul className="space-y-4 text-sm text-[#A0A0A0]">
+              <li><Link href="/ara" className="hover:text-white hover:translate-x-1 inline-block transition-all">Esnaf Ara</Link></li>
               {KATEGORILER.slice(0, 5).map((k) => (
                 <li key={k.slug}>
-                  <Link href={`/kategori/${k.slug}`} className="hover:text-white transition-colors flex items-center gap-2">
+                  <Link href={`/kategori/${k.slug}`} className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all">
                     <span>{k.ikon}</span> {k.ad}
                   </Link>
                 </li>
@@ -53,19 +53,19 @@ export function Footer() {
           </div>
 
           {/* İşletmem */}
-          <div>
-            <p className="font-semibold text-base mb-5 text-white">İşletmenizi Büyütün</p>
-            <ul className="space-y-3 text-sm text-[#A0A0A0]">
-              <li><Link href="/kayit" className="hover:text-white transition-colors">Ücretsiz Kaydol</Link></li>
-              <li><Link href="/giris" className="hover:text-white transition-colors">Giriş Yap</Link></li>
-              <li><Link href="/panel" className="hover:text-white transition-colors">Yönetim Paneli</Link></li>
-              <li><Link href="#" className="hover:text-white transition-colors">Neden Biz?</Link></li>
-              <li><Link href="#" className="hover:text-white transition-colors">Fiyatlandırma</Link></li>
+          <div className="col-span-1 border-t border-[#3333] pt-6 sm:border-0 sm:pt-0">
+            <p className="font-semibold text-lg mb-5 text-white tracking-wide">İşletmenizi Büyütün</p>
+            <ul className="space-y-4 text-sm text-[#A0A0A0]">
+              <li><Link href="/kayit" className="hover:text-[var(--color-primary)] hover:translate-x-1 inline-block transition-all font-medium">✨ Ücretsiz Kaydol</Link></li>
+              <li><Link href="/giris" className="hover:text-white hover:translate-x-1 inline-block transition-all">Giriş Yap</Link></li>
+              <li><Link href="/panel" className="hover:text-white hover:translate-x-1 inline-block transition-all">Yönetim Paneli</Link></li>
+              <li><Link href="#" className="hover:text-white hover:translate-x-1 inline-block transition-all">Neden Biz?</Link></li>
+              <li><Link href="#" className="hover:text-white hover:translate-x-1 inline-block transition-all">Fiyatlandırma</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-[#333333] flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#A0A0A0]">
+        <div className="mt-16 pt-8 border-t border-[#333333] flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-[#A0A0A0] text-center md:text-left">
           <span>© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</span>
           <div className="flex gap-6">
             <Link href="/gizlilik" className="hover:text-white transition-colors">Gizlilik Politikası</Link>
