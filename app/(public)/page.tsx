@@ -71,40 +71,53 @@ export default async function AnaSayfa() {
 
   return (
     <div>
-      {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(165deg, #FFF7F0 0%, #FFFFFF 60%)' }}>
-        {/* Decorative blobs */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-[0.07] -translate-y-1/2 translate-x-1/4"
-          style={{ background: 'radial-gradient(circle, var(--color-primary) 0%, transparent 70%)' }}
+      {/* ─── ELITE HERO ─── */}
+      <section className="relative overflow-hidden pt-28 pb-24 lg:pt-36 lg:pb-32 bg-[var(--color-bg)]">
+        {/* Subtle grid background (Vercel/Stripe style) */}
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+              linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)'
+          }}
         />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-[0.05] translate-y-1/2 -translate-x-1/4"
-          style={{ background: 'radial-gradient(circle, #0BC15C 0%, transparent 70%)' }}
-        />
+        
+        {/* Intense background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[var(--color-primary-light)] blur-[100px] rounded-[100%] opacity-70 pointer-events-none" />
 
-        <div className="container-main relative py-16 sm:py-20 lg:py-24 text-center">
+        <div className="container-main relative z-10 flex flex-col items-center text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-xs font-medium text-[var(--color-primary)] mb-6 border border-[var(--color-border)] shadow-[var(--shadow-xs)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
-            3.200+ esnaf zaten dijitalde
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white shadow-soft text-sm font-semibold text-[var(--color-primary)] mb-8 transition-transform hover:scale-105">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-success)] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-success)]"></span>
+            </span>
+            Platformda 3.200+ Aktif İşletme
           </div>
 
-          {/* Heading */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--color-text)] mb-4 leading-tight font-display">
-            İşletmeni 5 Dakikada<br />
-            <span className="text-[var(--color-primary)]">Dijitale Taşı</span>
+          {/* Epic Heading */}
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tight mb-6 font-display leading-[1.1] max-w-4xl mx-auto">
+            <span className="text-[var(--color-text)]">İşletmeni Dakikalar İçinde </span>
+            <span className="text-gradient-primary">Dijitale Taşı</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-[var(--color-text-secondary)] mb-8 max-w-lg mx-auto leading-relaxed">
-            Türkiye&apos;nin esnaf ve KOBİ&apos;leri için dijital vitrin platformu.
-            Ücretsiz kaydol, vitrinini kur, müşteri kazan.
+          <p className="text-lg sm:text-xl text-[var(--color-text-secondary)] mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+            Yeni nesil dijital vitrin çözümü ile hizmetlerini tanıt, online randevu al ve müşteri tabanını bugün büyütmeye başla.
           </p>
 
-          {/* Search */}
-          <HeroArama />
+          {/* Search Bar - Elite */}
+          <div className="w-full max-w-3xl mb-4">
+            <HeroArama />
+          </div>
 
-          <p className="text-xs text-[var(--color-text-secondary)] mt-4">
-            Kredi kartı gerekmez · Ücretsiz başla
+          <p className="text-sm text-[var(--color-text-secondary)] font-medium mt-4">
+            Kredi kartı gerekmez · Modern altyapı · 7/24 randevu
           </p>
         </div>
       </section>

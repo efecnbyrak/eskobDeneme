@@ -10,7 +10,7 @@ export function Navbar() {
   const [kategoriAcik, setKategoriAcik] = useState(false)
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-[var(--color-border)]" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-white/20 transition-all duration-300" style={{ boxShadow: '0 4px 30px rgba(0, 0, 0, 0.03)' }}>
       <div className="container-main">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

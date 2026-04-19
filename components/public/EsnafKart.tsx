@@ -19,32 +19,35 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
   return (
     <Link
       href={`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
-      className="group block bg-white rounded-lg overflow-hidden border border-[var(--color-border)] hover:shadow-[var(--shadow-card-hover)] transition-all duration-200"
+      className="group block card-elite rounded-[1.5rem] overflow-hidden"
     >
       {/* Image */}
-      <div className="relative w-full" style={{ paddingBottom: '75%' }}>
+      <div className="relative w-full overflow-hidden" style={{ paddingBottom: '80%' }}>
         <div className="absolute inset-0 bg-[#F5F5F5]">
           <Image
             src={esnaf.kapakFoto || `https://picsum.photos/seed/${esnaf.id}/400/400`}
             alt={esnaf.isletmeAdi}
             fill
-            className="object-cover group-hover:scale-[1.03] transition-transform duration-500 will-change-transform"
+            className="object-cover group-hover:scale-[1.08] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
         </div>
 
+        {/* Floating gradient overlay for badges */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-80" />
+
         {/* Badges */}
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-3 left-3 z-10">
           <Badge
-            className="text-white text-[10px] px-2 py-0.5"
-            style={{ backgroundColor: esnaf.kategori.renk }}
+            className="text-white backdrop-blur-sm bg-white/20 border-white/30 text-[10px] px-2.5 py-1 rounded-full shadow-sm"
+            style={{ backgroundColor: `${esnaf.kategori.renk}dd` }}
           >
-            {esnaf.kategori.ikon} {esnaf.kategori.ad}
+            {esnaf.kategori.ikon} <span className="ml-1 font-medium">{esnaf.kategori.ad}</span>
           </Badge>
         </div>
-        <div className="absolute top-2 right-2">
-          <Badge variant={acik ? 'success' : 'default'} className="text-[10px] px-2 py-0.5">
-            {acik ? 'Açık' : 'Kapalı'}
+        <div className="absolute top-3 right-3 z-10">
+          <Badge variant={acik ? 'success' : 'default'} className="text-[10px] px-2.5 py-1 rounded-full shadow-sm font-semibold capitalize tracking-wide">
+            {acik ? '• Açık' : 'Kapalı'}
           </Badge>
         </div>
       </div>
