@@ -178,7 +178,7 @@ export default async function AnaSayfa() {
               </p>
             </div>
             <Link href="/ara" className="shrink-0">
-              <Button variant="outline" className="border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] shadow-sm">
+              <Button variant="secondary" className="border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] shadow-sm">
                 Tümünü İncele →
               </Button>
             </Link>
@@ -252,8 +252,8 @@ export default async function AnaSayfa() {
             <Link href="/ara" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                variant="outline"
-                className="w-full sm:w-auto h-16 px-10 text-lg border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full font-semibold transition-all backdrop-blur-sm bg-transparent"
+                variant="secondary"
+                className="w-full sm:w-auto h-16 px-10 text-lg border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full font-semibold transition-all backdrop-blur-sm bg-transparent"
               >
                 Esnafları İncele
               </Button>
