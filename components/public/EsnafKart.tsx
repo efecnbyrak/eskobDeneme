@@ -72,7 +72,7 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
           </div>
           {minFiyat !== null && (
             <span className="text-xs font-medium text-[var(--color-primary)]">
-              {formatFiyat(minFiyat)} &apos;den
+              {formatFiyat(minFiyat)}&apos;den
             </span>
           )}
         </div>
