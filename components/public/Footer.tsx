@@ -3,31 +3,31 @@ import { KATEGORILER } from '@/lib/constants'
 
 export function Footer() {
   return (
-    <footer className="bg-[#FAFAFA] border-t border-[var(--color-border)] mt-auto">
-      <div className="container-main py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+    <footer className="bg-[#1A1A1A] text-[#E0E0E0] mt-auto">
+      <div className="container-main py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 lg:gap-16">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-sm">EV</span>
-              <span className="font-bold text-base text-[var(--color-text)] font-display">Esnaf Vitrin</span>
+            <div className="flex items-center gap-3 mb-5">
+              <span className="w-10 h-10 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-base shadow-lg">EV</span>
+              <span className="font-bold text-xl text-white font-display">Esnaf Vitrin</span>
             </div>
-            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4 max-w-[260px]">
-              Türkiye&apos;nin esnaf ve KOBİ&apos;leri için dijital vitrin platformu.
+            <p className="text-sm text-[#A0A0A0] leading-relaxed mb-6 max-w-[280px]">
+              Türkiye&apos;nin esnaf ve KOBİ&apos;leri için yeni nesil dijital vitrin platformu. İşletmeni bugün dijitale taşı, müşterilerini artır.
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <a
                 href="#"
-                className="w-8 h-8 rounded-full bg-[var(--color-bg-muted)] flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-primary)] hover:text-white transition-all"
+                className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center text-white hover:bg-[var(--color-primary)] transition-all"
                 aria-label="Instagram"
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                 </svg>
               </a>
               <a
                 href="#"
-                className="w-8 h-8 rounded-full bg-[var(--color-bg-muted)] flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-primary)] hover:text-white transition-all"
+                className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center text-white hover:bg-[var(--color-primary)] transition-all"
                 aria-label="Twitter"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -39,13 +39,13 @@ export function Footer() {
 
           {/* Keşfet */}
           <div>
-            <p className="font-semibold text-sm mb-3 text-[var(--color-text)]">Keşfet</p>
-            <ul className="space-y-2 text-sm text-[var(--color-text-secondary)]">
-              <li><Link href="/ara" className="hover:text-[var(--color-primary)] transition-colors">Esnaf Ara</Link></li>
+            <p className="font-semibold text-base mb-5 text-white">Keşfet</p>
+            <ul className="space-y-3 text-sm text-[#A0A0A0]">
+              <li><Link href="/ara" className="hover:text-white transition-colors">Esnaf Ara</Link></li>
               {KATEGORILER.slice(0, 5).map((k) => (
                 <li key={k.slug}>
-                  <Link href={`/kategori/${k.slug}`} className="hover:text-[var(--color-primary)] transition-colors">
-                    {k.ikon} {k.ad}
+                  <Link href={`/kategori/${k.slug}`} className="hover:text-white transition-colors flex items-center gap-2">
+                    <span>{k.ikon}</span> {k.ad}
                   </Link>
                 </li>
               ))}
@@ -54,20 +54,23 @@ export function Footer() {
 
           {/* İşletmem */}
           <div>
-            <p className="font-semibold text-sm mb-3 text-[var(--color-text)]">İşletmem</p>
-            <ul className="space-y-2 text-sm text-[var(--color-text-secondary)]">
-              <li><Link href="/kayit" className="hover:text-[var(--color-primary)] transition-colors">Ücretsiz Kaydol</Link></li>
-              <li><Link href="/giris" className="hover:text-[var(--color-primary)] transition-colors">Giriş Yap</Link></li>
-              <li><Link href="/panel" className="hover:text-[var(--color-primary)] transition-colors">Yönetim Paneli</Link></li>
+            <p className="font-semibold text-base mb-5 text-white">İşletmenizi Büyütün</p>
+            <ul className="space-y-3 text-sm text-[#A0A0A0]">
+              <li><Link href="/kayit" className="hover:text-white transition-colors">Ücretsiz Kaydol</Link></li>
+              <li><Link href="/giris" className="hover:text-white transition-colors">Giriş Yap</Link></li>
+              <li><Link href="/panel" className="hover:text-white transition-colors">Yönetim Paneli</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Neden Biz?</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Fiyatlandırma</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--color-text-secondary)]">
+        <div className="mt-16 pt-8 border-t border-[#333333] flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#A0A0A0]">
           <span>© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</span>
-          <div className="flex gap-4">
-            <Link href="/gizlilik" className="hover:text-[var(--color-primary)] transition-colors">Gizlilik</Link>
-            <Link href="/kullanim" className="hover:text-[var(--color-primary)] transition-colors">Kullanım Şartları</Link>
+          <div className="flex gap-6">
+            <Link href="/gizlilik" className="hover:text-white transition-colors">Gizlilik Politikası</Link>
+            <Link href="/kullanim" className="hover:text-white transition-colors">Kullanım Şartları</Link>
+            <Link href="/iletisim" className="hover:text-white transition-colors">İletişim</Link>
           </div>
         </div>
       </div>

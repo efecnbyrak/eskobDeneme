@@ -19,6 +19,47 @@ async function onecikarilan(): Promise<Esnaf[]> {
       orderBy: { olusturmaT: 'desc' },
       take: 10,
     })
+    if (esnaflar.length === 0) {
+      // Mock data for visual presentation since DB is empty
+      return [
+        {
+          id: '1', slug: 'ozkan-berber', isletmeAdi: 'Özkan Erkek Kuaförü', aktif: true, onaylı: true,
+          sehir: 'İstanbul', ilce: 'Kadıköy', adres: 'Moda Cd.', kategoriId: '1',
+          kategori: { id: '1', ad: 'Berber', ikon: '✂️', renk: '#F27A1A', slug: 'berber', sira: 1 },
+          yorumlar: [{ id: '1', puan: 5, musteriAd: 'A', esnafId: '1', olusturmaT: new Date(), onaylı: true }],
+          hizmetler: [{ id: '1', ad: 'Saç Kesimi', fiyat: 200, aktif: true, esnafId: '1', sira: 1, olusturmaT: new Date() }]
+        },
+        {
+          id: '2', slug: 'lezzet-duragi', isletmeAdi: 'Lezzet Durağı Ev Yemekleri', aktif: true, onaylı: true,
+          sehir: 'Ankara', ilce: 'Çankaya', adres: 'Tunalı Hilmi Cd.', kategoriId: '2',
+          kategori: { id: '2', ad: 'Restoran', ikon: '🍽️', renk: '#0BC15C', slug: 'restoran', sira: 2 },
+          yorumlar: [{ id: '2', puan: 4, musteriAd: 'B', esnafId: '2', olusturmaT: new Date(), onaylı: true }],
+          hizmetler: [{ id: '2', ad: 'Günün Menüsü', fiyat: 150, aktif: true, esnafId: '2', sira: 1, olusturmaT: new Date() }]
+        },
+        {
+          id: '3', slug: 'usta-eller-oto', isletmeAdi: 'Usta Eller Oto Tamir', aktif: true, onaylı: true,
+          sehir: 'İzmir', ilce: 'Bornova', adres: 'Sanayi Sitesi', kategoriId: '3',
+          kategori: { id: '3', ad: 'Tamirci', ikon: '🔧', renk: '#2BD4E0', slug: 'tamirci', sira: 3 },
+          yorumlar: [],
+          hizmetler: []
+        },
+        {
+          id: '4', slug: 'papatya-cicekcilik', isletmeAdi: 'Papatya Çiçekçilik & Hediyelik', aktif: true, onaylı: true,
+          sehir: 'Bursa', ilce: 'Nilüfer', adres: 'FSM Bulvarı', kategoriId: '4',
+          kategori: { id: '4', ad: 'Çiçekçi', ikon: '🌸', renk: '#E07A5F', slug: 'cicekci', sira: 4 },
+          yorumlar: [{ id: '4', puan: 5, musteriAd: 'C', esnafId: '4', olusturmaT: new Date(), onaylı: true }],
+          hizmetler: [{ id: '4', ad: 'Buket', fiyat: 400, aktif: true, esnafId: '4', sira: 1, olusturmaT: new Date() }]
+        },
+        {
+          id: '5', slug: 'fit-life-gym', isletmeAdi: 'Fit Life Spor Salonu', aktif: true, onaylı: true,
+          sehir: 'Antalya', ilce: 'Muratpaşa', adres: 'Lara', kategoriId: '5',
+          kategori: { id: '5', ad: 'Spor', ikon: '💪', renk: '#81B29A', slug: 'spor', sira: 5 },
+          yorumlar: [{ id: '5', puan: 4.5, musteriAd: 'D', esnafId: '5', olusturmaT: new Date(), onaylı: true }],
+          hizmetler: [{ id: '5', ad: 'Aylık Üyelik', fiyat: 800, aktif: true, esnafId: '5', sira: 1, olusturmaT: new Date() }]
+        }
+      ] as unknown as Esnaf[]
+    }
+
     return esnaflar as unknown as Esnaf[]
   } catch {
     return []

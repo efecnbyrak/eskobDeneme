@@ -23,19 +23,15 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
     >
       {/* Image */}
       <div className="relative w-full" style={{ paddingBottom: '75%' }}>
-        {esnaf.kapakFoto ? (
+        <div className="absolute inset-0 bg-[#F5F5F5]">
           <Image
-            src={esnaf.kapakFoto}
+            src={esnaf.kapakFoto || `https://picsum.photos/seed/${esnaf.id}/400/400`}
             alt={esnaf.isletmeAdi}
             fill
-            className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-500 will-change-transform"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
-        ) : (
-          <div className="absolute inset-0 bg-[var(--color-bg-muted)] flex items-center justify-center">
-            <span className="text-4xl">{esnaf.kategori.ikon}</span>
-          </div>
-        )}
+        </div>
 
         {/* Badges */}
         <div className="absolute top-2 left-2">

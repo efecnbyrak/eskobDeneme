@@ -23,10 +23,10 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav — centered */}
-          <div className="hidden lg:flex items-center gap-1 ml-8">
+          <div className="hidden lg:flex items-center gap-2 ml-10">
             <Link
               href="/ara"
-              className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors px-3 py-2 rounded-md hover:bg-[var(--color-bg-muted)]"
+              className="text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors px-4 py-2.5 rounded-md hover:bg-[var(--color-bg-muted)]"
             >
               Esnaf Ara
             </Link>
@@ -34,7 +34,7 @@ export function Navbar() {
             {/* Kategoriler dropdown */}
             <div className="relative">
               <button
-                className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors flex items-center gap-1 px-3 py-2 rounded-md hover:bg-[var(--color-bg-muted)]"
+                className="text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors flex items-center gap-1 px-4 py-2.5 rounded-md hover:bg-[var(--color-bg-muted)]"
                 onMouseEnter={() => setKategoriAcik(true)}
                 onMouseLeave={() => setKategoriAcik(false)}
               >
