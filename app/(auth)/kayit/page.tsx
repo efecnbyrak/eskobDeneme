@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { Input } from '@/components/ui/Input'
@@ -10,7 +9,6 @@ import { KATEGORILER, SEHIRLER } from '@/lib/constants'
 type Tip = 'USER' | 'BUSINESS'
 
 function KayitForm() {
-  const router = useRouter()
   const [tip, setTip] = useState<Tip>('USER')
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
@@ -60,12 +58,11 @@ function KayitForm() {
       })
 
       if (!signInRes || signInRes.error) {
-        router.push('/giris?kayit=basarili')
+        window.location.href = '/giris?kayit=basarili'
         return
       }
 
-      router.push(tip === 'BUSINESS' ? '/panel' : '/user')
-      router.refresh()
+      window.location.href = tip === 'BUSINESS' ? '/panel' : '/user'
     } catch (err) {
       setHata(err instanceof Error ? err.message : 'Bir hata oluştu.')
     } finally {

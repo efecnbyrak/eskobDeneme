@@ -2,12 +2,11 @@
 
 import { signIn } from 'next-auth/react'
 import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 
 function GirisForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl')
   const kayitBasarili = searchParams.get('kayit') === 'basarili'
@@ -37,7 +36,7 @@ function GirisForm() {
       }
 
       const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
-      let hedef = callbackUrl || '/'
+      let hedef = callbackUrl || '/user'
       if (meRes.ok) {
         const me = await meRes.json()
         if (!callbackUrl) {
@@ -46,8 +45,7 @@ function GirisForm() {
           else hedef = '/user'
         }
       }
-      router.push(hedef)
-      router.refresh()
+      window.location.href = hedef
     } catch {
       setHata('Bir hata oluştu. Lütfen tekrar deneyin.')
     } finally {
