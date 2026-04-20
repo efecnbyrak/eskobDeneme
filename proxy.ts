@@ -1,7 +1,6 @@
-import { auth } from '@/lib/auth'
+import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import type { Session } from 'next-auth'
 
 type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
@@ -24,24 +23,23 @@ function homeForRole(rol?: Rol | string | null): string {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  let oturum: Session | null = null
-  try {
-    oturum = (await auth()) as Session | null
-  } catch {
-    oturum = null
-  }
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  }).catch(() => null)
 
-  const rol = (oturum?.user as { rol?: Rol } | undefined)?.rol
+  const rol = token?.rol as Rol | undefined
+  const isAuthenticated = !!token
 
   if (matchesAny(pathname, AUTH_PATHS)) {
-    if (oturum) {
+    if (isAuthenticated) {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
     }
     return NextResponse.next()
   }
 
   if (matchesAny(pathname, ADMIN_PATHS)) {
-    if (!oturum) {
+    if (!isAuthenticated) {
       const url = new URL('/giris', request.url)
       url.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(url)
@@ -53,7 +51,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (matchesAny(pathname, BUSINESS_PATHS)) {
-    if (!oturum) {
+    if (!isAuthenticated) {
       const url = new URL('/giris', request.url)
       url.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(url)
@@ -65,7 +63,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (matchesAny(pathname, USER_PATHS)) {
-    if (!oturum) {
+    if (!isAuthenticated) {
       const url = new URL('/giris', request.url)
       url.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(url)
