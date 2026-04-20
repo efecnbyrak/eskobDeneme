@@ -29,7 +29,7 @@ export async function PATCH(
   if (parsed.data.onayli !== undefined) data.onaylı = parsed.data.onayli
 
   const guncel = await prisma.esnaf.update({
-    where: { id },
+    where: { id: parseInt(id) },
     data,
     select: { id: true, aktif: true, onaylı: true },
   })

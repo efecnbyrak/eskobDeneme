@@ -7,7 +7,7 @@ type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
 type Props = {
   kullanici: {
-    id: string
+    id: number
     ad: string
     soyad: string
     email: string

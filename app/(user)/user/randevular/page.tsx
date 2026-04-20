@@ -94,7 +94,7 @@ function RandevuKart({
   solgun,
 }: {
   r: {
-    id: string
+    id: number
     tarih: Date
     durum: string
     esnaf: { isletmeAdi: string; slug: string; sehir: string }

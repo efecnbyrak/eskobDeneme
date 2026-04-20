@@ -10,7 +10,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
   try {
     const { id } = await params
     const esnaf = await prisma.esnaf.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: {
         kategori: true,
         hizmetler: { where: { aktif: true } },
@@ -30,6 +30,7 @@ export async function PUT(req: NextRequest, { params }: Props) {
     if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
     const { id } = await params
+    const numId = parseInt(id)
     const body = await req.json()
 
     const kullanici = await prisma.kullanici.findUnique({
@@ -37,12 +38,12 @@ export async function PUT(req: NextRequest, { params }: Props) {
       include: { esnaf: true },
     })
 
-    if (kullanici?.esnaf?.id !== id) {
+    if (kullanici?.esnaf?.id !== numId) {
       return NextResponse.json({ error: 'Bu kaydı düzenleme yetkiniz yok' }, { status: 403 })
     }
 
     const esnaf = await prisma.esnaf.update({
-      where: { id },
+      where: { id: numId },
       data: {
         isletmeAdi: body.isletmeAdi,
         aciklama: body.aciklama,
@@ -68,16 +69,18 @@ export async function DELETE(req: NextRequest, { params }: Props) {
     if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
     const { id } = await params
+    const numId = parseInt(id)
+
     const kullanici = await prisma.kullanici.findUnique({
       where: { email: oturum.user.email },
       include: { esnaf: true },
     })
 
-    if (kullanici?.esnaf?.id !== id) {
+    if (kullanici?.esnaf?.id !== numId) {
       return NextResponse.json({ error: 'Bu kaydı silme yetkiniz yok' }, { status: 403 })
     }
 
-    await prisma.esnaf.update({ where: { id }, data: { aktif: false } })
+    await prisma.esnaf.update({ where: { id: numId }, data: { aktif: false } })
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })

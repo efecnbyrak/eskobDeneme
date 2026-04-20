@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input'
 import type { Hizmet } from '@/types'
 
 interface HizmetFormProps {
-  esnafId: string
+  esnafId: number
   hizmet?: Hizmet
   onKayit: (hizmet: Hizmet) => void
   onIptal: () => void

@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Kullanici {
-  id              String    @id @default(cuid())
+  id              Int       @id @default(autoincrement())
   email           String    @unique
   telefon         String?
   sifreHash       String
@@ -43,12 +43,12 @@ enum Plan {
 }
 
 model Esnaf {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   slug        String   @unique
   isletmeAdi  String
   aciklama    String?  @db.Text
   kategori    Kategori @relation(fields: [kategoriId], references: [id])
-  kategoriId  String
+  kategoriId  Int
   kapakFoto   String?
   logoUrl     String?
   fotograflar String[]
@@ -72,7 +72,7 @@ model Esnaf {
   guncelleT  DateTime @updatedAt
 
   sahip         Kullanici    @relation(fields: [kullaniciId], references: [id])
-  kullaniciId   String       @unique
+  kullaniciId   Int          @unique
   hizmetler     Hizmet[]
   randevular    Randevu[]
   yorumlar      Yorum[]
@@ -85,7 +85,7 @@ model Esnaf {
 }
 
 model Kategori {
-  id   String @id @default(cuid())
+  id   Int    @id @default(autoincrement())
   ad   String @unique
   slug String @unique
   ikon String
@@ -98,7 +98,7 @@ model Kategori {
 }
 
 model Hizmet {
-  id         String   @id @default(cuid())
+  id         Int      @id @default(autoincrement())
   ad         String
   aciklama   String?
   fiyat      Decimal  @db.Decimal(10, 2)
@@ -110,14 +110,14 @@ model Hizmet {
   olusturmaT DateTime @default(now())
 
   esnaf      Esnaf     @relation(fields: [esnafId], references: [id], onDelete: Cascade)
-  esnafId    String
+  esnafId    Int
   randevular Randevu[]
 
   @@map("hizmetler")
 }
 
 model Randevu {
-  id             String       @id @default(cuid())
+  id             Int          @id @default(autoincrement())
   tarih          DateTime
   sure           Int
   durum          RandevuDurum @default(BEKLIYOR)
@@ -128,9 +128,9 @@ model Randevu {
   guncelleT      DateTime     @updatedAt
 
   esnaf    Esnaf   @relation(fields: [esnafId], references: [id])
-  esnafId  String
+  esnafId  Int
   hizmet   Hizmet? @relation(fields: [hizmetId], references: [id])
-  hizmetId String?
+  hizmetId Int?
 
   @@index([esnafId, tarih])
   @@map("randevular")
@@ -144,7 +144,7 @@ enum RandevuDurum {
 }
 
 model Yorum {
-  id         String   @id @default(cuid())
+  id         Int      @id @default(autoincrement())
   puan       Int
   yorum      String?  @db.Text
   musteriAd  String
@@ -153,16 +153,16 @@ model Yorum {
   olusturmaT DateTime @default(now())
 
   esnaf   Esnaf  @relation(fields: [esnafId], references: [id])
-  esnafId String
+  esnafId Int
 
   @@map("yorumlar")
 }
 
 model Oturum {
-  id          String    @id @default(cuid())
+  id          Int       @id @default(autoincrement())
   token       String    @unique
   kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
-  kullaniciId String
+  kullaniciId Int
   sonT        DateTime
   olusturmaT  DateTime  @default(now())
 
@@ -170,12 +170,12 @@ model Oturum {
 }
 
 model Favori {
-  id          String   @id @default(cuid())
+  id          Int       @id @default(autoincrement())
   kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
-  kullaniciId String
-  esnaf       Esnaf    @relation(fields: [esnafId], references: [id], onDelete: Cascade)
-  esnafId     String
-  olusturmaT  DateTime @default(now())
+  kullaniciId Int
+  esnaf       Esnaf     @relation(fields: [esnafId], references: [id], onDelete: Cascade)
+  esnafId     Int
+  olusturmaT  DateTime  @default(now())
 
   @@unique([kullaniciId, esnafId])
   @@index([kullaniciId])
@@ -183,7 +183,7 @@ model Favori {
 }
 
 model Istatistik {
-  id           String   @id @default(cuid())
+  id           Int      @id @default(autoincrement())
   tarih        DateTime @default(now()) @db.Date
   goruntulenme Int      @default(0)
   tiklanma     Int      @default(0)
@@ -191,7 +191,7 @@ model Istatistik {
   whatsappT    Int      @default(0)
 
   esnaf   Esnaf  @relation(fields: [esnafId], references: [id])
-  esnafId String
+  esnafId Int
 
   @@unique([esnafId, tarih])
   @@map("istatistikler")

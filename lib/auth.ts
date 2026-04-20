@@ -15,22 +15,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         sifre: { label: 'Şifre', type: 'password' },
       },
       async authorize(credentials) {
-        const email = (credentials?.email as string | undefined)?.toLowerCase().trim()
-        const sifre = credentials?.sifre as string | undefined
-        if (!email || !sifre) return null
+        try {
+          const email = (credentials?.email as string | undefined)?.toLowerCase().trim()
+          const sifre = credentials?.sifre as string | undefined
+          if (!email || !sifre) return null
 
-        const kullanici = await prisma.kullanici.findUnique({ where: { email } })
-        if (!kullanici) return null
+          const kullanici = await prisma.kullanici.findUnique({ where: { email } })
+          if (!kullanici) return null
 
-        const dogru = await bcrypt.compare(sifre, kullanici.sifreHash)
-        if (!dogru) return null
+          const dogru = await bcrypt.compare(sifre, kullanici.sifreHash)
+          if (!dogru) return null
 
-        return {
-          id: kullanici.id,
-          email: kullanici.email,
-          name: `${kullanici.ad} ${kullanici.soyad}`,
-          image: kullanici.avatarUrl,
-          rol: kullanici.rol,
+          return {
+            id: String(kullanici.id),
+            email: kullanici.email,
+            name: `${kullanici.ad} ${kullanici.soyad}`,
+            image: kullanici.avatarUrl,
+            rol: kullanici.rol,
+          }
+        } catch (err) {
+          console.error('authorize error:', err)
+          return null
         }
       },
     }),
@@ -42,7 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.rol = (user as { rol: Rol }).rol
       }
       if (trigger === 'update' && token.id) {
-        const taze = await prisma.kullanici.findUnique({ where: { id: token.id as string } })
+        const taze = await prisma.kullanici.findUnique({ where: { id: parseInt(token.id as string) } })
         if (taze) token.rol = taze.rol
       }
       return token

@@ -5,11 +5,11 @@ import { RandevuSchema } from '@/lib/validations'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const esnafId = searchParams.get('esnafId')
-    if (!esnafId) return NextResponse.json({ error: 'esnafId gerekli' }, { status: 400 })
+    const esnafIdStr = searchParams.get('esnafId')
+    if (!esnafIdStr) return NextResponse.json({ error: 'esnafId gerekli' }, { status: 400 })
 
     const randevular = await prisma.randevu.findMany({
-      where: { esnafId },
+      where: { esnafId: parseInt(esnafIdStr) },
       include: { hizmet: true },
       orderBy: { tarih: 'desc' },
     })
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         musteriTelefon: veri.musteriTelefon,
         musteriNot: veri.musteriNot,
         esnafId: veri.esnafId,
-        hizmetId: veri.hizmetId,
+        hizmetId: veri.hizmetId ?? null,
       },
     })
 
@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json()
     const randevu = await prisma.randevu.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data: { durum: body.durum },
     })
 

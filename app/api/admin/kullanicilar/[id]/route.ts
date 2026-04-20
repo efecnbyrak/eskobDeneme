@@ -37,7 +37,7 @@ export async function PATCH(
   }
 
   const guncel = await prisma.kullanici.update({
-    where: { id },
+    where: { id: parseInt(id) },
     data: { rol: parsed.data.rol },
     select: { id: true, rol: true },
   })
@@ -60,7 +60,7 @@ export async function DELETE(
     )
   }
 
-  const hedef = await prisma.kullanici.findUnique({ where: { id } })
+  const hedef = await prisma.kullanici.findUnique({ where: { id: parseInt(id) } })
   if (!hedef) return NextResponse.json({ error: 'Bulunamadı.' }, { status: 404 })
   if (hedef.rol === 'SUPER_ADMIN') {
     return NextResponse.json(
@@ -69,6 +69,6 @@ export async function DELETE(
     )
   }
 
-  await prisma.kullanici.delete({ where: { id } })
+  await prisma.kullanici.delete({ where: { id: parseInt(id) } })
   return NextResponse.json({ ok: true })
 }

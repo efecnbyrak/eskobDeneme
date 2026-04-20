@@ -10,7 +10,7 @@ export default async function FavorilerPage() {
   const userId = oturum!.user!.id!
 
   const favoriler = await prisma.favori.findMany({
-    where: { kullaniciId: userId },
+    where: { kullaniciId: parseInt(userId) },
     include: {
       esnaf: {
         include: { kategori: true },

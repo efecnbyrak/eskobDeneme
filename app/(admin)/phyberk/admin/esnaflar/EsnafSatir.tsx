@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 type Props = {
   esnaf: {
-    id: string
+    id: number
     isletmeAdi: string
     slug: string
     sehir: string

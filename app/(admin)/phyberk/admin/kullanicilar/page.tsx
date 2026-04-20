@@ -65,7 +65,7 @@ export default async function KullanicilarPage() {
                     olusturmaT: k.olusturmaT.toISOString(),
                   }}
                   superMi={superMi}
-                  kendiMi={kendiId === k.id}
+                  kendiMi={String(k.id) === kendiId}
                 />
               ))}
             </tbody>

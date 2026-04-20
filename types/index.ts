@@ -3,7 +3,7 @@ export type Plan = 'UCRETSIZ' | 'STARTER' | 'PRO'
 export type RandevuDurum = 'BEKLIYOR' | 'ONAYLANDI' | 'IPTAL' | 'TAMAMLANDI'
 
 export interface Kategori {
-  id: string
+  id: number
   ad: string
   slug: string
   ikon: string
@@ -12,7 +12,7 @@ export interface Kategori {
 }
 
 export interface Kullanici {
-  id: string
+  id: number
   email: string
   ad: string
   soyad: string
@@ -21,7 +21,7 @@ export interface Kullanici {
 }
 
 export interface Hizmet {
-  id: string
+  id: number
   ad: string
   aciklama?: string | null
   fiyat: number
@@ -29,18 +29,18 @@ export interface Hizmet {
   fotoUrl?: string | null
   aktif: boolean
   sira: number
-  esnafId: string
+  esnafId: number
 }
 
 export interface Yorum {
-  id: string
+  id: number
   puan: number
   yorum?: string | null
   musteriAd: string
   yanitlar?: string | null
   onaylı: boolean
   olusturmaT: string
-  esnafId: string
+  esnafId: number
 }
 
 export interface CalismaGunu {
@@ -60,12 +60,12 @@ export interface CalismaSaatleri {
 }
 
 export interface Esnaf {
-  id: string
+  id: number
   slug: string
   isletmeAdi: string
   aciklama?: string | null
   kategori: Kategori
-  kategoriId: string
+  kategoriId: number
   kapakFoto?: string | null
   logoUrl?: string | null
   fotograflar: string[]
@@ -87,7 +87,7 @@ export interface Esnaf {
 }
 
 export interface Randevu {
-  id: string
+  id: number
   tarih: string
   sure: number
   durum: RandevuDurum
@@ -95,17 +95,17 @@ export interface Randevu {
   musteriTelefon: string
   musteriNot?: string | null
   olusturmaT: string
-  esnafId: string
-  hizmetId?: string | null
+  esnafId: number
+  hizmetId?: number | null
   hizmet?: Hizmet | null
 }
 
 export interface Istatistik {
-  id: string
+  id: number
   tarih: string
   goruntulenme: number
   tiklanma: number
   randevuSay: number
   whatsappT: number
-  esnafId: string
+  esnafId: number
 }

@@ -5,14 +5,14 @@ import { RandevuTakvim } from '@/components/dashboard/RandevuTakvim'
 import type { Randevu, RandevuDurum } from '@/types'
 
 interface Props {
-  esnafId: string
+  esnafId: number
   randevular: Randevu[]
 }
 
 export function RandevuTakvimClient({ esnafId, randevular: initial }: Props) {
   const [randevular, setRandevular] = useState(initial)
 
-  async function durumGuncelle(id: string, durum: RandevuDurum) {
+  async function durumGuncelle(id: number, durum: RandevuDurum) {
     await fetch(`/api/randevu?id=${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

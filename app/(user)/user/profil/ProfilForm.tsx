@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input'
 
 type Props = {
   kullanici: {
-    id: string
+    id: number
     email: string
     ad: string
     soyad: string

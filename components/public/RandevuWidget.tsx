@@ -7,7 +7,7 @@ import { useRandevu } from '@/hooks/useRandevu'
 import type { Hizmet } from '@/types'
 
 interface RandevuWidgetProps {
-  esnafId: string
+  esnafId: number
   hizmetler: Hizmet[]
 }
 
@@ -22,16 +22,19 @@ export function RandevuWidget({ esnafId, hizmetler }: RandevuWidgetProps) {
     tarih: '',
   })
 
-  const seciliHizmet = hizmetler.find((h) => h.id === form.hizmetId)
+  const seciliHizmet = hizmetler.find((h) => String(h.id) === form.hizmetId)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const sure = seciliHizmet?.sure || 60
     const sonuc = await randevuOlustur({
-      ...form,
+      musteriAd: form.musteriAd,
+      musteriTelefon: form.musteriTelefon,
+      musteriNot: form.musteriNot,
       esnafId,
       sure,
       tarih: new Date(form.tarih).toISOString(),
+      hizmetId: form.hizmetId ? parseInt(form.hizmetId) : null,
     })
     if (sonuc) setBasarili(true)
   }
@@ -64,7 +67,7 @@ export function RandevuWidget({ esnafId, hizmetler }: RandevuWidgetProps) {
           >
             <option value="">Hizmet seçin</option>
             {hizmetler.map((h) => (
-              <option key={h.id} value={h.id}>
+              <option key={h.id} value={String(h.id)}>
                 {h.ad}
               </option>
             ))}

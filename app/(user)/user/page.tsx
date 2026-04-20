@@ -11,7 +11,7 @@ export default async function UserAnaSayfa() {
   const userId = oturum!.user!.id!
 
   const [favoriSay, randevuSay, yaklasan] = await Promise.all([
-    prisma.favori.count({ where: { kullaniciId: userId } }),
+    prisma.favori.count({ where: { kullaniciId: parseInt(userId) } }),
     prisma.randevu.count({
       where: { musteriAd: oturum!.user!.name ?? undefined },
     }),

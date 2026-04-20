@@ -58,8 +58,8 @@ export const RandevuSchema = z.object({
   musteriAd: z.string().min(2, 'İsim en az 2 karakter olmalı'),
   musteriTelefon: z.string().min(10, 'Geçerli telefon numarası girin'),
   musteriNot: z.string().optional(),
-  hizmetId: z.string().optional(),
-  esnafId: z.string().min(1, 'Esnaf ID gerekli'),
+  hizmetId: z.coerce.number().int().optional(),
+  esnafId: z.coerce.number().int().min(1, 'Esnaf ID gerekli'),
   sure: z.number().positive(),
 })
 
@@ -67,5 +67,5 @@ export const YorumSchema = z.object({
   puan: z.number().min(1).max(5),
   yorum: z.string().max(500).optional(),
   musteriAd: z.string().min(2, 'İsim en az 2 karakter olmalı'),
-  esnafId: z.string().min(1),
+  esnafId: z.coerce.number().int().min(1),
 })

@@ -5,11 +5,11 @@ import { YorumSchema } from '@/lib/validations'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const esnafId = searchParams.get('esnafId')
-    if (!esnafId) return NextResponse.json({ error: 'esnafId gerekli' }, { status: 400 })
+    const esnafIdStr = searchParams.get('esnafId')
+    if (!esnafIdStr) return NextResponse.json({ error: 'esnafId gerekli' }, { status: 400 })
 
     const yorumlar = await prisma.yorum.findMany({
-      where: { esnafId, onaylı: true },
+      where: { esnafId: parseInt(esnafIdStr), onaylı: true },
       orderBy: { olusturmaT: 'desc' },
     })
 

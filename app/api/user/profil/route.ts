@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const kullanici = await prisma.kullanici.update({
-    where: { id: oturum.user.id },
+    where: { id: parseInt(oturum.user.id!) },
     data: {
       ad: parsed.data.ad,
       soyad: parsed.data.soyad,

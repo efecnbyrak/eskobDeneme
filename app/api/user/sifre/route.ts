@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest) {
     )
   }
 
-  const kullanici = await prisma.kullanici.findUnique({ where: { id: oturum.user.id } })
+  const kullanici = await prisma.kullanici.findUnique({ where: { id: parseInt(oturum.user.id!) } })
   if (!kullanici) {
     return NextResponse.json({ error: 'Kullanıcı bulunamadı.' }, { status: 404 })
   }

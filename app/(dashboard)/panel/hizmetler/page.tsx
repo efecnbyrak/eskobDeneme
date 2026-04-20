@@ -11,7 +11,7 @@ import type { Hizmet } from '@/types'
 
 export default function HizmetlerSayfasi() {
   const [hizmetler, setHizmetler] = useState<Hizmet[]>([])
-  const [esnafId, setEsnafId] = useState('')
+  const [esnafId, setEsnafId] = useState(0)
   const [modalAcik, setModalAcik] = useState(false)
   const [duzenle, setDuzenle] = useState<Hizmet | null>(null)
 
@@ -20,7 +20,7 @@ export default function HizmetlerSayfasi() {
       .then((r) => r.json())
       .then((data) => {
         setHizmetler(data.hizmetler || [])
-        setEsnafId(data.esnafId || '')
+        setEsnafId(data.esnafId || 0)
       })
   }, [])
 
@@ -32,7 +32,7 @@ export default function HizmetlerSayfasi() {
     setDuzenle(null)
   }
 
-  async function sil(id: string) {
+  async function sil(id: number) {
     await fetch(`/api/hizmet?id=${id}`, { method: 'DELETE' })
     setHizmetler((prev) => prev.filter((h) => h.id !== id))
   }

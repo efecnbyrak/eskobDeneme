@@ -7,7 +7,7 @@ import type { Randevu, RandevuDurum } from '@/types'
 
 interface RandevuTakvimProps {
   randevular: Randevu[]
-  onDurumGuncelle: (id: string, durum: RandevuDurum) => void
+  onDurumGuncelle: (id: number, durum: RandevuDurum) => void
 }
 
 const durumRenk: Record<RandevuDurum, 'default' | 'success' | 'warning' | 'danger' | 'info'> = {

@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       include: { esnaf: true },
     })
 
-    if (!kullanici?.esnaf) return NextResponse.json({ hizmetler: [], esnafId: '' })
+    if (!kullanici?.esnaf) return NextResponse.json({ hizmetler: [], esnafId: 0 })
 
     const hizmetler = await prisma.hizmet.findMany({
       where: { esnafId: kullanici.esnaf.id },
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         sure: veri.sure,
         aciklama: veri.aciklama,
         kategori: veri.kategori,
-        esnafId: body.esnafId,
+        esnafId: parseInt(body.esnafId),
       },
     })
 
@@ -64,7 +64,7 @@ export async function PUT(req: NextRequest) {
     const veri = HizmetSchema.parse(body)
 
     const hizmet = await prisma.hizmet.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data: { ad: veri.ad, fiyat: veri.fiyat, sure: veri.sure, aciklama: veri.aciklama },
     })
 
@@ -83,7 +83,7 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
 
-    await prisma.hizmet.update({ where: { id }, data: { aktif: false } })
+    await prisma.hizmet.update({ where: { id: parseInt(id) }, data: { aktif: false } })
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
