@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { PrismaClient } from '../app/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { KATEGORILER } from '../lib/constants'
+import bcrypt from 'bcryptjs'
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
@@ -15,6 +16,21 @@ async function main() {
       create: { ad: k.ad, slug: k.slug, ikon: k.ikon, renk: k.renk, sira: index },
     })
   }
+
+  console.log('Süper admin oluşturuluyor...')
+  const sifreHash = await bcrypt.hash('phyberk123', 12)
+  await prisma.kullanici.upsert({
+    where: { email: 'phyberk123@gmail.com' },
+    update: { rol: 'SUPER_ADMIN', sifreHash },
+    create: {
+      email: 'phyberk123@gmail.com',
+      sifreHash,
+      ad: 'Phyberk',
+      soyad: 'Admin',
+      rol: 'SUPER_ADMIN',
+    },
+  })
+
   console.log('✅ Seed tamamlandı!')
 }
 
