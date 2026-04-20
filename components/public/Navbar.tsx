@@ -1,40 +1,78 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { KATEGORILER } from '@/lib/constants'
+
+type Me = {
+  authenticated: boolean
+  name?: string | null
+  rol?: 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
+}
+
+function panelYolu(rol?: Me['rol']) {
+  if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
+  if (rol === 'BUSINESS') return '/panel'
+  return '/user'
+}
 
 export function Navbar() {
   const [menuAcik, setMenuAcik] = useState(false)
   const [kategoriAcik, setKategoriAcik] = useState(false)
+  const [me, setMe] = useState<Me | null>(null)
+
+  useEffect(() => {
+    let iptal = false
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : { authenticated: false }))
+      .then((d) => {
+        if (!iptal) setMe(d)
+      })
+      .catch(() => {
+        if (!iptal) setMe({ authenticated: false })
+      })
+    return () => {
+      iptal = true
+    }
+  }, [])
+
+  const girisliMi = !!me?.authenticated
 
   return (
-    <nav style={{
-      position: 'sticky', top: 0, zIndex: 50,
-      background: 'rgba(255,255,255,0.85)',
-      backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid var(--color-border)',
-      transition: 'all 0.3s',
-    }}>
+    <nav
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        background: 'rgba(255,255,255,0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid var(--color-border)',
+        transition: 'all 0.3s',
+      }}
+    >
       <div className="container-main">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
-          {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 700, fontSize: '18px', color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }} className="font-display">
-            <span style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--color-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>EV</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
+          <Link
+            href="/"
+            style={{ display: 'flex', alignItems: 'center', gap: 12, fontWeight: 700, fontSize: 18, color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }}
+            className="font-display"
+          >
+            <span style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--color-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>
+              EV
+            </span>
             <span className="hidden sm:inline">Esnaf Vitrin</span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '4px', marginLeft: '40px' }}>
-            <Link href="/ara" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text)', padding: '10px 16px', borderRadius: '12px', transition: 'all 0.2s', textDecoration: 'none' }}>
+          <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 40 }}>
+            <Link href="/ara" style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 16px', borderRadius: 12, textDecoration: 'none' }}>
               Esnaf Ara
             </Link>
 
-            {/* Kategoriler dropdown */}
             <div style={{ position: 'relative' }}>
               <button
-                style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text)', padding: '10px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 16px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer' }}
                 onMouseEnter={() => setKategoriAcik(true)}
                 onMouseLeave={() => setKategoriAcik(false)}
               >
@@ -46,13 +84,17 @@ export function Navbar() {
               {kategoriAcik && (
                 <div
                   className="animate-fade-in"
-                  style={{ position: 'absolute', top: '100%', left: 0, marginTop: '4px', width: '260px', background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', boxShadow: 'var(--shadow-lg)', padding: '8px 0' }}
+                  style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 260, background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, boxShadow: 'var(--shadow-lg)', padding: '8px 0' }}
                   onMouseEnter={() => setKategoriAcik(true)}
                   onMouseLeave={() => setKategoriAcik(false)}
                 >
                   {KATEGORILER.map((k) => (
-                    <Link key={k.slug} href={`/kategori/${k.slug}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', fontSize: '14px', color: 'var(--color-text)', transition: 'background 0.15s', textDecoration: 'none' }}>
-                      <span style={{ fontSize: '18px' }}>{k.ikon}</span>
+                    <Link
+                      key={k.slug}
+                      href={`/kategori/${k.slug}`}
+                      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px', fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}
+                    >
+                      <span style={{ fontSize: 18 }}>{k.ikon}</span>
                       {k.ad}
                     </Link>
                   ))}
@@ -61,23 +103,43 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Spacer */}
           <div style={{ flex: 1 }} />
 
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex" style={{ alignItems: 'center', gap: '16px' }}>
-            <Link href="/giris" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text)', padding: '10px 16px', textDecoration: 'none' }}>
-              Giriş Yap
-            </Link>
-            <Link href="/kayit">
-              <Button size="sm">Ücretsiz Başla</Button>
-            </Link>
+          <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 16 }}>
+            {girisliMi ? (
+              <>
+                <Link
+                  href={panelYolu(me?.rol)}
+                  style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', padding: '10px 16px', textDecoration: 'none' }}
+                >
+                  {me?.rol === 'BUSINESS'
+                    ? 'Panelim'
+                    : me?.rol === 'SUPER_ADMIN' || me?.rol === 'ADMIN'
+                      ? 'Yönetim'
+                      : 'Hesabım'}
+                </Link>
+                <a
+                  href="/api/auth/signout"
+                  style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-secondary)', padding: '10px 16px', textDecoration: 'none' }}
+                >
+                  Çıkış
+                </a>
+              </>
+            ) : (
+              <>
+                <Link href="/giris" style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 16px', textDecoration: 'none' }}>
+                  Giriş Yap
+                </Link>
+                <Link href="/kayit">
+                  <Button size="sm">Ücretsiz Başla</Button>
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Mobile hamburger */}
           <button
             className="lg:hidden"
-            style={{ padding: '12px', marginRight: '-8px', borderRadius: '12px', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ padding: 12, marginRight: -8, borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}
             onClick={() => setMenuAcik((p) => !p)}
             aria-label="Menü"
           >
@@ -94,33 +156,66 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuAcik && (
         <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
           <div className="container-main" style={{ padding: '24px 20px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <Link href="/ara" style={{ padding: '14px 16px', fontSize: '14px', fontWeight: 500, borderRadius: '12px', textDecoration: 'none', color: 'var(--color-text)' }} onClick={() => setMenuAcik(false)}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Link
+                href="/ara"
+                style={{ padding: '14px 16px', fontSize: 14, fontWeight: 500, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
+                onClick={() => setMenuAcik(false)}
+              >
                 🔍 Esnaf Ara
               </Link>
-              
-              <div style={{ padding: '16px 16px 8px', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
+
+              <div style={{ padding: '16px 16px 8px', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
                 Kategoriler
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                 {KATEGORILER.slice(0, 8).map((k) => (
-                  <Link key={k.slug} href={`/kategori/${k.slug}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', fontSize: '14px', borderRadius: '12px', textDecoration: 'none', color: 'var(--color-text)' }} onClick={() => setMenuAcik(false)}>
+                  <Link
+                    key={k.slug}
+                    href={`/kategori/${k.slug}`}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', fontSize: 14, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
+                    onClick={() => setMenuAcik(false)}
+                  >
                     <span>{k.ikon}</span> {k.ad}
                   </Link>
                 ))}
               </div>
-              
-              <div style={{ paddingTop: '20px', marginTop: '16px', borderTop: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <Link href="/giris" onClick={() => setMenuAcik(false)}>
-                  <Button variant="secondary" size="sm" className="w-full">Giriş Yap</Button>
-                </Link>
-                <Link href="/kayit" onClick={() => setMenuAcik(false)}>
-                  <Button size="sm" className="w-full">Ücretsiz Başla</Button>
-                </Link>
+
+              <div style={{ paddingTop: 20, marginTop: 16, borderTop: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {girisliMi ? (
+                  <>
+                    <Link href={panelYolu(me?.rol)} onClick={() => setMenuAcik(false)}>
+                      <Button variant="secondary" size="sm" className="w-full">
+                        {me?.rol === 'BUSINESS'
+                          ? 'Panelim'
+                          : me?.rol === 'SUPER_ADMIN' || me?.rol === 'ADMIN'
+                            ? 'Yönetim'
+                            : 'Hesabım'}
+                      </Button>
+                    </Link>
+                    <a href="/api/auth/signout" onClick={() => setMenuAcik(false)}>
+                      <Button variant="ghost" size="sm" className="w-full">
+                        Çıkış
+                      </Button>
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/giris" onClick={() => setMenuAcik(false)}>
+                      <Button variant="secondary" size="sm" className="w-full">
+                        Giriş Yap
+                      </Button>
+                    </Link>
+                    <Link href="/kayit" onClick={() => setMenuAcik(false)}>
+                      <Button size="sm" className="w-full">
+                        Ücretsiz Başla
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

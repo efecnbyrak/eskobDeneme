@@ -1,7 +1,16 @@
+import { redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ToastProvider } from '@/components/ui/Toast'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const oturum = await auth()
+  if (!oturum?.user) redirect('/giris?callbackUrl=/panel')
+
+  const rol = oturum.user.rol
+  if (rol === 'USER') redirect('/user')
+  if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
+
   return (
     <ToastProvider>
       <div className="flex min-h-screen bg-[var(--color-bg)]">

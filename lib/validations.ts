@@ -1,11 +1,31 @@
 import { z } from 'zod'
 
-export const KayitSchema = z.object({
+export const KullaniciKayitSchema = z.object({
+  tip: z.literal('USER'),
   ad: z.string().min(2, 'Ad en az 2 karakter olmalı'),
   soyad: z.string().min(2, 'Soyad en az 2 karakter olmalı'),
   email: z.string().email('Geçerli bir e-posta girin'),
-  sifre: z.string().min(8, 'Şifre en az 8 karakter olmalı'),
+  sifre: z.string().min(6, 'Şifre en az 6 karakter olmalı'),
+  telefon: z.string().optional(),
 })
+
+export const IsletmeKayitSchema = z.object({
+  tip: z.literal('BUSINESS'),
+  ad: z.string().min(2, 'Ad en az 2 karakter olmalı'),
+  soyad: z.string().min(2, 'Soyad en az 2 karakter olmalı'),
+  email: z.string().email('Geçerli bir e-posta girin'),
+  sifre: z.string().min(6, 'Şifre en az 6 karakter olmalı'),
+  telefon: z.string().optional(),
+  isletmeAdi: z.string().min(2, 'İşletme adı gerekli'),
+  kategoriSlug: z.string().min(1, 'Kategori seçin'),
+  sehir: z.string().min(1, 'Şehir seçin'),
+  ilce: z.string().min(1, 'İlçe girin'),
+})
+
+export const KayitSchema = z.discriminatedUnion('tip', [
+  KullaniciKayitSchema,
+  IsletmeKayitSchema,
+])
 
 export const GirisSchema = z.object({
   email: z.string().email('Geçerli bir e-posta girin'),

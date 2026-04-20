@@ -15,6 +15,7 @@ model Kullanici {
   ad              String
   soyad           String
   avatarUrl       String?
+  rol             Rol       @default(USER)
   emailOnay       Boolean   @default(false)
   plan            Plan      @default(UCRETSIZ)
   planBitisTarihi DateTime?
@@ -23,8 +24,16 @@ model Kullanici {
 
   esnaf     Esnaf?
   oturumlar Oturum[]
+  favoriler Favori[]
 
   @@map("kullaniciler")
+}
+
+enum Rol {
+  SUPER_ADMIN
+  ADMIN
+  BUSINESS
+  USER
 }
 
 enum Plan {
@@ -68,6 +77,7 @@ model Esnaf {
   randevular    Randevu[]
   yorumlar      Yorum[]
   istatistikler Istatistik[]
+  favoriler     Favori[]
 
   @@index([sehir, kategoriId])
   @@index([slug])
@@ -157,6 +167,19 @@ model Oturum {
   olusturmaT  DateTime  @default(now())
 
   @@map("oturumlar")
+}
+
+model Favori {
+  id          String   @id @default(cuid())
+  kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
+  kullaniciId String
+  esnaf       Esnaf    @relation(fields: [esnafId], references: [id], onDelete: Cascade)
+  esnafId     String
+  olusturmaT  DateTime @default(now())
+
+  @@unique([kullaniciId, esnafId])
+  @@index([kullaniciId])
+  @@map("favoriler")
 }
 
 model Istatistik {
