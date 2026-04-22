@@ -3,8 +3,8 @@ import { prisma } from '@/lib/db'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
 import { HeroArama } from '@/components/public/HeroArama'
+import { KategoriSlider } from '@/components/public/KategoriSlider'
 import { Button } from '@/components/ui/Button'
-import { KATEGORILER } from '@/lib/constants'
 import type { Esnaf } from '@/types'
 
 async function onecikarilan(): Promise<Esnaf[]> {
@@ -36,25 +36,25 @@ async function onecikarilan(): Promise<Esnaf[]> {
           hizmetler: [{ id: '2', ad: 'Günün Menüsü', fiyat: 150, aktif: true, esnafId: '2', sira: 1, olusturmaT: new Date() }]
         },
         {
-          id: '3', slug: 'usta-eller-oto', isletmeAdi: 'Usta Eller Oto Tamir', aktif: true, onaylı: true,
-          sehir: 'İzmir', ilce: 'Bornova', adres: 'Sanayi Sitesi', kategoriId: '3',
-          kategori: { id: '3', ad: 'Tamirci', ikon: '🔧', renk: '#2BD4E0', slug: 'tamirci', sira: 3 },
-          yorumlar: [],
-          hizmetler: []
+          id: '3', slug: 'fit-life-gym', isletmeAdi: 'Fit Life Spor Salonu', aktif: true, onaylı: true,
+          sehir: 'Antalya', ilce: 'Muratpaşa', adres: 'Lara', kategoriId: '3',
+          kategori: { id: '3', ad: 'Spor', ikon: '💪', renk: '#81B29A', slug: 'spor', sira: 3 },
+          yorumlar: [{ id: '3', puan: 5, musteriAd: 'C', esnafId: '3', olusturmaT: new Date(), onaylı: true }],
+          hizmetler: [{ id: '3', ad: 'Aylık Üyelik', fiyat: 800, aktif: true, esnafId: '3', sira: 1, olusturmaT: new Date() }]
         },
         {
-          id: '4', slug: 'papatya-cicekcilik', isletmeAdi: 'Papatya Çiçekçilik & Hediyelik', aktif: true, onaylı: true,
+          id: '4', slug: 'papatya-cicekcilik', isletmeAdi: 'Papatya Çiçekçilik', aktif: true, onaylı: true,
           sehir: 'Bursa', ilce: 'Nilüfer', adres: 'FSM Bulvarı', kategoriId: '4',
           kategori: { id: '4', ad: 'Çiçekçi', ikon: '🌸', renk: '#E07A5F', slug: 'cicekci', sira: 4 },
-          yorumlar: [{ id: '4', puan: 5, musteriAd: 'C', esnafId: '4', olusturmaT: new Date(), onaylı: true }],
+          yorumlar: [{ id: '4', puan: 5, musteriAd: 'D', esnafId: '4', olusturmaT: new Date(), onaylı: true }],
           hizmetler: [{ id: '4', ad: 'Buket', fiyat: 400, aktif: true, esnafId: '4', sira: 1, olusturmaT: new Date() }]
         },
         {
-          id: '5', slug: 'fit-life-gym', isletmeAdi: 'Fit Life Spor Salonu', aktif: true, onaylı: true,
-          sehir: 'Antalya', ilce: 'Muratpaşa', adres: 'Lara', kategoriId: '5',
-          kategori: { id: '5', ad: 'Spor', ikon: '💪', renk: '#81B29A', slug: 'spor', sira: 5 },
-          yorumlar: [{ id: '5', puan: 4.5, musteriAd: 'D', esnafId: '5', olusturmaT: new Date(), onaylı: true }],
-          hizmetler: [{ id: '5', ad: 'Aylık Üyelik', fiyat: 800, aktif: true, esnafId: '5', sira: 1, olusturmaT: new Date() }]
+          id: '5', slug: 'guzellik-kosesi', isletmeAdi: 'Güzellik Köşesi', aktif: true, onaylı: true,
+          sehir: 'İzmir', ilce: 'Bornova', adres: 'Sanayi Sitesi', kategoriId: '5',
+          kategori: { id: '5', ad: 'Güzellik', ikon: '💅', renk: '#F2CC8F', slug: 'guzellik', sira: 5 },
+          yorumlar: [],
+          hizmetler: []
         }
       ] as unknown as Esnaf[]
     }
@@ -64,6 +64,8 @@ async function onecikarilan(): Promise<Esnaf[]> {
   }
 }
 
+const DEMO_FOTO_SEED = ['berber', 'kafe', 'spor', 'guzellik', 'tamirci', 'restoran']
+
 export default async function AnaSayfa() {
   const esnaflar = await onecikarilan()
 
@@ -72,11 +74,11 @@ export default async function AnaSayfa() {
 
       {/* ═══ HERO ═══ */}
       <section
-        className="relative overflow-hidden bg-[var(--color-bg)]"
-        style={{ paddingTop: '140px', paddingBottom: '100px' }}
+        className="relative overflow-hidden"
+        style={{ background: 'var(--color-bg)', paddingTop: '120px', paddingBottom: '100px' }}
       >
         {/* Grid BG */}
-        <div 
+        <div
           className="absolute inset-0 z-0 pointer-events-none"
           style={{
             opacity: 0.2,
@@ -89,12 +91,57 @@ export default async function AnaSayfa() {
             WebkitMaskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)'
           }}
         />
-        
+
         {/* Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: 800, height: 500, background: 'var(--color-primary-light)', filter: 'blur(120px)', borderRadius: '100%', opacity: 0.5 }} />
 
+        {/* Floating business photos */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+          {DEMO_FOTO_SEED.map((seed, i) => {
+            const positions = [
+              { top: '8%', left: '3%' },
+              { top: '60%', left: '1%' },
+              { top: '15%', right: '2%' },
+              { top: '55%', right: '4%' },
+              { top: '38%', left: '8%' },
+              { top: '35%', right: '8%' },
+            ]
+            const pos = positions[i] ?? { top: '50%', left: '50%' }
+            return (
+              <div
+                key={seed}
+                className="hidden xl:block"
+                style={{
+                  position: 'absolute',
+                  ...pos,
+                  width: 88, height: 88,
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                  border: '3px solid white',
+                  opacity: 0.75,
+                  animation: `floatCard ${3.5 + i * 0.7}s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.4}s`,
+                }}
+              >
+                <img
+                  src={`https://picsum.photos/seed/${seed}/88/88`}
+                  alt=""
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+            )
+          })}
+        </div>
+
+        <style>{`
+          @keyframes floatCard {
+            from { transform: translateY(0px) rotate(-2deg); }
+            to   { transform: translateY(-18px) rotate(2deg); }
+          }
+        `}</style>
+
         <div className="container-main relative" style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          {/* Badge */}
           <div
             className="backdrop-blur-md"
             style={{
@@ -112,35 +159,22 @@ export default async function AnaSayfa() {
             Platformda 3.200+ Aktif İşletme
           </div>
 
-          {/* Heading */}
           <h1
             className="font-display"
             style={{
               fontSize: 'clamp(2.25rem, 5vw, 4.5rem)',
-              fontWeight: 800,
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
-              maxWidth: '900px',
-              marginBottom: '32px'
+              fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.1,
+              maxWidth: '900px', marginBottom: '32px'
             }}
           >
             <span style={{ color: 'var(--color-text)' }}>İşletmeni Dakikalar İçinde </span>
             <span style={{ color: 'var(--color-primary)' }}>Dijitale Taşı</span>
           </h1>
 
-          {/* Subtitle */}
-          <p style={{
-            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-            color: 'var(--color-text-secondary)',
-            maxWidth: '640px',
-            lineHeight: 1.7,
-            fontWeight: 500,
-            marginBottom: '48px'
-          }}>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'var(--color-text-secondary)', maxWidth: '640px', lineHeight: 1.7, fontWeight: 500, marginBottom: '48px' }}>
             Yeni nesil dijital vitrin çözümü ile hizmetlerini tanıt, online randevu al ve müşteri tabanını bugün büyütmeye başla.
           </p>
 
-          {/* Search */}
           <div style={{ width: '100%', maxWidth: '640px', marginBottom: '32px' }}>
             <HeroArama />
           </div>
@@ -172,32 +206,15 @@ export default async function AnaSayfa() {
       {/* ═══ KATEGORİLER ═══ */}
       <section style={{ background: 'var(--color-bg-muted)', paddingTop: '80px', paddingBottom: '80px', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '16px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '12px' }}>
               Popüler Kategoriler
             </h2>
             <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', lineHeight: 1.7, maxWidth: '500px', margin: '0 auto' }}>
               İhtiyacın olan hizmeti kolayca bul, en iyisi ile çalış.
             </p>
           </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
-            {KATEGORILER.slice(0, 12).map((k) => (
-              <Link
-                key={k.slug}
-                href={`/kategori/${k.slug}`}
-                className="card-elite group"
-                style={{ padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
-              >
-                <div style={{ width: 64, height: 64, borderRadius: 16, background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', transition: 'all 0.3s' }} className="group-hover:scale-105">
-                  <span style={{ fontSize: '28px' }}>{k.ikon}</span>
-                </div>
-                <span className="group-hover:text-[var(--color-primary)]" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text)', transition: 'color 0.2s', lineHeight: 1.4 }}>
-                  {k.ad}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <KategoriSlider />
         </div>
       </section>
 
@@ -210,13 +227,11 @@ export default async function AnaSayfa() {
                 Öne Çıkan Esnaflar
               </h2>
               <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', lineHeight: 1.7, maxWidth: '600px' }}>
-                Yakınındaki en popüler ve yüksek puanlı işletmeleri keşfet, hemen randevunu oluştur.
+                Yakınındaki en popüler işletmeleri keşfet, hemen randevunu oluştur.
               </p>
             </div>
             <Link href="/ara">
-              <Button variant="secondary" size="sm">
-                Tümünü İncele →
-              </Button>
+              <Button variant="secondary" size="sm">Tümünü İncele →</Button>
             </Link>
           </div>
 
@@ -232,7 +247,6 @@ export default async function AnaSayfa() {
       {/* ═══ NASIL ÇALIŞIR ═══ */}
       <section style={{ background: 'var(--color-bg)', paddingTop: '100px', paddingBottom: '100px', borderTop: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '72px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '10px',
@@ -248,12 +262,11 @@ export default async function AnaSayfa() {
               Nasıl Çalışır?
             </h2>
             <p style={{ color: 'var(--color-text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '17px', lineHeight: 1.7, fontWeight: 500 }}>
-              Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla. Kodlama gerektirmez.
+              Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla.
             </p>
           </div>
 
-          {/* Steps */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px', maxWidth: '1000px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '28px', maxWidth: '1000px', margin: '0 auto' }}>
             {[
               { ikon: '📝', adim: '01', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni detaylıca tanımla.' },
               { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve işletmene ait harika fotoğrafları yükle.' },
@@ -262,18 +275,15 @@ export default async function AnaSayfa() {
               <div
                 key={item.adim}
                 className="card-elite"
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
-                  padding: '48px 32px', borderRadius: '24px',
-                }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '44px 28px', borderRadius: '24px' }}
               >
-                <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: '24px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: '20px' }}>
                   Aşama {item.adim}
                 </span>
-                <div style={{ width: 80, height: 80, borderRadius: 16, background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', marginBottom: '32px' }}>
+                <div style={{ width: 72, height: 72, borderRadius: 16, background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '28px' }}>
                   {item.ikon}
                 </div>
-                <h3 className="font-display" style={{ fontWeight: 700, fontSize: '22px', color: 'var(--color-text)', marginBottom: '16px' }}>
+                <h3 className="font-display" style={{ fontWeight: 700, fontSize: '20px', color: 'var(--color-text)', marginBottom: '14px' }}>
                   {item.baslik}
                 </h3>
                 <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.7, fontWeight: 500 }}>
@@ -287,7 +297,6 @@ export default async function AnaSayfa() {
 
       {/* ═══ CTA ═══ */}
       <section className="relative overflow-hidden" style={{ background: 'var(--color-primary)', paddingTop: '100px', paddingBottom: '100px' }}>
-        {/* Pattern */}
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="absolute pointer-events-none" style={{ top: -128, right: -128, width: 384, height: 384, background: 'white', opacity: 0.07, borderRadius: '50%', filter: 'blur(80px)' }} />
 
@@ -299,34 +308,13 @@ export default async function AnaSayfa() {
             3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen şimdi ulaş!
           </p>
           <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-            {/* CTA PRIMARY — guaranteed visible */}
             <Link href="/kayit">
-              <button
-                style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  height: '60px', padding: '0 40px',
-                  fontSize: '16px', fontWeight: 700,
-                  background: 'white', color: 'var(--color-primary)',
-                  borderRadius: '16px', border: 'none',
-                  cursor: 'pointer', transition: 'all 0.2s',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                }}
-              >
+              <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: 'var(--color-primary)', borderRadius: '16px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
                 Hemen Ücretsiz Başla
               </button>
             </Link>
-            {/* CTA SECONDARY */}
             <Link href="/ara">
-              <button
-                style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  height: '60px', padding: '0 40px',
-                  fontSize: '16px', fontWeight: 600,
-                  background: 'transparent', color: 'white',
-                  borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)',
-                  cursor: 'pointer', transition: 'all 0.2s',
-                }}
-              >
+              <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 600, background: 'transparent', color: 'white', borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
                 Esnafları İncele
               </button>
             </Link>

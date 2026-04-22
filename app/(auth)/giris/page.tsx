@@ -36,13 +36,13 @@ function GirisForm() {
       }
 
       const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
-      let hedef = callbackUrl || '/user'
+      let hedef = callbackUrl || '/'
       if (meRes.ok) {
         const me = await meRes.json()
         if (!callbackUrl) {
           if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
           else if (me.rol === 'BUSINESS') hedef = '/panel'
-          else hedef = '/user'
+          else hedef = '/'
         }
       }
       window.location.href = hedef

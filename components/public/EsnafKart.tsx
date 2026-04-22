@@ -1,15 +1,20 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/Badge'
 import { YildizPuan } from '@/components/shared/YildizPuan'
 import { ortalamaPuan, isletmeAcikMi, formatFiyat } from '@/lib/utils'
+import { FavoriButon } from './FavoriButon'
 import type { Esnaf } from '@/types'
 
 interface EsnafKartProps {
   esnaf: Esnaf
+  favoriMi?: boolean
+  authenticated?: boolean
 }
 
-export function EsnafKart({ esnaf }: EsnafKartProps) {
+export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: EsnafKartProps) {
   const puan = ortalamaPuan(esnaf.yorumlar || [])
   const acik = isletmeAcikMi(esnaf.calismaS as Record<string, { acik: string; kapali: string; kapali_gun?: boolean }> | null)
   const minFiyat = esnaf.hizmetler?.length
@@ -41,10 +46,9 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
           />
         </div>
 
-        {/* Gradient */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent, transparent)' }} />
 
-        {/* Badges */}
+        {/* Kategori badge */}
         <div className="absolute" style={{ top: 12, left: 12, zIndex: 10 }}>
           <Badge
             className="text-white backdrop-blur-sm"
@@ -53,9 +57,12 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
             {esnaf.kategori.ikon} <span style={{ marginLeft: 4, fontWeight: 500 }}>{esnaf.kategori.ad}</span>
           </Badge>
         </div>
-        <div className="absolute" style={{ top: 12, right: 12, zIndex: 10 }}>
-          <Badge 
-            variant={acik ? 'success' : 'default'} 
+
+        {/* Favori + Açık/Kapalı */}
+        <div className="absolute" style={{ top: 10, right: 10, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <FavoriButon esnafId={esnaf.id} baslangicFavori={favoriMi} authenticated={authenticated} />
+          <Badge
+            variant={acik ? 'success' : 'default'}
             style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '9999px', boxShadow: 'var(--shadow-sm)', fontWeight: 600, letterSpacing: '0.02em' }}
           >
             {acik ? '• Açık' : 'Kapalı'}
@@ -75,7 +82,6 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
           📍 {esnaf.ilce}, {esnaf.sehir}
         </p>
 
-        {/* Rating */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
           <YildizPuan puan={puan} boyut="sm" />
           <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
@@ -83,7 +89,6 @@ export function EsnafKart({ esnaf }: EsnafKartProps) {
           </span>
         </div>
 
-        {/* Price */}
         {minFiyat !== null && (
           <div style={{ paddingTop: '12px', borderTop: '1px solid var(--color-border)' }}>
             <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-primary)' }}>
