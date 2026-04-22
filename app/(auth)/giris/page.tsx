@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/Input'
 
 function GirisForm() {
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl')
   const kayitBasarili = searchParams.get('kayit') === 'basarili'
 
   const [yukleniyor, setYukleniyor] = useState(false)
@@ -36,14 +35,12 @@ function GirisForm() {
       }
 
       const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
-      let hedef = callbackUrl || '/'
+      let hedef = '/'
       if (meRes.ok) {
         const me = await meRes.json()
-        if (!callbackUrl) {
-          if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
-          else if (me.rol === 'BUSINESS') hedef = '/panel'
-          else hedef = '/'
-        }
+        if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
+        else if (me.rol === 'BUSINESS') hedef = '/panel'
+        else hedef = '/'
       }
       window.location.href = hedef
     } catch {

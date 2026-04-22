@@ -40,9 +40,7 @@ export async function proxy(request: NextRequest) {
 
   if (matchesAny(pathname, ADMIN_PATHS)) {
     if (!isAuthenticated) {
-      const url = new URL('/giris', request.url)
-      url.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(url)
+      return NextResponse.redirect(new URL('/giris', request.url))
     }
     if (rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
@@ -52,9 +50,7 @@ export async function proxy(request: NextRequest) {
 
   if (matchesAny(pathname, BUSINESS_PATHS)) {
     if (!isAuthenticated) {
-      const url = new URL('/giris', request.url)
-      url.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(url)
+      return NextResponse.redirect(new URL('/giris', request.url))
     }
     if (rol !== 'BUSINESS' && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
@@ -64,9 +60,7 @@ export async function proxy(request: NextRequest) {
 
   if (matchesAny(pathname, USER_PATHS)) {
     if (!isAuthenticated) {
-      const url = new URL('/giris', request.url)
-      url.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(url)
+      return NextResponse.redirect(new URL('/giris', request.url))
     }
     if (rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/panel', request.url))
