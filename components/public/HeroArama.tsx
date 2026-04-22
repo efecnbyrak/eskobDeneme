@@ -97,7 +97,7 @@ export function HeroArama() {
           <div
             style={{
               display: 'flex', alignItems: 'center',
-              background: 'white', borderRadius: 20,
+              background: 'white',
               overflow: 'visible',
               boxShadow: aktif ? '0 8px 48px rgba(0,0,0,0.22)' : 'var(--shadow-md)',
               border: `2px solid ${aktif ? 'var(--color-primary)' : 'var(--color-border)'}`,
