@@ -1,36 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { benzersizSlug } from '@/lib/slug'
 import { kategorileriGarantile } from '@/lib/bootstrap'
-
-const BaseSchema = z.object({
-  ad: z.string().min(2, 'Ad en az 2 karakter olmalı.'),
-  soyad: z.string().min(2, 'Soyad en az 2 karakter olmalı.'),
-  email: z.string().email('Geçerli bir e-posta girin.'),
-  sifre: z.string().min(6, 'Şifre en az 6 karakter olmalı.'),
-  telefon: z.string().optional(),
-})
-
-const UserSchema = BaseSchema.extend({
-  tip: z.literal('USER'),
-})
-
-const BusinessSchema = BaseSchema.extend({
-  tip: z.literal('BUSINESS'),
-  isletmeAdi: z.string().min(2, 'İşletme adı gerekli.'),
-  kategoriSlug: z.string().min(1, 'Kategori seçin.'),
-  sehir: z.string().min(1, 'Şehir seçin.'),
-  ilce: z.string().min(1, 'İlçe girin.'),
-})
-
-const RegisterSchema = z.discriminatedUnion('tip', [UserSchema, BusinessSchema])
+import { KayitSchema } from '@/lib/validations'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const parsed = RegisterSchema.safeParse(body)
+    const parsed = KayitSchema.safeParse(body)
 
     if (!parsed.success) {
       const msg = parsed.error.issues[0]?.message ?? 'Geçersiz veri.'
@@ -39,13 +17,11 @@ export async function POST(req: NextRequest) {
 
     const veri = parsed.data
     const email = veri.email.toLowerCase().trim()
+    const telefon = veri.telefon?.replace(/\s+/g, '') || undefined
 
     const mevcut = await prisma.kullanici.findUnique({ where: { email } })
     if (mevcut) {
-      return NextResponse.json(
-        { error: 'Bu e-posta zaten kayıtlı.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Bu e-posta zaten kayıtlı.' }, { status: 400 })
     }
 
     const sifreHash = await bcrypt.hash(veri.sifre, 12)
@@ -53,10 +29,10 @@ export async function POST(req: NextRequest) {
     if (veri.tip === 'USER') {
       const kullanici = await prisma.kullanici.create({
         data: {
-          ad: veri.ad,
-          soyad: veri.soyad,
+          ad: veri.ad.trim(),
+          soyad: veri.soyad.trim(),
           email,
-          telefon: veri.telefon,
+          telefon,
           sifreHash,
           rol: 'USER',
         },
@@ -67,10 +43,7 @@ export async function POST(req: NextRequest) {
     await kategorileriGarantile()
     const kategori = await prisma.kategori.findUnique({ where: { slug: veri.kategoriSlug } })
     if (!kategori) {
-      return NextResponse.json(
-        { error: 'Seçilen kategori geçerli değil.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Seçilen kategori geçerli değil.' }, { status: 400 })
     }
 
     const benzerler = await prisma.esnaf.findMany({
@@ -81,19 +54,19 @@ export async function POST(req: NextRequest) {
 
     const kullanici = await prisma.kullanici.create({
       data: {
-        ad: veri.ad,
-        soyad: veri.soyad,
+        ad: veri.ad.trim(),
+        soyad: veri.soyad.trim(),
         email,
-        telefon: veri.telefon,
+        telefon,
         sifreHash,
         rol: 'BUSINESS',
         esnaf: {
           create: {
             slug,
-            isletmeAdi: veri.isletmeAdi,
+            isletmeAdi: veri.isletmeAdi.trim(),
             kategoriId: kategori.id,
             sehir: veri.sehir,
-            ilce: veri.ilce,
+            ilce: veri.ilce.trim(),
           },
         },
       },

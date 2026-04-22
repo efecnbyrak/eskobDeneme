@@ -1,22 +1,47 @@
 import { z } from 'zod'
 
+const TURKCE_HARF = /^[\p{L}\s'-]+$/u
+
+const adSchema = z
+  .string()
+  .min(2, 'En az 2 karakter olmalı')
+  .regex(TURKCE_HARF, 'Sadece harf girin (rakam ve sembol girilemiyor)')
+
+const emailSchema = z
+  .string()
+  .email('Geçerli bir e-posta girin')
+  .refine(
+    (v) => v.endsWith('@gmail.com') || v.endsWith('@hotmail.com'),
+    'Sadece @gmail.com veya @hotmail.com e-posta adresleri kabul edilir'
+  )
+
+const sifreSchema = z
+  .string()
+  .min(6, 'Şifre en az 6 karakter olmalı')
+  .refine((v) => /[A-Z]/.test(v), 'Şifre en az 1 büyük harf içermeli')
+  .refine((v) => /[^A-Za-z0-9]/.test(v), 'Şifre en az 1 sembol içermeli (!@#$... vb.)')
+
+const telefonSchema = z
+  .string()
+  .regex(/^(\+90|0)?5\d{9}$/, 'Geçerli bir Türk telefon numarası girin (+90 5XX XXX XX XX)')
+
 export const KullaniciKayitSchema = z.object({
   tip: z.literal('USER'),
-  ad: z.string().min(2, 'Ad en az 2 karakter olmalı'),
-  soyad: z.string().min(2, 'Soyad en az 2 karakter olmalı'),
-  email: z.string().email('Geçerli bir e-posta girin'),
-  sifre: z.string().min(6, 'Şifre en az 6 karakter olmalı'),
-  telefon: z.string().optional(),
+  ad: adSchema,
+  soyad: adSchema,
+  email: emailSchema,
+  sifre: sifreSchema,
+  telefon: telefonSchema.optional().or(z.literal('')),
 })
 
 export const IsletmeKayitSchema = z.object({
   tip: z.literal('BUSINESS'),
-  ad: z.string().min(2, 'Ad en az 2 karakter olmalı'),
-  soyad: z.string().min(2, 'Soyad en az 2 karakter olmalı'),
-  email: z.string().email('Geçerli bir e-posta girin'),
-  sifre: z.string().min(6, 'Şifre en az 6 karakter olmalı'),
-  telefon: z.string().optional(),
-  isletmeAdi: z.string().min(2, 'İşletme adı gerekli'),
+  ad: adSchema,
+  soyad: adSchema,
+  email: emailSchema,
+  sifre: sifreSchema,
+  telefon: telefonSchema.optional().or(z.literal('')),
+  isletmeAdi: z.string().min(2, 'İşletme adı en az 2 karakter olmalı'),
   kategoriSlug: z.string().min(1, 'Kategori seçin'),
   sehir: z.string().min(1, 'Şehir seçin'),
   ilce: z.string().min(1, 'İlçe girin'),

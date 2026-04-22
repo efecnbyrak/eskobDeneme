@@ -30,8 +30,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             id: String(kullanici.id),
             email: kullanici.email,
             name: `${kullanici.ad} ${kullanici.soyad}`,
-            image: kullanici.avatarUrl,
+            image: kullanici.avatarUrl ?? null,
             rol: kullanici.rol,
+            ad: kullanici.ad,
+            soyad: kullanici.soyad,
           }
         } catch (err) {
           console.error('authorize error:', err)
@@ -43,20 +45,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
-        token.id = (user as { id: string }).id
-        token.rol = (user as { rol: Rol }).rol
+        const u = user as { id: string; rol: Rol; ad: string; soyad: string }
+        token.id = u.id
+        token.rol = u.rol
+        token.ad = u.ad
+        token.soyad = u.soyad
       }
       if (trigger === 'update' && token.id) {
-        const taze = await prisma.kullanici.findUnique({ where: { id: parseInt(token.id as string) } })
-        if (taze) token.rol = taze.rol
+        const taze = await prisma.kullanici.findUnique({
+          where: { id: parseInt(token.id as string) },
+          select: { rol: true, ad: true, soyad: true, avatarUrl: true, email: true },
+        })
+        if (taze) {
+          token.rol = taze.rol
+          token.ad = taze.ad
+          token.soyad = taze.soyad
+          token.picture = taze.avatarUrl ?? undefined
+          token.email = taze.email
+        }
       }
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
-        const u = session.user as { id?: string; rol?: Rol }
-        u.id = token.id as string
-        u.rol = token.rol as Rol
+        session.user.id = token.id as string
+        session.user.rol = token.rol as Rol
+        session.user.ad = token.ad as string
+        session.user.soyad = token.soyad as string
       }
       return session
     },
@@ -67,8 +82,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 gün
   },
-  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
 })
 
 export function girisYoluByRol(rol?: Rol | string | null): string {
