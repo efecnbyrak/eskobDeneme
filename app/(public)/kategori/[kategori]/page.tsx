@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { KATEGORILER } from '@/lib/constants'
 import { notFound } from 'next/navigation'
@@ -24,7 +25,11 @@ export default async function KategoriSayfasi({ params }: Props) {
   const kat = KATEGORILER.find((k) => k.slug === slug)
   if (!kat) notFound()
 
-  const dbKat = await prisma.kategori.findUnique({ where: { slug } })
+  const [oturum, dbKat] = await Promise.all([
+    auth(),
+    prisma.kategori.findUnique({ where: { slug } }),
+  ])
+  const authenticated = !!oturum?.user?.id
 
   const esnaflar = dbKat
     ? await prisma.esnaf.findMany({
@@ -55,7 +60,7 @@ export default async function KategoriSayfasi({ params }: Props) {
 
       {esnaflar.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
-          {esnaflar.map((e: typeof esnaflar[0]) => <EsnafKart key={e.id} esnaf={e as unknown as Esnaf} />)}
+          {esnaflar.map((e: typeof esnaflar[0]) => <EsnafKart key={e.id} esnaf={e as unknown as Esnaf} authenticated={authenticated} />)}
         </div>
       ) : (
         <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '80px 20px', fontSize: '15px' }}>

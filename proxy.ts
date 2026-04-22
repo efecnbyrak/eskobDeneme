@@ -1,4 +1,4 @@
-import { getToken } from 'next-auth/jwt'
+import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -23,13 +23,9 @@ function homeForRole(rol?: Rol | string | null): string {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
-  }).catch(() => null)
-
-  const rol = token?.rol as Rol | undefined
-  const isAuthenticated = !!token
+  const oturum = await auth()
+  const rol = oturum?.user?.rol as Rol | undefined
+  const isAuthenticated = !!oturum?.user
 
   if (matchesAny(pathname, AUTH_PATHS)) {
     if (isAuthenticated) {

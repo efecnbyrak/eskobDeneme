@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
+import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
 import { HeroArama } from '@/components/public/HeroArama'
@@ -69,7 +70,8 @@ async function onecikarilan(): Promise<Esnaf[]> {
 const DEMO_FOTO_SEED = ['berber', 'kafe', 'spor', 'guzellik', 'tamirci', 'restoran']
 
 export default async function AnaSayfa() {
-  const esnaflar = await onecikarilan()
+  const [esnaflar, oturum] = await Promise.all([onecikarilan(), auth()])
+  const authenticated = !!oturum?.user?.id
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -229,7 +231,7 @@ export default async function AnaSayfa() {
             {esnaflar.length > 0
               ? esnaflar.map((e, i) => (
                   <div key={e.id} data-reveal="up" data-reveal-delay={String(Math.min(i % 4 + 1, 5))}>
-                    <EsnafKart esnaf={e} />
+                    <EsnafKart esnaf={e} authenticated={authenticated} />
                   </div>
                 ))
               : Array.from({ length: 5 }).map((_, i) => <EsnafKartSkeleton key={i} />)

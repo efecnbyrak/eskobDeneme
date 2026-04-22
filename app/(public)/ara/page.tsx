@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
 import { Button } from '@/components/ui/Button'
@@ -25,6 +25,14 @@ export default function AraSayfasi() {
   const [kategori, setKategori] = useState('')
   const [arama, setArama] = useState('')
   const [sayfa, setSayfa] = useState(1)
+  const [authenticated, setAuthenticated] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : { authenticated: false }))
+      .then((d) => setAuthenticated(!!d.authenticated))
+      .catch(() => setAuthenticated(false))
+  }, [])
 
   const debouncedArama = useDebounce(arama, 400)
   const { esnaflar, yukleniyor, toplamSayfa } = useEsnaf({ sehir, kategori, arama: debouncedArama, sayfa })
@@ -101,7 +109,7 @@ export default function AraSayfasi() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
         {yukleniyor
           ? Array.from({ length: 10 }).map((_, i) => <EsnafKartSkeleton key={i} />)
-          : esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
+          : esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} authenticated={authenticated} />)
         }
       </div>
 
