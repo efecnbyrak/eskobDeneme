@@ -4,14 +4,14 @@
    DESIGN TOKENS
    ────────────────────────────────────────────── */
 :root {
-  --color-primary: #4F6D7A;
-  --color-primary-hover: #3b535d;
-  --color-primary-light: #4F6D7A1A;
-  --color-accent: #A8DADC;
+  --color-primary: #F97316;
+  --color-primary-hover: #EA580C;
+  --color-primary-light: rgba(249,115,22,0.10);
+  --color-accent: #FED7AA;
 
-  --color-bg: #F8FAF9;
+  --color-bg: #FFFAF5;
   --color-bg-card: #FFFFFF;
-  --color-bg-muted: #F0F4F2;
+  --color-bg-muted: #FFF7ED;
   --color-bg-section: #FFFFFF;
 
   --color-text: #2F2F2F;
@@ -25,8 +25,8 @@
   --color-warm: #FFF7ED;
   --color-warm-dark: #FFEDD5;
 
-  --color-border: #E8EDE9;
-  --color-border-focus: #4F6D7A;
+  --color-border: #FFE8D6;
+  --color-border-focus: #F97316;
 
   --shadow-xs: 0 1px 2px rgba(47,47,47,0.03);
   --shadow-sm: 0 2px 8px rgba(47,47,47,0.04);
@@ -181,7 +181,7 @@ p {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  background-image: linear-gradient(135deg, #4F6D7A 0%, #A8DADC 100%);
+  background-image: linear-gradient(135deg, #F97316 0%, #FBBF24 100%);
 }
 
 .glass-panel {
@@ -223,4 +223,27 @@ p {
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ──────────────────────────────────────────────
+   SCROLL REVEAL ANIMATIONS
+   ────────────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+[data-reveal="left"]  { transform: translateX(-60px); }
+[data-reveal="right"] { transform: translateX(60px); }
+[data-reveal="up"]    { transform: translateY(50px); }
+[data-reveal="fade"]  { transform: scale(0.97); }
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal-delay="1"] { transition-delay: 0.1s; }
+[data-reveal-delay="2"] { transition-delay: 0.2s; }
+[data-reveal-delay="3"] { transition-delay: 0.3s; }
+[data-reveal-delay="4"] { transition-delay: 0.4s; }
+[data-reveal-delay="5"] { transition-delay: 0.5s; }
 

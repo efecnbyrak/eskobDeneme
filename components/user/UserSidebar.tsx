@@ -8,6 +8,7 @@ const ITEMS = [
   { href: '/user', label: 'Genel Bakış', ikon: '🏠' },
   { href: '/user/randevular', label: 'Randevularım', ikon: '📅' },
   { href: '/user/favoriler', label: 'Favorilerim', ikon: '❤️' },
+  { href: '/user/yorumlar', label: 'Yorumlarım', ikon: '⭐' },
   { href: '/user/profil', label: 'Profilim', ikon: '👤' },
   { href: '/user/ayarlar', label: 'Ayarlar', ikon: '⚙️' },
 ]

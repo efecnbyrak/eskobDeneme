@@ -5,7 +5,7 @@ import { ToastProvider } from '@/components/ui/Toast'
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
-  if (!oturum?.user) redirect('/giris?callbackUrl=/user')
+  if (!oturum?.user) redirect('/giris')
 
   const rol = oturum.user.rol
   if (rol === 'BUSINESS') redirect('/panel')
@@ -39,6 +39,13 @@ export default async function UserLayout({ children }: { children: React.ReactNo
                 title="Favoriler"
               >
                 ❤️
+              </a>
+              <a
+                href="/user/yorumlar"
+                className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
+                title="Yorumlarım"
+              >
+                ⭐
               </a>
               <a
                 href="/user/ayarlar"

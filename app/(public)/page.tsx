@@ -4,6 +4,8 @@ import { EsnafKart } from '@/components/public/EsnafKart'
 import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
 import { HeroArama } from '@/components/public/HeroArama'
 import { KategoriSlider } from '@/components/public/KategoriSlider'
+import { StatsSection } from '@/components/public/StatsCounter'
+import { ScrollRevealInit } from '@/components/public/ScrollReveal'
 import { Button } from '@/components/ui/Button'
 import type { Esnaf } from '@/types'
 
@@ -71,6 +73,7 @@ export default async function AnaSayfa() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <ScrollRevealInit />
 
       {/* ═══ HERO ═══ */}
       <section
@@ -93,7 +96,7 @@ export default async function AnaSayfa() {
         />
 
         {/* Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: 800, height: 500, background: 'var(--color-primary-light)', filter: 'blur(120px)', borderRadius: '100%', opacity: 0.5 }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: 800, height: 500, background: 'var(--color-primary-light)', filter: 'blur(120px)', borderRadius: '100%', opacity: 0.6 }} />
 
         {/* Floating business photos */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
@@ -185,28 +188,13 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* ═══ STATS ═══ */}
-      <section style={{ background: 'white', paddingTop: '56px', paddingBottom: '56px', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
-        <div className="container-main">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', textAlign: 'center' }}>
-            {[
-              { sayi: '3.200+', label: 'Aktif Esnaf' },
-              { sayi: '47', label: 'Şehir' },
-              { sayi: '150.000+', label: 'Aylık Ziyaretçi' },
-            ].map((s) => (
-              <div key={s.label}>
-                <p className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '8px' }}>{s.sayi}</p>
-                <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ═══ STATS (animated counter) ═══ */}
+      <StatsSection />
 
       {/* ═══ KATEGORİLER ═══ */}
       <section style={{ background: 'var(--color-bg-muted)', paddingTop: '80px', paddingBottom: '80px', borderBottom: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div data-reveal="up" style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '12px' }}>
               Popüler Kategoriler
             </h2>
@@ -214,14 +202,16 @@ export default async function AnaSayfa() {
               İhtiyacın olan hizmeti kolayca bul, en iyisi ile çalış.
             </p>
           </div>
-          <KategoriSlider />
+          <div data-reveal="up" data-reveal-delay="2">
+            <KategoriSlider />
+          </div>
         </div>
       </section>
 
       {/* ═══ ÖNE ÇIKAN ESNAFLAR ═══ */}
       <section style={{ background: 'white', paddingTop: '80px', paddingBottom: '80px' }}>
         <div className="container-main">
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px', marginBottom: '48px' }}>
+          <div data-reveal="left" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px', marginBottom: '48px' }}>
             <div>
               <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '12px' }}>
                 Öne Çıkan Esnaflar
@@ -237,7 +227,11 @@ export default async function AnaSayfa() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
             {esnaflar.length > 0
-              ? esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} />)
+              ? esnaflar.map((e, i) => (
+                  <div key={e.id} data-reveal="up" data-reveal-delay={String(Math.min(i % 4 + 1, 5))}>
+                    <EsnafKart esnaf={e} />
+                  </div>
+                ))
               : Array.from({ length: 5 }).map((_, i) => <EsnafKartSkeleton key={i} />)
             }
           </div>
@@ -247,7 +241,7 @@ export default async function AnaSayfa() {
       {/* ═══ NASIL ÇALIŞIR ═══ */}
       <section style={{ background: 'var(--color-bg)', paddingTop: '100px', paddingBottom: '100px', borderTop: '1px solid var(--color-border)' }}>
         <div className="container-main">
-          <div style={{ textAlign: 'center', marginBottom: '72px' }}>
+          <div data-reveal="up" style={{ textAlign: 'center', marginBottom: '72px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '10px',
               padding: '10px 24px', borderRadius: '9999px',
@@ -271,10 +265,12 @@ export default async function AnaSayfa() {
               { ikon: '📝', adim: '01', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni detaylıca tanımla.' },
               { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve işletmene ait harika fotoğrafları yükle.' },
               { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Arama sonuçlarında üstte çık, randevuları 7/24 otomatik olarak yönet.' },
-            ].map((item) => (
+            ].map((item, i) => (
               <div
                 key={item.adim}
                 className="card-elite"
+                data-reveal={i === 0 ? 'left' : i === 2 ? 'right' : 'up'}
+                data-reveal-delay={String(i + 1)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '44px 28px', borderRadius: '24px' }}
               >
                 <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: '20px' }}>
@@ -296,28 +292,33 @@ export default async function AnaSayfa() {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="relative overflow-hidden" style={{ background: 'var(--color-primary)', paddingTop: '100px', paddingBottom: '100px' }}>
+      <section
+        className="relative overflow-hidden"
+        style={{ background: 'var(--color-primary)', paddingTop: '100px', paddingBottom: '100px' }}
+      >
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
         <div className="absolute pointer-events-none" style={{ top: -128, right: -128, width: 384, height: 384, background: 'white', opacity: 0.07, borderRadius: '50%', filter: 'blur(80px)' }} />
 
         <div className="container-main relative" style={{ zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 4vw, 3.5rem)', fontWeight: 700, color: 'white', marginBottom: '32px', lineHeight: 1.15, maxWidth: '800px', letterSpacing: '-0.01em' }}>
-            Sen de Kurumsal Platformumuza Katıl
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '56px', fontSize: 'clamp(1rem, 2vw, 1.25rem)', maxWidth: '600px', fontWeight: 500, lineHeight: 1.7 }}>
-            3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen şimdi ulaş!
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-            <Link href="/kayit">
-              <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: 'var(--color-primary)', borderRadius: '16px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
-                Hemen Ücretsiz Başla
-              </button>
-            </Link>
-            <Link href="/ara">
-              <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 600, background: 'transparent', color: 'white', borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
-                Esnafları İncele
-              </button>
-            </Link>
+          <div data-reveal="up">
+            <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 4vw, 3.5rem)', fontWeight: 700, color: 'white', marginBottom: '32px', lineHeight: 1.15, maxWidth: '800px', letterSpacing: '-0.01em' }}>
+              Sen de Kurumsal Platformumuza Katıl
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '56px', fontSize: 'clamp(1rem, 2vw, 1.25rem)', maxWidth: '600px', fontWeight: 500, lineHeight: 1.7 }}>
+              3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen şimdi ulaş!
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
+              <Link href="/kayit">
+                <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: 'var(--color-primary)', borderRadius: '16px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+                  Hemen Ücretsiz Başla
+                </button>
+              </Link>
+              <Link href="/ara">
+                <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 600, background: 'transparent', color: 'white', borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
+                  Esnafları İncele
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
