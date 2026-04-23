@@ -1,4 +1,4 @@
-export function Loader() {
+export function Loader({ renk }: { renk?: string }) {
   return (
     <>
       <style>{`
