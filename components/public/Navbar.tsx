@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/Button'
+import { ThemeSwitch } from '@/components/ui/ThemeSwitch'
 import { KATEGORILER } from '@/lib/constants'
 
 type Me = {
@@ -283,6 +284,7 @@ export function Navbar() {
 
           {/* Desktop Auth */}
           <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12 }}>
+            <ThemeSwitch />
             {me === null ? (
               <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
             ) : girisliMi ? (

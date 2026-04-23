@@ -35,6 +35,9 @@ export async function POST(req: NextRequest) {
           telefon,
           sifreHash,
           rol: 'USER',
+          sehir: veri.sehir,
+          ilce: veri.ilce.trim(),
+          ilgiAlanlari: veri.ilgiAlanlari,
         },
       })
       return NextResponse.json({ id: kullanici.id, rol: kullanici.rol }, { status: 201 })

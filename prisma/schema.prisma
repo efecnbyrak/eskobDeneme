@@ -22,6 +22,10 @@ model Kullanici {
   olusturmaT      DateTime  @default(now())
   guncelleT       DateTime  @updatedAt
 
+  sehir           String?
+  ilce            String?
+  ilgiAlanlari    String[]
+
   esnaf     Esnaf?
   oturumlar Oturum[]
   favoriler Favori[]

@@ -1,18 +1,25 @@
 import { z } from 'zod'
 
 const TURKCE_HARF = /^[\p{L}\s'-]+$/u
+const SESLI = /[aeıioöuüAEIİOÖUÜ]/
 
 const adSchema = z
   .string()
   .min(2, 'En az 2 karakter olmalı')
   .regex(TURKCE_HARF, 'Sadece harf girin (rakam ve sembol girilemiyor)')
+  .refine((v) => SESLI.test(v), 'Lütfen gerçek adınızı girin')
+
+const KABUL_EDILEN_DOMAINLER = [
+  'gmail.com', 'hotmail.com', 'outlook.com',
+  'yahoo.com', 'icloud.com', 'yandex.com',
+]
 
 const emailSchema = z
   .string()
   .email('Geçerli bir e-posta girin')
   .refine(
-    (v) => v.endsWith('@gmail.com') || v.endsWith('@hotmail.com'),
-    'Sadece @gmail.com veya @hotmail.com e-posta adresleri kabul edilir'
+    (v) => KABUL_EDILEN_DOMAINLER.some((d) => v.toLowerCase().endsWith('@' + d)),
+    'Sadece bilinen e-posta sağlayıcıları kabul edilir (gmail, hotmail, outlook, yahoo...)'
   )
 
 const sifreSchema = z
@@ -23,7 +30,10 @@ const sifreSchema = z
 
 const telefonSchema = z
   .string()
-  .regex(/^(\+90|0)?5\d{9}$/, 'Geçerli bir Türk telefon numarası girin (+90 5XX XXX XX XX)')
+  .refine(
+    (v) => /^0[5-9]\d{9}$/.test(v.replace(/\s/g, '')),
+    'Geçerli bir Türk telefon numarası girin (örn: 0533 045 00 92)'
+  )
 
 export const KullaniciKayitSchema = z.object({
   tip: z.literal('USER'),
@@ -32,6 +42,9 @@ export const KullaniciKayitSchema = z.object({
   email: emailSchema,
   sifre: sifreSchema,
   telefon: telefonSchema.optional().or(z.literal('')),
+  sehir: z.string().min(1, 'Şehir seçin'),
+  ilce: z.string().min(1, 'İlçe girin'),
+  ilgiAlanlari: z.array(z.string()).min(1, 'En az 1 tür seçin'),
 })
 
 export const IsletmeKayitSchema = z.object({
