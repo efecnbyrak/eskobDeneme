@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
+import { Loader } from '@/components/ui/Loader'
 import { Button } from '@/components/ui/Button'
 import { useEsnaf } from '@/hooks/useEsnaf'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -164,12 +165,15 @@ export default function AraSayfasi() {
       )}
 
       {/* Results grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
-        {yukleniyor
-          ? Array.from({ length: 10 }).map((_, i) => <EsnafKartSkeleton key={i} />)
-          : esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} authenticated={authenticated} />)
-        }
-      </div>
+      {yukleniyor ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0' }}>
+          <Loader />
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
+          {esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} authenticated={authenticated} />)}
+        </div>
+      )}
 
       {/* Empty state */}
       {!yukleniyor && esnaflar.length === 0 && (

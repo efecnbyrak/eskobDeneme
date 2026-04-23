@@ -1,12 +1,71 @@
 import Link from 'next/link'
 import { KATEGORILER } from '@/lib/constants'
 
+function SocialButtons() {
+  return (
+    <>
+      <style>{`
+        .eskob-social-main { display: flex; flex-direction: column; gap: 0.5em; }
+        .eskob-social-up { display: flex; flex-direction: row; gap: 0.5em; }
+        .eskob-social-down { display: flex; flex-direction: row; gap: 0.5em; }
+        .eskob-sc1, .eskob-sc2, .eskob-sc3, .eskob-sc4 {
+          width: 72px; height: 72px; outline: none; border: none;
+          background: #1F333D; cursor: pointer; transition: 0.2s ease-in-out;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .eskob-sc1 { border-radius: 72px 5px 5px 5px; }
+        .eskob-sc2 { border-radius: 5px 72px 5px 5px; }
+        .eskob-sc3 { border-radius: 5px 5px 5px 72px; }
+        .eskob-sc4 { border-radius: 5px 5px 72px 5px; }
+        .eskob-sc1:hover { transform: scale(1.1); background-color: #cc39a4; }
+        .eskob-sc2:hover { transform: scale(1.1); background-color: #03A9F4; }
+        .eskob-sc3:hover { transform: scale(1.1); background-color: #333; }
+        .eskob-sc4:hover { transform: scale(1.1); background-color: #8c9eff; }
+        .eskob-sc1 svg { fill: #cc39a4; }
+        .eskob-sc1:hover svg { fill: white; }
+        .eskob-sc2 svg { fill: #03A9F4; }
+        .eskob-sc2:hover svg { fill: white; }
+        .eskob-sc3 svg { fill: #90A8B2; }
+        .eskob-sc3:hover svg { fill: white; }
+        .eskob-sc4 svg { fill: #8c9eff; }
+        .eskob-sc4:hover svg { fill: white; }
+      `}</style>
+      <div className="eskob-social-main">
+        <div className="eskob-social-up">
+          <a href="#" aria-label="Instagram" className="eskob-sc1">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" width="26px" height="26px" fillRule="nonzero">
+              <g fillRule="nonzero" stroke="none" strokeWidth={1}><g transform="scale(8,8)"><path d="M11.46875,5c-3.55078,0 -6.46875,2.91406 -6.46875,6.46875v9.0625c0,3.55078 2.91406,6.46875 6.46875,6.46875h9.0625c3.55078,0 6.46875,-2.91406 6.46875,-6.46875v-9.0625c0,-3.55078 -2.91406,-6.46875 -6.46875,-6.46875zM11.46875,7h9.0625c2.47266,0 4.46875,1.99609 4.46875,4.46875v9.0625c0,2.47266 -1.99609,4.46875 -4.46875,4.46875h-9.0625c-2.47266,0 -4.46875,-1.99609 -4.46875,-4.46875v-9.0625c0,-2.47266 1.99609,-4.46875 4.46875,-4.46875zM21.90625,9.1875c-0.50391,0 -0.90625,0.40234 -0.90625,0.90625c0,0.50391 0.40234,0.90625 0.90625,0.90625c0.50391,0 0.90625,-0.40234 0.90625,-0.90625c0,-0.50391 -0.40234,-0.90625 -0.90625,-0.90625zM16,10c-3.30078,0 -6,2.69922 -6,6c0,3.30078 2.69922,6 6,6c3.30078,0 6,-2.69922 6,-6c0,-3.30078 -2.69922,-6 -6,-6zM16,12c2.22266,0 4,1.77734 4,4c0,2.22266 -1.77734,4 -4,4c-2.22266,0 -4,-1.77734 -4,-4c0,-2.22266 1.77734,-4 4,-4z" /></g></g>
+            </svg>
+          </a>
+          <a href="#" aria-label="Twitter/X" className="eskob-sc2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="26px" height="26px">
+              <path d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429" />
+            </svg>
+          </a>
+        </div>
+        <div className="eskob-social-down">
+          <a href="#" aria-label="GitHub" className="eskob-sc3">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="26px" height="26px">
+              <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z" />
+            </svg>
+          </a>
+          <a href="#" aria-label="Discord" className="eskob-sc4">
+            <svg height="26px" width="26px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40,12c0,0-4.585-3.588-10-4l-0.488,0.976C34.408,10.174,36.654,11.891,39,14c-4.045-2.065-8.039-4-15-4s-10.955,1.935-15,4c2.346-2.109,5.018-4.015,9.488-5.024L18,8c-5.681,0.537-10,4-10,4s-5.121,7.425-6,22c5.162,5.953,13,6,13,6l1.639-2.185C13.857,36.848,10.715,35.121,8,32c3.238,2.45,8.125,5,16,5s12.762-2.55,16-5c-2.715,3.121-5.857,4.848-8.639,5.815L33,40c0,0,7.838-0.047,13-6C45.121,19.425,40,12,40,12z M17.5,30c-1.933,0-3.5-1.791-3.5-4c0-2.209,1.567-4,3.5-4s3.5,1.791,3.5,4C21,28.209,19.433,30,17.5,30z M30.5,30c-1.933,0-3.5-1.791-3.5-4c0-2.209,1.567-4,3.5-4s3.5,1.791,3.5,4C34,28.209,32.433,30,30.5,30z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </>
+  )
+}
+
 export function Footer() {
   return (
     <footer className="bg-[#15232A] text-[#B0C4CC] mt-auto">
       <div className="container-main py-20 lg:py-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-12">
-          
+
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-5">
             <div className="flex items-center gap-3 mb-8">
@@ -18,27 +77,7 @@ export function Footer() {
             <p className="text-base text-[#90A8B2] leading-[1.8] mb-10 max-w-sm">
               Türkiye&apos;nin esnaf ve KOBİ&apos;leri için yeni nesil dijital vitrin platformu. İşletmeni bugün dijitale taşı, hizmetlerini tanıt ve randevularını kolayca yönet.
             </p>
-            {/* Social icons — proper gap */}
-            <div className="flex items-center gap-5">
-              <a
-                href="#"
-                className="w-12 h-12 rounded-xl bg-[#1F333D] flex items-center justify-center text-[#90A8B2] hover:bg-[var(--color-accent)] hover:text-[#15232A] transition-all duration-300 hover:scale-105"
-                aria-label="Instagram"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-              </a>
-              <a
-                href="#"
-                className="w-12 h-12 rounded-xl bg-[#1F333D] flex items-center justify-center text-[#90A8B2] hover:bg-[var(--color-accent)] hover:text-[#15232A] transition-all duration-300 hover:scale-105"
-                aria-label="Twitter"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-            </div>
+            <SocialButtons />
           </div>
 
           {/* Keşfet */}

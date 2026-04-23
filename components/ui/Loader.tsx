@@ -1,48 +1,113 @@
-export function Loader({ renk = 'var(--color-primary)' }: { renk?: string }) {
+export function Loader() {
   return (
     <>
       <style>{`
-        @keyframes _eskobBounce {
-          0%   { top: 60px; height: 5px; border-radius: 50px 50px 25px 25px; transform: scaleX(1.7); }
-          40%  { height: 20px; border-radius: 50%; transform: scaleX(1); }
-          100% { top: 0%; }
+        .eskob-loadingspinner {
+          --square: 26px;
+          --offset: 30px;
+          --duration: 2.4s;
+          --delay: 0.2s;
+          --timing-function: ease-in-out;
+          --in-duration: 0.4s;
+          --in-delay: 0.1s;
+          --in-timing-function: ease-out;
+          width: calc(3 * var(--offset) + var(--square));
+          height: calc(2 * var(--offset) + var(--square));
+          padding: 0px;
+          margin-left: auto;
+          margin-right: auto;
+          margin-top: 10px;
+          margin-bottom: 30px;
+          position: relative;
         }
-        @keyframes _eskobShadow {
-          0%   { transform: scaleX(1.5); }
-          40%  { transform: scaleX(1); opacity: .7; }
-          100% { transform: scaleX(.2); opacity: .4; }
+        .eskob-loadingspinner div {
+          display: inline-block;
+          background: darkorange;
+          border: none;
+          border-radius: 2px;
+          width: var(--square);
+          height: var(--square);
+          position: absolute;
+          padding: 0px;
+          margin: 0px;
+        }
+        .eskob-sq1 {
+          left: calc(0 * var(--offset)); top: calc(0 * var(--offset));
+          animation: eskob-sq1 var(--duration) var(--delay) var(--timing-function) infinite,
+            eskob-sqfadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+        }
+        .eskob-sq2 {
+          left: calc(0 * var(--offset)); top: calc(1 * var(--offset));
+          animation: eskob-sq2 var(--duration) var(--delay) var(--timing-function) infinite,
+            eskob-sqfadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+        }
+        .eskob-sq3 {
+          left: calc(1 * var(--offset)); top: calc(1 * var(--offset));
+          animation: eskob-sq3 var(--duration) var(--delay) var(--timing-function) infinite,
+            eskob-sqfadein var(--in-duration) calc(2 * var(--in-delay)) var(--in-timing-function) both;
+        }
+        .eskob-sq4 {
+          left: calc(2 * var(--offset)); top: calc(1 * var(--offset));
+          animation: eskob-sq4 var(--duration) var(--delay) var(--timing-function) infinite,
+            eskob-sqfadein var(--in-duration) calc(3 * var(--in-delay)) var(--in-timing-function) both;
+        }
+        .eskob-sq5 {
+          left: calc(3 * var(--offset)); top: calc(1 * var(--offset));
+          animation: eskob-sq5 var(--duration) var(--delay) var(--timing-function) infinite,
+            eskob-sqfadein var(--in-duration) calc(4 * var(--in-delay)) var(--in-timing-function) both;
+        }
+        @keyframes eskob-sq1 {
+          0%   { left: calc(0 * var(--offset)); top: calc(0 * var(--offset)); }
+          8.333% { left: calc(0 * var(--offset)); top: calc(1 * var(--offset)); }
+          100% { left: calc(0 * var(--offset)); top: calc(1 * var(--offset)); }
+        }
+        @keyframes eskob-sq2 {
+          0%    { left: calc(0 * var(--offset)); top: calc(1 * var(--offset)); }
+          8.333%  { left: calc(0 * var(--offset)); top: calc(2 * var(--offset)); }
+          16.67%  { left: calc(1 * var(--offset)); top: calc(2 * var(--offset)); }
+          25.00%  { left: calc(1 * var(--offset)); top: calc(1 * var(--offset)); }
+          83.33%  { left: calc(1 * var(--offset)); top: calc(1 * var(--offset)); }
+          91.67%  { left: calc(1 * var(--offset)); top: calc(0 * var(--offset)); }
+          100%  { left: calc(0 * var(--offset)); top: calc(0 * var(--offset)); }
+        }
+        @keyframes eskob-sq3 {
+          0%, 100% { left: calc(1 * var(--offset)); top: calc(1 * var(--offset)); }
+          16.67%   { left: calc(1 * var(--offset)); top: calc(1 * var(--offset)); }
+          25.00%   { left: calc(1 * var(--offset)); top: calc(0 * var(--offset)); }
+          33.33%   { left: calc(2 * var(--offset)); top: calc(0 * var(--offset)); }
+          41.67%   { left: calc(2 * var(--offset)); top: calc(1 * var(--offset)); }
+          66.67%   { left: calc(2 * var(--offset)); top: calc(1 * var(--offset)); }
+          75.00%   { left: calc(2 * var(--offset)); top: calc(2 * var(--offset)); }
+          83.33%   { left: calc(1 * var(--offset)); top: calc(2 * var(--offset)); }
+          91.67%   { left: calc(1 * var(--offset)); top: calc(1 * var(--offset)); }
+        }
+        @keyframes eskob-sq4 {
+          0%    { left: calc(2 * var(--offset)); top: calc(1 * var(--offset)); }
+          33.33%  { left: calc(2 * var(--offset)); top: calc(1 * var(--offset)); }
+          41.67%  { left: calc(2 * var(--offset)); top: calc(2 * var(--offset)); }
+          50.00%  { left: calc(3 * var(--offset)); top: calc(2 * var(--offset)); }
+          58.33%  { left: calc(3 * var(--offset)); top: calc(1 * var(--offset)); }
+          100%  { left: calc(3 * var(--offset)); top: calc(1 * var(--offset)); }
+        }
+        @keyframes eskob-sq5 {
+          0%    { left: calc(3 * var(--offset)); top: calc(1 * var(--offset)); }
+          50.00%  { left: calc(3 * var(--offset)); top: calc(1 * var(--offset)); }
+          58.33%  { left: calc(3 * var(--offset)); top: calc(0 * var(--offset)); }
+          66.67%  { left: calc(2 * var(--offset)); top: calc(0 * var(--offset)); }
+          75.00%  { left: calc(2 * var(--offset)); top: calc(1 * var(--offset)); }
+          100%  { left: calc(2 * var(--offset)); top: calc(1 * var(--offset)); }
+        }
+        @keyframes eskob-sqfadein {
+          0%   { transform: scale(0.75); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
         }
       `}</style>
-      <div style={{ width: 200, height: 60, position: 'relative' }}>
-        {([0, 1, 2] as const).map((i) => (
-          <div
-            key={i}
-            style={{
-              width: 20, height: 20, position: 'absolute', borderRadius: '50%',
-              backgroundColor: renk,
-              left: i === 2 ? 'auto' : i === 0 ? '15%' : '45%',
-              right: i === 2 ? '15%' : 'auto',
-              transformOrigin: '50%',
-              animation: `_eskobBounce .5s alternate infinite ease`,
-              animationDelay: i === 0 ? '0s' : i === 1 ? '.2s' : '.3s',
-            }}
-          />
-        ))}
-        {([0, 1, 2] as const).map((i) => (
-          <div
-            key={i}
-            style={{
-              width: 20, height: 4, borderRadius: '50%',
-              backgroundColor: 'rgba(0,0,0,0.25)',
-              position: 'absolute', top: 62,
-              left: i === 2 ? 'auto' : i === 0 ? '15%' : '45%',
-              right: i === 2 ? '15%' : 'auto',
-              transformOrigin: '50%', zIndex: -1, filter: 'blur(1px)',
-              animation: `_eskobShadow .5s alternate infinite ease`,
-              animationDelay: i === 0 ? '0s' : i === 1 ? '.2s' : '.3s',
-            }}
-          />
-        ))}
+      <div className="eskob-loadingspinner">
+        <div className="eskob-sq1" />
+        <div className="eskob-sq2" />
+        <div className="eskob-sq3" />
+        <div className="eskob-sq4" />
+        <div className="eskob-sq5" />
       </div>
     </>
   )
