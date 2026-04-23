@@ -205,8 +205,8 @@ export function Navbar() {
   const [me, setMe] = useState<Me | null>(null)
   const pathname = usePathname()
 
-  const isIsletme = pathname?.startsWith('/isletme')
-  const isMusteri = pathname?.startsWith('/musteri')
+  const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
+  const isMusteri = pathname === '/musteri' || pathname?.startsWith('/musteri/')
 
   useEffect(() => {
     let iptal = false
@@ -220,20 +220,20 @@ export function Navbar() {
   const girisliMi = !!me?.authenticated
 
   const girisHref = isIsletme ? '/isletme/giris' : isMusteri ? '/musteri/giris' : '/giris'
-  const kayitHref = '/kayit'
+  const kayitHref = isIsletme ? '/isletme/kayit' : isMusteri ? '/musteri/kayit' : '/kayit'
 
   const accentBg = isIsletme ? '#1A2744' : isMusteri ? '#F27A1A' : 'var(--color-primary)'
 
   const isletmeNavLinks = [
-    { href: '/', label: 'Anasayfa' },
+    { href: '/isletme', label: 'Anasayfa' },
     { href: '/isletme#ozellikler', label: 'Özellikler' },
     { href: '/isletme#nasil-calisir', label: 'Nasıl Çalışır?' },
     { href: '/iletisim', label: 'İletişim' },
   ]
 
   const musteriNavLinks = [
-    { href: '/', label: 'Anasayfa' },
-    { href: '/ara', label: 'İşletmeleri Keşfet' },
+    { href: '/musteri', label: 'Anasayfa' },
+    { href: '/musteri/ara', label: 'İşletmeleri Keşfet' },
   ]
 
   const defaultNavLinks = [
@@ -247,10 +247,10 @@ export function Navbar() {
     <nav
       style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(255,255,255,0.92)',
+        background: isIsletme ? 'rgba(255,255,255,0.60)' : 'rgba(255,255,255,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid var(--color-border)',
+        borderBottom: isIsletme ? '1px solid rgba(255,255,255,0.25)' : '1px solid var(--color-border)',
       }}
     >
       <div className="container-main">

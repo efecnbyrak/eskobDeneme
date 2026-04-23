@@ -73,6 +73,41 @@ export default async function MusteriSayfasi() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <ScrollRevealInit />
+      <style>{`
+        .giris-btn-musteri {
+          display: inline-block;
+          width: 140px;
+          height: 52px;
+          border-radius: 14px;
+          border: 1px solid #F27A1A;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.5s ease-in;
+          z-index: 1;
+          color: #F27A1A;
+          background: white;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .giris-btn-musteri::before,
+        .giris-btn-musteri::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 0;
+          height: 100%;
+          transform: skew(15deg);
+          transition: all 0.5s;
+          overflow: hidden;
+          z-index: -1;
+        }
+        .giris-btn-musteri::before { left: -10px; background: #240046; }
+        .giris-btn-musteri::after  { right: -10px; background: #5a189a; }
+        .giris-btn-musteri:hover::before,
+        .giris-btn-musteri:hover::after { width: 58%; }
+        .giris-btn-musteri:hover { color: #e0aaff; border-color: #5a189a; transition: 0.3s; }
+      `}</style>
 
       {/* ═══ HERO ═══ */}
       <section
@@ -130,19 +165,19 @@ export default async function MusteriSayfasi() {
           </p>
 
           <div style={{ width: '100%', maxWidth: '640px', marginBottom: '32px' }}>
-            <HeroArama />
+            <HeroArama araYolu="/musteri/ara" />
           </div>
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {!girisYapti && (
               <>
-                <Link href="/kayit">
+                <Link href="/musteri/kayit">
                   <button style={{ height: 52, padding: '0 32px', fontSize: '15px', fontWeight: 700, background: '#F27A1A', color: 'white', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px rgba(242,122,26,0.35)' }}>
                     Ücretsiz Kayıt Ol
                   </button>
                 </Link>
                 <Link href="/musteri/giris">
-                  <button style={{ height: 52, padding: '0 28px', fontSize: '15px', fontWeight: 600, background: 'white', color: '#F27A1A', borderRadius: '14px', border: '2px solid #F27A1A', cursor: 'pointer' }}>
+                  <button className="giris-btn-musteri" style={{ height: 52, padding: '0 28px', fontSize: '15px', fontWeight: 600, background: 'white', color: '#F27A1A', borderRadius: '14px', border: '2px solid #F27A1A', cursor: 'pointer' }}>
                     Giriş Yap
                   </button>
                 </Link>
@@ -237,12 +272,12 @@ export default async function MusteriSayfasi() {
               Ücretsiz hesap oluştur ve binlerce işletmeye anında erişim kazan.
             </p>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/kayit">
+              <Link href="/musteri/kayit">
                 <button style={{ height: 56, padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: '#F27A1A', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
                   Ücretsiz Kayıt Ol
                 </button>
               </Link>
-              <Link href="/ara">
+              <Link href="/musteri/ara">
                 <button style={{ height: 56, padding: '0 36px', fontSize: '15px', fontWeight: 600, background: 'transparent', color: 'rgba(255,255,255,0.9)', borderRadius: '14px', border: '2px solid rgba(255,255,255,0.4)', cursor: 'pointer' }}>
                   İşletmeleri Keşfet
                 </button>

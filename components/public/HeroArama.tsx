@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Loader } from '@/components/ui/Loader'
 
 interface AramaSonucu {
   id: number
@@ -13,7 +14,7 @@ interface AramaSonucu {
   kategori: { ad: string; ikon: string }
 }
 
-export function HeroArama() {
+export function HeroArama({ araYolu = '/ara' }: { araYolu?: string }) {
   const router = useRouter()
   const [deger, setDeger] = useState('')
   const [aktif, setAktif] = useState(false)
@@ -70,9 +71,9 @@ export function HeroArama() {
     setAktif(false)
     setSonuclar([])
     if (deger.trim()) {
-      router.push(`/ara?arama=${encodeURIComponent(deger.trim())}`)
+      router.push(`${araYolu}?arama=${encodeURIComponent(deger.trim())}`)
     } else {
-      router.push('/ara')
+      router.push(araYolu)
     }
   }
 
@@ -167,7 +168,9 @@ export function HeroArama() {
               }}
             >
               {yukleniyor && (
-                <div style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-text-secondary)' }}>Aranıyor...</div>
+                <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Loader />
+                </div>
               )}
               {!yukleniyor && sonuclar.length === 0 && (
                 <div style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-text-secondary)' }}>

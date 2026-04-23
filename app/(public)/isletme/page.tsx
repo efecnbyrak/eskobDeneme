@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { ScrollRevealInit } from '@/components/public/ScrollReveal'
+import { IsletmeStats } from '@/components/public/IsletmeStats'
 
 export const metadata = {
   title: 'İşletmeler İçin | Eskob',
@@ -112,6 +113,40 @@ export default async function IsletmeSayfasi() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <ScrollRevealInit />
+      <style>{`
+        .giris-btn-isletme {
+          display: inline-block;
+          width: 160px;
+          height: 56px;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.4);
+          position: relative;
+          overflow: hidden;
+          transition: all 0.5s ease-in;
+          z-index: 1;
+          color: rgba(255,255,255,0.85);
+          background: transparent;
+          font-size: 16px;
+          font-weight: 600;
+        }
+        .giris-btn-isletme::before,
+        .giris-btn-isletme::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 0;
+          height: 100%;
+          transform: skew(15deg);
+          transition: all 0.5s;
+          overflow: hidden;
+          z-index: -1;
+        }
+        .giris-btn-isletme::before { left: -10px; background: #240046; }
+        .giris-btn-isletme::after  { right: -10px; background: #5a189a; }
+        .giris-btn-isletme:hover::before,
+        .giris-btn-isletme:hover::after { width: 58%; }
+        .giris-btn-isletme:hover { color: #e0aaff; border-color: #5a189a; transition: 0.3s; }
+      `}</style>
 
       {/* ═══ HERO — tam karanlık #1A2744 arka plan ═══ */}
       <section
@@ -179,13 +214,13 @@ export default async function IsletmeSayfasi() {
               </Link>
             ) : (
               <>
-                <Link href="/kayit">
+                <Link href="/isletme/kayit">
                   <button style={{ height: 56, padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: '#1A2744', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
                     Ücretsiz Başla →
                   </button>
                 </Link>
                 <Link href="/isletme/giris">
-                  <button style={{ height: 56, padding: '0 36px', fontSize: '16px', fontWeight: 600, background: 'transparent', color: 'rgba(255,255,255,0.85)', borderRadius: '14px', border: '2px solid rgba(255,255,255,0.3)', cursor: 'pointer' }}>
+                  <button className="giris-btn-isletme" style={{ height: 56, padding: '0 36px', fontSize: '16px', fontWeight: 600, cursor: 'pointer' }}>
                     Giriş Yap
                   </button>
                 </Link>
@@ -198,18 +233,7 @@ export default async function IsletmeSayfasi() {
           </p>
 
           {/* Stats row */}
-          <div style={{ display: 'flex', gap: '48px', marginTop: '72px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {[
-              { sayi: '3.200+', etiket: 'Aktif İşletme' },
-              { sayi: '18.000+', etiket: 'Aylık Randevu' },
-              { sayi: '4.8★', etiket: 'Ortalama Puan' },
-            ].map((s) => (
-              <div key={s.etiket} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2rem', fontWeight: 800, color: 'white', lineHeight: 1 }}>{s.sayi}</div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: 6, fontWeight: 500 }}>{s.etiket}</div>
-              </div>
-            ))}
-          </div>
+          <IsletmeStats />
         </div>
       </section>
 
@@ -319,7 +343,7 @@ export default async function IsletmeSayfasi() {
               <strong style={{ color: 'white' }}>3.200+ işletme dijitale taşındı</strong> ve müşteri tabanını büyüttü. Sıra sende.
             </p>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/kayit">
+              <Link href="/isletme/kayit">
                 <button style={{ height: 56, padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: '#1A2744', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
                   Ücretsiz Kayıt Ol
                 </button>
