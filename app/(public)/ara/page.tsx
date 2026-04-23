@@ -6,7 +6,7 @@ import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { useEsnaf } from '@/hooks/useEsnaf'
 import { useDebounce } from '@/hooks/useDebounce'
-import { KATEGORILER, SEHIRLER } from '@/lib/constants'
+import { TURLER, ALT_KATEGORILER, SEHIRLER } from '@/lib/constants'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -22,6 +22,7 @@ const inputStyle: React.CSSProperties = {
 
 export default function AraSayfasi() {
   const [sehir, setSehir] = useState('')
+  const [ustTur, setUstTur] = useState('')
   const [kategori, setKategori] = useState('')
   const [arama, setArama] = useState('')
   const [sayfa, setSayfa] = useState(1)
@@ -37,12 +38,20 @@ export default function AraSayfasi() {
   const debouncedArama = useDebounce(arama, 400)
   const { esnaflar, yukleniyor, toplamSayfa } = useEsnaf({ sehir, kategori, arama: debouncedArama, sayfa })
 
-  const filtreAktif = sehir || kategori || arama
+  const altKategoriler = ustTur ? (ALT_KATEGORILER[ustTur] ?? []) : []
+  const filtreAktif = sehir || ustTur || kategori || arama
 
   function filtreleriTemizle() {
     setSehir('')
+    setUstTur('')
     setKategori('')
     setArama('')
+    setSayfa(1)
+  }
+
+  function ustTurDegis(yeni: string) {
+    setUstTur(yeni)
+    setKategori('')
     setSayfa(1)
   }
 
@@ -60,7 +69,8 @@ export default function AraSayfasi() {
 
       {/* Filters */}
       <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '24px', marginBottom: '32px', boxShadow: 'var(--shadow-card)' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+        {/* Arama + Şehir */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
           <div style={{ flex: '1 1 200px', position: 'relative' }}>
             <svg style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', width: 18, height: 18, color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -82,20 +92,68 @@ export default function AraSayfasi() {
             <option value="">Tüm Şehirler</option>
             {SEHIRLER.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select
-            style={{ ...inputStyle, flex: '0 0 200px', cursor: 'pointer' }}
-            value={kategori}
-            onChange={(e) => { setKategori(e.target.value); setSayfa(1) }}
-          >
-            <option value="">Tüm Kategoriler</option>
-            {KATEGORILER.map((k) => <option key={k.slug} value={k.slug}>{k.ikon} {k.ad}</option>)}
-          </select>
           {filtreAktif && (
             <Button variant="ghost" size="sm" onClick={filtreleriTemizle} style={{ flexShrink: 0 }}>
               Temizle ✕
             </Button>
           )}
         </div>
+
+        {/* Üst Tür */}
+        <div style={{ marginBottom: 12 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Üst Kategori
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {TURLER.map((tur) => (
+              <button
+                key={tur.slug}
+                type="button"
+                onClick={() => ustTurDegis(ustTur === tur.slug ? '' : tur.slug)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '8px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
+                  border: `1.5px solid ${ustTur === tur.slug ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  background: ustTur === tur.slug ? 'var(--color-primary-light)' : 'white',
+                  color: ustTur === tur.slug ? 'var(--color-primary)' : 'var(--color-text)',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
+              >
+                <span style={{ fontSize: 16 }}>{tur.ikon}</span>
+                {tur.ad}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Alt Kategori */}
+        {ustTur && altKategoriler.length > 0 && (
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 10 }}>
+              Alt Kategori
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {altKategoriler.map((ak) => (
+                <button
+                  key={ak.slug}
+                  type="button"
+                  onClick={() => { setKategori(kategori === ak.slug ? '' : ak.slug); setSayfa(1) }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '7px 12px', borderRadius: 16, fontSize: 12, fontWeight: 600,
+                    border: `1.5px solid ${kategori === ak.slug ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                    background: kategori === ak.slug ? 'var(--color-primary-light)' : 'var(--color-bg-muted)',
+                    color: kategori === ak.slug ? 'var(--color-primary)' : 'var(--color-text)',
+                    cursor: 'pointer', transition: 'all 0.2s',
+                  }}
+                >
+                  <span style={{ fontSize: 15 }}>{ak.ikon}</span>
+                  {ak.ad}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Result count */}

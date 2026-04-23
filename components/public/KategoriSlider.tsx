@@ -1,12 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
 import { KATEGORILER } from '@/lib/constants'
 
 export function KategoriSlider() {
-  const [genisl, setGenisl] = useState(false)
-  const gorsel = genisl ? KATEGORILER : KATEGORILER.slice(0, 6)
+  const gorsel = KATEGORILER.slice(0, 6)
 
   return (
     <>
@@ -68,19 +66,20 @@ export function KategoriSlider() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <button
-            onClick={() => setGenisl((p) => !p)}
+          <Link
+            href="/ara"
             style={{
+              display: 'inline-block',
               padding: '10px 28px', fontSize: 14, fontWeight: 600,
               color: 'var(--color-primary)', background: 'transparent',
               border: '1.5px solid var(--color-primary)', borderRadius: 12,
-              cursor: 'pointer', transition: 'all 0.2s',
+              textDecoration: 'none', transition: 'all 0.2s',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-primary-light)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--color-primary-light)' }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
           >
-            {genisl ? 'Daha Az Göster ↑' : `Daha Fazla (${KATEGORILER.length - 6}) →`}
-          </button>
+            Daha Fazla →
+          </Link>
         </div>
       </div>
     </>

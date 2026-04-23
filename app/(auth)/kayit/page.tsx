@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { Input } from '@/components/ui/Input'
-import { KATEGORILER, SEHIRLER } from '@/lib/constants'
+import { TURLER, ALT_KATEGORILER, SEHIRLER } from '@/lib/constants'
 
 type Tip = 'USER' | 'BUSINESS'
 
@@ -66,79 +66,131 @@ function SifreGucu({ sifre }: { sifre: string }) {
   )
 }
 
+/* ─── Step indicator ─────────────────────────────────── */
+function StepBar({ adim, toplam, etiketler }: { adim: number; toplam: number; etiketler: string[] }) {
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+        {etiketler.map((etiket, i) => {
+          const aktif = i + 1 === adim
+          const tamamlandi = i + 1 < adim
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', flex: i < toplam - 1 ? 1 : 'unset' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 700, fontSize: 13,
+                  background: tamamlandi ? 'var(--color-primary)' : aktif ? 'var(--color-primary)' : 'var(--color-bg-muted)',
+                  color: (tamamlandi || aktif) ? 'white' : 'var(--color-text-secondary)',
+                  border: aktif ? '2px solid var(--color-primary)' : '2px solid transparent',
+                  transition: 'all 0.3s',
+                  flexShrink: 0,
+                }}>
+                  {tamamlandi ? '✓' : i + 1}
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 600, color: aktif ? 'var(--color-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
+                  {etiket}
+                </span>
+              </div>
+              {i < toplam - 1 && (
+                <div style={{ flex: 1, height: 2, background: tamamlandi ? 'var(--color-primary)' : 'var(--color-border)', margin: '0 8px', marginBottom: 20, transition: 'background 0.3s' }} />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Main Form ─────────────────────────────────────── */
 function KayitForm() {
-  const [tip, setTip] = useState<Tip>('USER')
+  const [tip, setTip] = useState<Tip | null>(null)
+  const [adim, setAdim] = useState(1)
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
   const [sifre, setSifre] = useState('')
   const [kullaniciAdiHata, setKullaniciAdiHata] = useState('')
 
-  function kullaniciAdiDegisti(e: React.ChangeEvent<HTMLInputElement>) {
-    const deger = e.target.value
-    const err = kullaniciAdiGecerliMi(deger)
-    setKullaniciAdiHata(err ?? '')
+  // form data state
+  const [seciliTur, setSeciliTur] = useState('')
+  const [seciliAltKategori, setSeciliAltKategori] = useState('')
+  const [ad, setAd] = useState('')
+  const [soyad, setSoyad] = useState('')
+  const [email, setEmail] = useState('')
+  const [kullaniciAdi, setKullaniciAdi] = useState('')
+  const [telefon, setTelefon] = useState('')
+  const [isletmeAdi, setIsletmeAdi] = useState('')
+  const [sehir, setSehir] = useState('')
+  const [ilce, setIlce] = useState('')
+  const [sifreOnay, setSifreOnay] = useState('')
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%', height: 48, padding: '0 16px',
+    background: 'var(--color-bg-muted)', border: '2px solid transparent',
+    borderRadius: 12, fontSize: 14, outline: 'none', cursor: 'pointer',
   }
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const inputKabiStyle: React.CSSProperties = {
+    width: '100%', height: 48, padding: '0 16px', background: 'var(--color-bg-muted)',
+    border: '2px solid transparent', borderRadius: 12, fontSize: 14, outline: 'none',
+  }
+
+  // USER steps: 1=tip, 2=kisisel, 3=sifre
+  // BUSINESS steps: 1=tip, 2=tur, 3=isletme, 4=kisisel, 5=sifre
+  const userEtiketler = ['Hesap Türü', 'Kişisel Bilgiler', 'Şifre']
+  const businessEtiketler = ['Hesap Türü', 'İşletme Türü', 'İşletme Bilgileri', 'Kişisel Bilgiler', 'Şifre']
+  const etiketler = tip === 'BUSINESS' ? businessEtiketler : userEtiketler
+  const toplamAdim = tip === 'BUSINESS' ? 5 : 3
+
+  function ileri() {
+    setHata('')
+    // Validate current step
+    if (adim === 1) {
+      if (!tip) { setHata('Hesap türünüzü seçin.'); return }
+    }
+    if (tip === 'BUSINESS' && adim === 2) {
+      if (!seciliTur) { setHata('İşletme türünü seçin.'); return }
+      if (!seciliAltKategori) { setHata('Alt kategoriyi seçin.'); return }
+    }
+    if ((tip === 'BUSINESS' && adim === 3) || (tip === 'USER' && adim === 2)) {
+      if (tip === 'BUSINESS') {
+        if (!isletmeAdi.trim()) { setHata('İşletme adını girin.'); return }
+        if (!sehir) { setHata('Şehir seçin.'); return }
+        if (!ilce.trim()) { setHata('İlçe girin.'); return }
+      }
+    }
+    const kisiselAdim = tip === 'BUSINESS' ? 4 : 2
+    if (adim === kisiselAdim) {
+      if (!/^[\p{L}\s'-]+$/u.test(ad)) { setHata('Ad sadece harf içermeli.'); return }
+      if (!/^[\p{L}\s'-]+$/u.test(soyad)) { setHata('Soyad sadece harf içermeli.'); return }
+      if (!email.endsWith('@gmail.com') && !email.endsWith('@hotmail.com')) {
+        setHata('Sadece @gmail.com veya @hotmail.com kabul edilir.'); return
+      }
+      if (kullaniciAdi) {
+        const err = kullaniciAdiGecerliMi(kullaniciAdi)
+        if (err) { setHata(err); return }
+      }
+      if (!telefon.startsWith('+90')) { setHata('Telefon +90 ile başlamalı.'); return }
+    }
+    setAdim((p) => p + 1)
+  }
+
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (sifre.length < 6 || !/[A-Z]/.test(sifre) || !/[^A-Za-z0-9]/.test(sifre)) {
+      setHata('Şifre en az 6 karakter, 1 büyük harf ve 1 sembol içermeli.')
+      return
+    }
+    if (sifre !== sifreOnay) { setHata('Şifreler eşleşmiyor.'); return }
+
     setYukleniyor(true)
     setHata('')
 
-    const formData = new FormData(e.currentTarget)
-    const ad = (formData.get('ad') as string)?.trim()
-    const soyad = (formData.get('soyad') as string)?.trim()
-    const email = (formData.get('email') as string)?.trim().toLowerCase()
-    const kullaniciAdi = (formData.get('kullaniciAdi') as string)?.trim()
-    const sifreVal = formData.get('sifre') as string
-    const sifreOnay = formData.get('sifreOnay') as string
-    const telefon = (formData.get('telefon') as string)?.replace(/\s+/g, '') || undefined
-
-    // Client-side validasyon
-    if (!/^[\p{L}\s'-]+$/u.test(ad)) {
-      setHata('Ad sadece harf içermeli.')
-      setYukleniyor(false)
-      return
-    }
-    if (!/^[\p{L}\s'-]+$/u.test(soyad)) {
-      setHata('Soyad sadece harf içermeli.')
-      setYukleniyor(false)
-      return
-    }
-    if (!email.endsWith('@gmail.com') && !email.endsWith('@hotmail.com')) {
-      setHata('Sadece @gmail.com veya @hotmail.com e-posta kabul edilir.')
-      setYukleniyor(false)
-      return
-    }
-    if (kullaniciAdi) {
-      const kErr = kullaniciAdiGecerliMi(kullaniciAdi)
-      if (kErr) {
-        setHata(kErr)
-        setYukleniyor(false)
-        return
-      }
-    }
-    if (sifreVal.length < 6 || !/[A-Z]/.test(sifreVal) || !/[^A-Za-z0-9]/.test(sifreVal)) {
-      setHata('Şifre en az 6 karakter, 1 büyük harf ve 1 sembol içermeli.')
-      setYukleniyor(false)
-      return
-    }
-    if (sifreVal !== sifreOnay) {
-      setHata('Şifreler eşleşmiyor.')
-      setYukleniyor(false)
-      return
-    }
-
-    const base = { tip, ad, soyad, email, sifre: sifreVal, telefon }
-    const payload =
-      tip === 'BUSINESS'
-        ? {
-            ...base,
-            isletmeAdi: (formData.get('isletmeAdi') as string)?.trim(),
-            kategoriSlug: formData.get('kategoriSlug') as string,
-            sehir: formData.get('sehir') as string,
-            ilce: (formData.get('ilce') as string)?.trim(),
-          }
-        : base
+    const base = { tip, ad: ad.trim(), soyad: soyad.trim(), email: email.trim().toLowerCase(), sifre, telefon }
+    const payload = tip === 'BUSINESS'
+      ? { ...base, isletmeAdi: isletmeAdi.trim(), kategoriSlug: seciliAltKategori, sehir, ilce: ilce.trim() }
+      : base
 
     try {
       const res = await fetch('/api/auth/register', {
@@ -146,23 +198,12 @@ function KayitForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data?.error || 'Kayıt sırasında bir hata oluştu.')
       }
-
-      const signInRes = await signIn('credentials', {
-        email: base.email,
-        sifre: base.sifre,
-        redirect: false,
-      })
-
-      if (!signInRes || signInRes.error) {
-        window.location.href = '/giris?kayit=basarili'
-        return
-      }
-
+      const signInRes = await signIn('credentials', { email: base.email, sifre: base.sifre, redirect: false })
+      if (!signInRes || signInRes.error) { window.location.href = '/giris?kayit=basarili'; return }
       window.location.href = tip === 'BUSINESS' ? '/panel' : '/'
     } catch (err) {
       setHata(err instanceof Error ? err.message : 'Bir hata oluştu.')
@@ -171,19 +212,7 @@ function KayitForm() {
     }
   }
 
-  const tabStyle = (active: boolean): React.CSSProperties => ({
-    flex: 1, padding: '13px 16px', borderRadius: 12, border: 'none',
-    fontWeight: 700, fontSize: 14, cursor: 'pointer',
-    background: active ? 'var(--color-primary)' : 'transparent',
-    color: active ? 'white' : 'var(--color-text-secondary)',
-    transition: 'all 0.2s',
-  })
-
-  const selectStyle: React.CSSProperties = {
-    width: '100%', height: 48, padding: '0 16px',
-    background: 'var(--color-bg-muted)', border: '2px solid transparent',
-    borderRadius: 12, fontSize: 14, outline: 'none', cursor: 'pointer',
-  }
+  const altKategoriler = seciliTur ? (ALT_KATEGORILER[seciliTur] ?? []) : []
 
   return (
     <>
@@ -202,133 +231,248 @@ function KayitForm() {
       </div>
 
       <div style={{ background: 'white', borderRadius: 24, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', padding: 32 }}>
-        <div style={{ display: 'flex', gap: 8, background: 'var(--color-bg-muted)', padding: 6, borderRadius: 16, marginBottom: 28 }}>
-          <button type="button" onClick={() => setTip('USER')} style={tabStyle(tip === 'USER')}>Müşteri</button>
-          <button type="button" onClick={() => setTip('BUSINESS')} style={tabStyle(tip === 'BUSINESS')}>İşletme</button>
-        </div>
+        {tip && (
+          <StepBar adim={adim} toplam={toplamAdim} etiketler={etiketler} />
+        )}
 
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <Input label="Ad" name="ad" required placeholder="Adınız" />
-            <Input label="Soyad" name="soyad" required placeholder="Soyadınız" />
+        {/* ── Step 1: Hesap Türü ── */}
+        {adim === 1 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>Nasıl kullanacaksınız?</p>
+            {[
+              { value: 'USER' as Tip, baslik: 'Müşteri Olarak Devam Et', aciklama: 'İşletme keşfet, randevu al, yorum yap.', ikon: '👤' },
+              { value: 'BUSINESS' as Tip, baslik: 'İşletme Olarak Devam Et', aciklama: 'Dijital vitrin kur, randevu yönet, müşteri kazan.', ikon: '🏪' },
+            ].map((secenek) => (
+              <button
+                key={secenek.value}
+                type="button"
+                onClick={() => setTip(secenek.value)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 16, padding: '18px 20px',
+                  borderRadius: 16, border: `2px solid ${tip === secenek.value ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  background: tip === secenek.value ? 'var(--color-primary-light)' : 'white',
+                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
+                }}
+              >
+                <span style={{ fontSize: 32, flexShrink: 0 }}>{secenek.ikon}</span>
+                <div>
+                  <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text)', marginBottom: 2 }}>{secenek.baslik}</p>
+                  <p style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{secenek.aciklama}</p>
+                </div>
+              </button>
+            ))}
+
+            {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
+
+            <button
+              type="button"
+              onClick={ileri}
+              disabled={!tip}
+              style={{ width: '100%', height: 52, fontSize: 16, fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: 14, border: 'none', cursor: tip ? 'pointer' : 'not-allowed', opacity: tip ? 1 : 0.5, marginTop: 8 }}
+            >
+              Devam Et →
+            </button>
           </div>
+        )}
 
-          <Input label="E-posta" name="email" type="email" required placeholder="ornek@gmail.com" autoComplete="email" />
-          <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: -10 }}>
-            Sadece @gmail.com veya @hotmail.com kabul edilir.
-          </p>
+        {/* ── Step 2 (BUSINESS): İşletme Türü ── */}
+        {tip === 'BUSINESS' && adim === 2 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>İşletme türünüzü seçin</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {TURLER.map((tur) => (
+                <button
+                  key={tur.slug}
+                  type="button"
+                  onClick={() => { setSeciliTur(tur.slug); setSeciliAltKategori('') }}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '16px 12px',
+                    borderRadius: 14, border: `2px solid ${seciliTur === tur.slug ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                    background: seciliTur === tur.slug ? 'var(--color-primary-light)' : 'white',
+                    cursor: 'pointer', transition: 'all 0.2s',
+                  }}
+                >
+                  <span style={{ fontSize: 28 }}>{tur.ikon}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)', textAlign: 'center', lineHeight: 1.3 }}>{tur.ad}</span>
+                </button>
+              ))}
+            </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
-              Kullanıcı Adı
-            </label>
-            <input
-              name="kullaniciAdi"
-              type="text"
-              placeholder="ornek_kullanici123"
-              autoComplete="username"
-              onChange={kullaniciAdiDegisti}
-              style={{ width: '100%', height: 48, padding: '0 16px', background: 'var(--color-bg-muted)', border: `2px solid ${kullaniciAdiHata ? '#EF4444' : 'transparent'}`, borderRadius: 12, fontSize: 14, outline: 'none' }}
-            />
-            {kullaniciAdiHata
-              ? <p style={{ fontSize: 11, color: '#EF4444', marginTop: 4 }}>{kullaniciAdiHata}</p>
-              : <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 4 }}>İngilizce harf, rakam ve _ kullanılabilir. Türkçe karakter yok.</p>
-            }
-          </div>
-
-          <Input label="Telefon" name="telefon" type="tel" required placeholder="+90 5XX XXX XX XX" />
-          <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: -10 }}>
-            Türkiye numarası (+90 ile başlamalı).
-          </p>
-
-          {tip === 'BUSINESS' && (
-            <>
-              <Input label="İşletme Adı" name="isletmeAdi" required placeholder="Örn: Özkan Kuaför" />
+            {seciliTur && altKategoriler.length > 0 && (
               <div>
-                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Kategori</label>
-                <select name="kategoriSlug" required style={selectStyle} defaultValue="">
-                  <option value="" disabled>Seçiniz</option>
-                  {KATEGORILER.map((k) => (
-                    <option key={k.slug} value={k.slug}>{k.ikon} {k.ad}</option>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Alt Kategori</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
+                  {altKategoriler.map((ak) => (
+                    <button
+                      key={ak.slug}
+                      type="button"
+                      onClick={() => setSeciliAltKategori(ak.slug)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
+                        borderRadius: 10, border: `2px solid ${seciliAltKategori === ak.slug ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                        background: seciliAltKategori === ak.slug ? 'var(--color-primary-light)' : 'white',
+                        cursor: 'pointer', transition: 'all 0.2s', fontSize: 13, fontWeight: 600,
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>{ak.ikon}</span>
+                      <span style={{ color: 'var(--color-text)' }}>{ak.ad}</span>
+                    </button>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              <button type="button" onClick={() => setAdim(1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              <button type="button" onClick={ileri} style={{ flex: 2, height: 48, fontSize: 15, fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>Devam Et →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 3 (BUSINESS): İşletme Bilgileri ── */}
+        {tip === 'BUSINESS' && adim === 3 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>İşletme bilgileriniz</p>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>İşletme Adı</label>
+              <input value={isletmeAdi} onChange={(e) => setIsletmeAdi(e.target.value)} placeholder="Örn: Özkan Kuaför" required style={inputKabiStyle} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Şehir</label>
+                <select value={sehir} onChange={(e) => setSehir(e.target.value)} required style={selectStyle}>
+                  <option value="">Şehir seçin</option>
+                  {SEHIRLER.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Şehir</label>
-                  <select name="sehir" required style={selectStyle} defaultValue="">
-                    <option value="" disabled>Şehir</option>
-                    {SEHIRLER.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-                <Input label="İlçe" name="ilce" required placeholder="Örn: Kadıköy" />
+              <div>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>İlçe</label>
+                <input value={ilce} onChange={(e) => setIlce(e.target.value)} placeholder="Örn: Kadıköy" required style={inputKabiStyle} />
               </div>
-            </>
-          )}
-
-          <div>
-            <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
-              Şifre
-            </label>
-            <input
-              name="sifre"
-              type="password"
-              required
-              value={sifre}
-              onChange={(e) => setSifre(e.target.value)}
-              placeholder="En az 6 karakter"
-              autoComplete="new-password"
-              style={{ width: '100%', height: 48, padding: '0 16px', background: 'var(--color-bg-muted)', border: '2px solid transparent', borderRadius: 12, fontSize: 14, outline: 'none' }}
-            />
-            <SifreGucu sifre={sifre} />
-            <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 4 }}>
-              En az 6 karakter, 1 büyük harf ve 1 sembol zorunlu (!@#$%& vb.)
-            </p>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
-              Şifre Onayla
-            </label>
-            <input
-              name="sifreOnay"
-              type="password"
-              required
-              placeholder="Şifrenizi tekrar girin"
-              autoComplete="new-password"
-              style={{ width: '100%', height: 48, padding: '0 16px', background: 'var(--color-bg-muted)', border: '2px solid transparent', borderRadius: 12, fontSize: 14, outline: 'none' }}
-            />
-          </div>
-
-          {hata && (
-            <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14, fontWeight: 500, border: '1px solid #FCA5A5' }}>
-              {hata}
             </div>
-          )}
 
-          <p style={{ fontSize: 12, textAlign: 'center', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-            Kayıt olarak{' '}
-            <Link href="/hizmet-sozlesmesi" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Kullanım Şartları</Link>
-            {' '}ve{' '}
-            <Link href="/kvkk" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>KVKK Metni</Link>
-            &apos;ni kabul etmiş olursunuz.
-          </p>
+            {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
 
-          <button
-            type="submit"
-            disabled={yukleniyor || !!kullaniciAdiHata}
-            style={{
-              width: '100%', height: 52, fontSize: 16, fontWeight: 700,
-              background: 'var(--color-primary)', color: 'white',
-              borderRadius: 14, border: 'none',
-              cursor: (yukleniyor || !!kullaniciAdiHata) ? 'not-allowed' : 'pointer',
-              opacity: (yukleniyor || !!kullaniciAdiHata) ? 0.6 : 1,
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            {yukleniyor ? 'Kayıt yapılıyor…' : 'Ücretsiz Kayıt Ol'}
-          </button>
-        </form>
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              <button type="button" onClick={() => setAdim(2)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              <button type="button" onClick={ileri} style={{ flex: 2, height: 48, fontSize: 15, fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>Devam Et →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Kişisel Bilgiler adımı: USER=2, BUSINESS=4 ── */}
+        {((tip === 'USER' && adim === 2) || (tip === 'BUSINESS' && adim === 4)) && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>Kişisel bilgileriniz</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Ad</label>
+                <input value={ad} onChange={(e) => setAd(e.target.value)} placeholder="Adınız" required style={inputKabiStyle} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Soyad</label>
+                <input value={soyad} onChange={(e) => setSoyad(e.target.value)} placeholder="Soyadınız" required style={inputKabiStyle} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>E-posta</label>
+              <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="ornek@gmail.com" required style={inputKabiStyle} />
+              <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 4 }}>Sadece @gmail.com veya @hotmail.com kabul edilir.</p>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Kullanıcı Adı</label>
+              <input
+                value={kullaniciAdi}
+                onChange={(e) => { setKullaniciAdi(e.target.value); setKullaniciAdiHata(kullaniciAdiGecerliMi(e.target.value) ?? '') }}
+                placeholder="ornek_kullanici123"
+                style={{ ...inputKabiStyle, border: `2px solid ${kullaniciAdiHata ? '#EF4444' : 'transparent'}` }}
+              />
+              {kullaniciAdiHata
+                ? <p style={{ fontSize: 11, color: '#EF4444', marginTop: 4 }}>{kullaniciAdiHata}</p>
+                : <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 4 }}>İngilizce harf, rakam ve _ kullanılabilir.</p>
+              }
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Telefon</label>
+              <input value={telefon} onChange={(e) => setTelefon(e.target.value)} type="tel" placeholder="+90 5XX XXX XX XX" required style={inputKabiStyle} />
+              <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 4 }}>Türkiye numarası (+90 ile başlamalı).</p>
+            </div>
+
+            {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              <button type="button" onClick={() => setAdim((p) => p - 1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              <button type="button" onClick={ileri} disabled={!!kullaniciAdiHata} style={{ flex: 2, height: 48, fontSize: 15, fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: 12, border: 'none', cursor: kullaniciAdiHata ? 'not-allowed' : 'pointer', opacity: kullaniciAdiHata ? 0.5 : 1 }}>Devam Et →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Şifre adımı: USER=3, BUSINESS=5 ── */}
+        {((tip === 'USER' && adim === 3) || (tip === 'BUSINESS' && adim === 5)) && (
+          <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>Şifrenizi belirleyin</p>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Şifre</label>
+              <input
+                type="password"
+                required
+                value={sifre}
+                onChange={(e) => setSifre(e.target.value)}
+                placeholder="En az 6 karakter"
+                autoComplete="new-password"
+                style={inputKabiStyle}
+              />
+              <SifreGucu sifre={sifre} />
+              <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 4 }}>En az 6 karakter, 1 büyük harf ve 1 sembol zorunlu.</p>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Şifre Onayla</label>
+              <input
+                type="password"
+                required
+                value={sifreOnay}
+                onChange={(e) => setSifreOnay(e.target.value)}
+                placeholder="Şifrenizi tekrar girin"
+                autoComplete="new-password"
+                style={{ ...inputKabiStyle, border: `2px solid ${sifreOnay && sifre !== sifreOnay ? '#EF4444' : 'transparent'}` }}
+              />
+              {sifreOnay && sifre !== sifreOnay && (
+                <p style={{ fontSize: 11, color: '#EF4444', marginTop: 4 }}>Şifreler eşleşmiyor.</p>
+              )}
+            </div>
+
+            <p style={{ fontSize: 12, textAlign: 'center', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+              Kayıt olarak{' '}
+              <Link href="/hizmet-sozlesmesi" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Kullanım Şartları</Link>
+              {' '}ve{' '}
+              <Link href="/kvkk" target="_blank" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>KVKK Metni</Link>
+              &apos;ni kabul etmiş olursunuz.
+            </p>
+
+            {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              <button type="button" onClick={() => setAdim((p) => p - 1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              <button
+                type="submit"
+                disabled={yukleniyor}
+                style={{ flex: 2, height: 52, fontSize: 16, fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: 14, border: 'none', cursor: yukleniyor ? 'not-allowed' : 'pointer', opacity: yukleniyor ? 0.6 : 1, boxShadow: 'var(--shadow-sm)' }}
+              >
+                {yukleniyor ? 'Kayıt yapılıyor…' : 'Ücretsiz Kayıt Ol 🎉'}
+              </button>
+            </div>
+          </form>
+        )}
 
         <div style={{ marginTop: 24, textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: 15 }}>
           Zaten hesabınız var mı?{' '}

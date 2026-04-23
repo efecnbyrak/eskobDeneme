@@ -13,6 +13,81 @@ export const KATEGORILER = [
   { slug: 'diger', ad: 'Diğer', ikon: '🏪', renk: '#9A8C98' },
 ]
 
+export const TURLER = [
+  { slug: 'hizmet', ad: 'Hizmet', ikon: '🔧', renk: '#E07A5F' },
+  { slug: 'saglik', ad: 'Sağlık', ikon: '🏥', renk: '#A8DADC' },
+  { slug: 'yemek-icecek', ad: 'Yemek & İçecek', ikon: '🍽️', renk: '#7FB069' },
+  { slug: 'egitim', ad: 'Eğitim', ikon: '📚', renk: '#3D405B' },
+  { slug: 'spor-aktivite', ad: 'Spor & Aktivite', ikon: '⚽', renk: '#81B29A' },
+  { slug: 'profesyonel', ad: 'Profesyonel Hizmetler', ikon: '💼', renk: '#4F6D7A' },
+]
+
+export const ALT_KATEGORILER: Record<string, { slug: string; ad: string; ikon: string }[]> = {
+  'hizmet': [
+    { slug: 'berber', ad: 'Berber', ikon: '✂️' },
+    { slug: 'guzellik', ad: 'Güzellik / Kuaför', ikon: '💅' },
+    { slug: 'tamirci', ad: 'Tamirci', ikon: '🔧' },
+    { slug: 'terzi', ad: 'Terzi', ikon: '🧵' },
+    { slug: 'fotografci', ad: 'Fotoğrafçı', ikon: '📷' },
+    { slug: 'cicekci', ad: 'Çiçekçi', ikon: '🌸' },
+    { slug: 'pastane-hizmet', ad: 'Pastane', ikon: '🎂' },
+    { slug: 'kuru-temizleme', ad: 'Kuru Temizleme', ikon: '👔' },
+    { slug: 'elektrikci', ad: 'Elektrikçi', ikon: '⚡' },
+    { slug: 'tesisatci', ad: 'Tesisatçı', ikon: '🚿' },
+    { slug: 'diger', ad: 'Diğer', ikon: '🏪' },
+  ],
+  'saglik': [
+    { slug: 'klinik', ad: 'Klinik / Poliklinik', ikon: '🏥' },
+    { slug: 'eczane', ad: 'Eczane', ikon: '💊' },
+    { slug: 'dis-klinigi', ad: 'Diş Kliniği', ikon: '🦷' },
+    { slug: 'fizik-tedavi', ad: 'Fizik Tedavi', ikon: '🤝' },
+    { slug: 'veteriner', ad: 'Veteriner', ikon: '🐾' },
+    { slug: 'optik', ad: 'Optik', ikon: '👓' },
+    { slug: 'psikoloji', ad: 'Psikoloji', ikon: '🧠' },
+  ],
+  'yemek-icecek': [
+    { slug: 'restoran', ad: 'Restoran', ikon: '🍽️' },
+    { slug: 'kafe', ad: 'Kafe', ikon: '☕' },
+    { slug: 'kafe-restoran', ad: 'Kafe & Restoran', ikon: '🍴' },
+    { slug: 'fastfood', ad: 'Fast Food', ikon: '🍔' },
+    { slug: 'pastane', ad: 'Pastane', ikon: '🎂' },
+    { slug: 'pizza', ad: 'Pizza', ikon: '🍕' },
+    { slug: 'et-lokantasi', ad: 'Et Lokantası', ikon: '🥩' },
+    { slug: 'balik-restorani', ad: 'Balık Restoranı', ikon: '🐟' },
+    { slug: 'kahvalti', ad: 'Kahvaltı Salonu', ikon: '🍳' },
+  ],
+  'egitim': [
+    { slug: 'dershane', ad: 'Dershane / Etüt', ikon: '📚' },
+    { slug: 'dil-okulu', ad: 'Dil Okulu', ikon: '🗣️' },
+    { slug: 'muzik-okulu', ad: 'Müzik Okulu', ikon: '🎵' },
+    { slug: 'dans-okulu', ad: 'Dans Okulu', ikon: '💃' },
+    { slug: 'ozel-ders', ad: 'Özel Ders', ikon: '✏️' },
+    { slug: 'surucu-kursu', ad: 'Sürücü Kursu', ikon: '🚗' },
+    { slug: 'kodlama', ad: 'Kodlama / Robotik', ikon: '💻' },
+  ],
+  'spor-aktivite': [
+    { slug: 'spor-salonu', ad: 'Spor Salonu / Gym', ikon: '💪' },
+    { slug: 'yuzme-havuzu', ad: 'Yüzme Havuzu', ikon: '🏊' },
+    { slug: 'bilardo', ad: 'Bilardo', ikon: '🎱' },
+    { slug: 'bowling', ad: 'Bowling', ikon: '🎳' },
+    { slug: 'yoga', ad: 'Yoga / Pilates', ikon: '🧘' },
+    { slug: 'tenis', ad: 'Tenis', ikon: '🎾' },
+    { slug: 'futbol-sahasi', ad: 'Futbol Sahası', ikon: '⚽' },
+    { slug: 'bisiklet', ad: 'Bisiklet', ikon: '🚴' },
+    { slug: 'spor', ad: 'Diğer Spor', ikon: '🏅' },
+  ],
+  'profesyonel': [
+    { slug: 'avukat', ad: 'Hukuk / Avukatlık', ikon: '⚖️' },
+    { slug: 'muhasebe', ad: 'Muhasebe / Mali Müşavir', ikon: '📊' },
+    { slug: 'mimar', ad: 'Mimar / İç Mimar', ikon: '🏗️' },
+    { slug: 'yazilim', ad: 'Yazılım / IT', ikon: '💻' },
+    { slug: 'danismanlik', ad: 'Danışmanlık', ikon: '🤝' },
+    { slug: 'sigorta', ad: 'Sigorta', ikon: '🛡️' },
+    { slug: 'gayrimenkul', ad: 'Gayrimenkul', ikon: '🏠' },
+    { slug: 'grafik-tasarim', ad: 'Grafik / Tasarım', ikon: '🎨' },
+  ],
+}
+
 export const SEHIRLER = [
   'Adana', 'Ankara', 'Antalya', 'Bursa', 'Diyarbakır', 'Eskişehir',
   'Gaziantep', 'İstanbul', 'İzmir', 'Kayseri', 'Konya', 'Mersin',
