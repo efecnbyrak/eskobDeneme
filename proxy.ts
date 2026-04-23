@@ -83,8 +83,27 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // ── Müşteri landing (/musteri/*): BUSINESS girişli kullanıcılar erişemez ──
+  if (
+    pathname === '/musteri' ||
+    (pathname.startsWith('/musteri/') &&
+      !pathname.startsWith('/musteri/giris') &&
+      !pathname.startsWith('/musteri/kayit') &&
+      !pathname.startsWith('/musteri/genel'))
+  ) {
+    if (isAuthenticated && (rol === 'BUSINESS' || rol === 'SUPER_ADMIN' || rol === 'ADMIN')) {
+      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
+    }
+    return NextResponse.next()
+  }
+
   // ── İşletme landing (/isletme/*): USER girişli kullanıcılar erişemez ──
-  if (pathname === '/isletme' || (pathname.startsWith('/isletme/') && !pathname.startsWith('/isletme/giris') && !pathname.startsWith('/isletme/kayit'))) {
+  if (
+    pathname === '/isletme' ||
+    (pathname.startsWith('/isletme/') &&
+      !pathname.startsWith('/isletme/giris') &&
+      !pathname.startsWith('/isletme/kayit'))
+  ) {
     if (isAuthenticated && rol === 'USER') {
       return NextResponse.redirect(new URL('/musteri/genel', request.url))
     }
@@ -100,11 +119,8 @@ export const config = {
     '/giris',
     '/kayit',
     '/panel/:path*',
-    '/musteri/genel/:path*',
-    '/musteri/giris',
-    '/musteri/kayit',
-    '/isletme/giris',
-    '/isletme/kayit',
+    '/musteri',
+    '/musteri/:path*',
     '/isletme',
     '/isletme/:path*',
     '/phyberk/:path*',

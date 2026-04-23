@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { KATEGORILER } from '@/lib/constants'
 
 function SocialButtons() {
@@ -90,7 +93,6 @@ function SocialButtons() {
         }
       `}</style>
       <ul className="ev-social-list">
-        {/* Instagram */}
         <li className="ev-social-item">
           <a href="#" aria-label="Instagram" data-social="instagram">
             <div className="ev-social-filled" />
@@ -100,7 +102,6 @@ function SocialButtons() {
           </a>
           <div className="ev-tooltip">Instagram</div>
         </li>
-        {/* Facebook */}
         <li className="ev-social-item">
           <a href="#" aria-label="Facebook" data-social="facebook">
             <div className="ev-social-filled" />
@@ -110,7 +111,6 @@ function SocialButtons() {
           </a>
           <div className="ev-tooltip">Facebook</div>
         </li>
-        {/* WhatsApp */}
         <li className="ev-social-item">
           <a href="#" aria-label="WhatsApp" data-social="whatsapp">
             <div className="ev-social-filled" />
@@ -120,7 +120,6 @@ function SocialButtons() {
           </a>
           <div className="ev-tooltip">WhatsApp</div>
         </li>
-        {/* Telegram */}
         <li className="ev-social-item">
           <a href="https://telegram.org/" aria-label="Telegram" data-social="telegram">
             <div className="ev-social-filled" />
@@ -136,6 +135,14 @@ function SocialButtons() {
 }
 
 export function Footer() {
+  const pathname = usePathname()
+  const isMusteri = pathname === '/musteri' || pathname?.startsWith('/musteri/')
+  const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
+
+  const gizlilikHref = isMusteri ? '/musteri/gizlilik' : isIsletme ? '/isletme/gizlilik' : '/gizlilik'
+  const kullanimHref = isMusteri ? '/musteri/kullanim' : isIsletme ? '/isletme/kullanim' : '/kullanim'
+  const iletisimHref = isMusteri ? '/musteri/iletisim' : isIsletme ? '/isletme/iletisim' : '/iletisim'
+
   return (
     <footer className="bg-[#15232A] text-[#B0C4CC] mt-auto">
       <div className="container-main py-12 sm:py-16 lg:py-24">
@@ -155,51 +162,166 @@ export function Footer() {
             <SocialButtons />
           </div>
 
-          {/* Keşfet */}
+          {/* Orta kolon — context'e göre değişir */}
           <div className="lg:col-span-3">
-            <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Keşfet</h3>
-            <ul className="space-y-4 sm:space-y-5">
-              <li>
-                <Link href="/ara" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                  Tüm Esnaflar
-                </Link>
-              </li>
-              {KATEGORILER.slice(0, 5).map((k) => (
-                <li key={k.slug}>
-                  <Link href={`/kategori/${k.slug}`} className="flex items-center gap-3 text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                    <span className="opacity-60">{k.ikon}</span>
-                    <span>{k.ad}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {isMusteri ? (
+              <>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Keşfet</h3>
+                <ul className="space-y-4 sm:space-y-5">
+                  <li>
+                    <Link href="/musteri/ara" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Tüm İşletmeler
+                    </Link>
+                  </li>
+                  {KATEGORILER.slice(0, 5).map((k) => (
+                    <li key={k.slug}>
+                      <Link href={`/musteri/kategori/${k.slug}`} className="flex items-center gap-3 text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                        <span className="opacity-60">{k.ikon}</span>
+                        <span>{k.ad}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : isIsletme ? (
+              <>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">İşletme</h3>
+                <ul className="space-y-4 sm:space-y-5">
+                  <li>
+                    <Link href="/isletme" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Neden Eskob?
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/isletme#ozellikler" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Özellikler
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/isletme#nasil-calisir" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Nasıl Çalışır?
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/isletme/iletisim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      İletişim
+                    </Link>
+                  </li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Keşfet</h3>
+                <ul className="space-y-4 sm:space-y-5">
+                  <li>
+                    <Link href="/ara" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Tüm Esnaflar
+                    </Link>
+                  </li>
+                  {KATEGORILER.slice(0, 5).map((k) => (
+                    <li key={k.slug}>
+                      <Link href={`/kategori/${k.slug}`} className="flex items-center gap-3 text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                        <span className="opacity-60">{k.ikon}</span>
+                        <span>{k.ad}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
 
-          {/* İşletmeni Büyüt */}
+          {/* Sağ kolon — context'e göre değişir */}
           <div className="lg:col-span-4">
-            <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">İşletmeni Büyüt</h3>
-            <ul className="space-y-4 sm:space-y-5">
-              <li>
-                <Link href="/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-sm sm:text-[15px] font-semibold leading-relaxed">
-                  ✨ Hemen Ücretsiz Kaydol
-                </Link>
-              </li>
-              <li>
-                <Link href="/giris" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                  Giriş Yap
-                </Link>
-              </li>
-              <li>
-                <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                  Yönetim Paneli
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                  Nasıl Çalışır?
-                </Link>
-              </li>
-            </ul>
+            {isMusteri ? (
+              <>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Hesabım</h3>
+                <ul className="space-y-4 sm:space-y-5">
+                  <li>
+                    <Link href="/musteri/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-sm sm:text-[15px] font-semibold leading-relaxed">
+                      ✨ Ücretsiz Kaydol
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/musteri/giris" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Giriş Yap
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/musteri/genel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Genel Bakış
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/musteri/genel/randevularim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Randevularım
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/musteri/genel/favorilerim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Favorilerim
+                    </Link>
+                  </li>
+                </ul>
+              </>
+            ) : isIsletme ? (
+              <>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Başla</h3>
+                <ul className="space-y-4 sm:space-y-5">
+                  <li>
+                    <Link href="/isletme/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-sm sm:text-[15px] font-semibold leading-relaxed">
+                      ✨ Hemen Ücretsiz Kaydol
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/isletme/giris" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Giriş Yap
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      İşletme Paneli
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/panel/vitrin" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Vitrinim
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/panel/randevular" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Randevular
+                    </Link>
+                  </li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">İşletmeni Büyüt</h3>
+                <ul className="space-y-4 sm:space-y-5">
+                  <li>
+                    <Link href="/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-sm sm:text-[15px] font-semibold leading-relaxed">
+                      ✨ Hemen Ücretsiz Kaydol
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/giris" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Giriş Yap
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      İşletme Paneli
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="#" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Nasıl Çalışır?
+                    </Link>
+                  </li>
+                </ul>
+              </>
+            )}
           </div>
 
         </div>
@@ -208,9 +330,9 @@ export function Footer() {
         <div className="mt-12 sm:mt-16 lg:mt-20 pt-8 sm:pt-10 border-t border-[#1F333D] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-xs sm:text-sm text-[#7A9AA6]">
           <p className="text-center sm:text-left">© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</p>
           <div className="flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
-            <Link href="/gizlilik" className="hover:text-white transition-colors">Gizlilik Politikası</Link>
-            <Link href="/kullanim" className="hover:text-white transition-colors">Kullanım Şartları</Link>
-            <Link href="/iletisim" className="hover:text-white transition-colors">İletişim</Link>
+            <Link href={gizlilikHref} className="hover:text-white transition-colors">Gizlilik Politikası</Link>
+            <Link href={kullanimHref} className="hover:text-white transition-colors">Kullanım Şartları</Link>
+            <Link href={iletisimHref} className="hover:text-white transition-colors">İletişim</Link>
           </div>
         </div>
       </div>

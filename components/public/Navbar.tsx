@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/Button'
 import { ThemeSwitch } from '@/components/ui/ThemeSwitch'
 import { KATEGORILER } from '@/lib/constants'
@@ -26,7 +27,7 @@ function CikisModal({ onOnayla, onIptal }: { onOnayla: () => void; onIptal: () =
     <div
       onClick={onIptal}
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
+        position: 'fixed', inset: 0, zIndex: 99999,
         background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
@@ -75,7 +76,12 @@ function CikisModal({ onOnayla, onIptal }: { onOnayla: () => void; onIptal: () =
 function UserDropdown({ me }: { me: Me }) {
   const [acik, setAcik] = useState(false)
   const [cikisModal, setCikisModal] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     function kapat(e: MouseEvent) {
@@ -93,19 +99,21 @@ function UserDropdown({ me }: { me: Me }) {
     : isBusiness
     ? [{ href: '/panel', label: '🏪  İşletme Panelim' }]
     : [
+        { href: '/musteri/genel', label: '🏠  Genel Bakış' },
         { href: '/musteri/genel/favorilerim', label: '❤️  Favorilerim' },
-        { href: '/musteri/genel/randevularim', label: '📅  Geçmiş Randevularım' },
+        { href: '/musteri/genel/randevularim', label: '📅  Randevularım' },
         { href: '/musteri/genel/yorumlarim', label: '⭐  Yorumlarım' },
         { href: '/musteri/genel/ayarlar', label: '⚙️  Ayarlar' },
       ]
 
   return (
     <>
-      {cikisModal && (
+      {mounted && cikisModal && createPortal(
         <CikisModal
           onOnayla={() => signOut({ callbackUrl: '/' })}
           onIptal={() => setCikisModal(false)}
-        />
+        />,
+        document.body
       )}
       <div ref={ref} style={{ position: 'relative' }}>
         <button
@@ -203,6 +211,7 @@ export function Navbar() {
   const [menuAcik, setMenuAcik] = useState(false)
   const [kategoriAcik, setKategoriAcik] = useState(false)
   const [me, setMe] = useState<Me | null>(null)
+  const [visible, setVisible] = useState(true)
   const pathname = usePathname()
 
   const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
@@ -215,6 +224,21 @@ export function Navbar() {
       .then((d) => { if (!iptal) setMe(d) })
       .catch(() => { if (!iptal) setMe({ authenticated: false }) })
     return () => { iptal = true }
+  }, [])
+
+  useEffect(() => {
+    let prevY = window.scrollY
+    function handleScroll() {
+      const currentY = window.scrollY
+      if (currentY < prevY || currentY < 10) {
+        setVisible(true)
+      } else if (currentY > prevY && currentY > 60) {
+        setVisible(false)
+      }
+      prevY = currentY
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const girisliMi = !!me?.authenticated
@@ -244,212 +268,226 @@ export function Navbar() {
   const showKategoriler = isMusteri || (!isIsletme && !isMusteri)
 
   return (
-    <nav
-      style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: isIsletme ? 'rgba(255,255,255,0.60)' : 'rgba(255,255,255,0.92)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: isIsletme ? '1px solid rgba(255,255,255,0.25)' : '1px solid var(--color-border)',
-      }}
-    >
-      <div className="container-main">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
-          {/* Logo */}
-          <Link
-            href="/"
-            style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 18, color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }}
-            className="font-display"
-          >
-            <span style={{ width: 40, height: 40, borderRadius: 12, background: accentBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>
-              EV
-            </span>
-            <span className="hidden sm:inline">Esnaf Vitrin</span>
-            {isIsletme && (
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#1A2744', background: 'rgba(26,39,68,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
-                İşletme
+    <>
+      <div style={{ height: 72, flexShrink: 0 }} />
+      <nav
+        style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+          background: isIsletme ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: isIsletme ? '1px solid rgba(255,255,255,0.25)' : '1px solid var(--color-border)',
+          transform: visible ? 'translateY(0)' : 'translateY(-100%)',
+          transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >
+        <div className="container-main">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
+            {/* Logo */}
+            <Link
+              href="/"
+              style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 18, color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }}
+              className="font-display"
+            >
+              <span style={{ width: 40, height: 40, borderRadius: 12, background: accentBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>
+                EV
               </span>
-            )}
-            {isMusteri && (
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#F27A1A', background: 'rgba(242,122,26,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
-                Müşteri
-              </span>
-            )}
-          </Link>
+              <span className="hidden sm:inline">Esnaf Vitrin</span>
+              {isIsletme && (
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#1A2744', background: 'rgba(26,39,68,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
+                  İşletme
+                </span>
+              )}
+              {isMusteri && (
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#F27A1A', background: 'rgba(242,122,26,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
+                  Müşteri
+                </span>
+              )}
+            </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 32 }}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, textDecoration: 'none' }}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {showKategoriler && (
-              <div style={{ position: 'relative' }}>
-                <button
-                  style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer' }}
-                  onMouseEnter={() => setKategoriAcik(true)}
-                  onMouseLeave={() => setKategoriAcik(false)}
-                >
-                  Kategoriler
-                  <svg style={{ width: 14, height: 14, transition: 'transform 0.2s', transform: kategoriAcik ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {kategoriAcik && (
-                  <div
-                    className="animate-fade-in"
-                    style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 240, background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, boxShadow: 'var(--shadow-lg)', padding: '8px 0', zIndex: 100 }}
-                    onMouseEnter={() => setKategoriAcik(true)}
-                    onMouseLeave={() => setKategoriAcik(false)}
-                  >
-                    {KATEGORILER.map((k) => (
-                      <Link
-                        key={k.slug}
-                        href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px', fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}
-                      >
-                        <span style={{ fontSize: 18 }}>{k.ikon}</span>
-                        {k.ad}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div style={{ flex: 1 }} />
-
-          {/* Desktop Auth */}
-          <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12 }}>
-            <ThemeSwitch />
-            {me === null ? (
-              <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
-            ) : girisliMi ? (
-              <UserDropdown me={me} />
-            ) : (isIsletme || isMusteri) ? (
-              <>
-                <Link
-                  href={girisHref}
-                  style={{ fontSize: 14, fontWeight: 600, color: accentBg, padding: '10px 16px', textDecoration: 'none', borderRadius: 10, border: `1.5px solid ${accentBg}` }}
-                >
-                  Giriş Yap
-                </Link>
-                <Link href={kayitHref}>
-                  <button style={{ height: 40, padding: '0 20px', fontSize: 14, fontWeight: 700, background: accentBg, color: 'white', borderRadius: 10, border: 'none', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.15)' }}>
-                    Ücretsiz Başla
-                  </button>
-                </Link>
-              </>
-            ) : null}
-          </div>
-
-          {/* Mobile burger */}
-          <button
-            className="lg:hidden"
-            style={{ padding: 10, marginRight: -8, borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}
-            onClick={() => setMenuAcik((p) => !p)}
-            aria-label="Menü"
-          >
-            {menuAcik ? (
-              <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {menuAcik && (
-        <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
-          <div className="container-main" style={{ padding: '20px 20px 28px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {/* Desktop Nav Links */}
+            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 32 }}>
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
-                  onClick={() => setMenuAcik(false)}
+                  style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, textDecoration: 'none' }}
                 >
                   {link.label}
                 </Link>
               ))}
 
               {showKategoriler && (
-                <>
-                  <div style={{ padding: '14px 14px 6px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer' }}
+                    onMouseEnter={() => setKategoriAcik(true)}
+                    onMouseLeave={() => setKategoriAcik(false)}
+                  >
                     Kategoriler
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
-                    {KATEGORILER.slice(0, 8).map((k) => (
-                      <Link
-                        key={k.slug}
-                        href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', fontSize: 14, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
-                        onClick={() => setMenuAcik(false)}
-                      >
-                        <span>{k.ikon}</span> {k.ad}
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {girisliMi ? (
-                  <>
-                    {(me?.rol === 'SUPER_ADMIN' || me?.rol === 'ADMIN') && (
-                      <Link href="/phyberk/admin" onClick={() => setMenuAcik(false)}>
-                        <Button variant="secondary" size="sm" className="w-full">🛡️ Yönetim Paneli</Button>
-                      </Link>
-                    )}
-                    {me?.rol === 'BUSINESS' && (
-                      <Link href="/panel" onClick={() => setMenuAcik(false)}>
-                        <Button variant="secondary" size="sm" className="w-full">🏪 İşletme Panelim</Button>
-                      </Link>
-                    )}
-                    {me?.rol === 'USER' && (
-                      <>
-                        <Link href="/musteri/genel/favorilerim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
-                        <Link href="/musteri/genel/randevularim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
-                        <Link href="/musteri/genel/ayarlar" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
-                      </>
-                    )}
-                    <button
-                      onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/' }) }}
-                      style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}
+                    <svg style={{ width: 14, height: 14, transition: 'transform 0.2s', transform: kategoriAcik ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {kategoriAcik && (
+                    <div
+                      className="animate-fade-in"
+                      style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 240, background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, boxShadow: 'var(--shadow-lg)', padding: '8px 0', zIndex: 100 }}
+                      onMouseEnter={() => setKategoriAcik(true)}
+                      onMouseLeave={() => setKategoriAcik(false)}
                     >
-                      🚪  Hesaptan Çıkış Yap
+                      {KATEGORILER.map((k) => (
+                        <Link
+                          key={k.slug}
+                          href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
+                          style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px', fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}
+                        >
+                          <span style={{ fontSize: 18 }}>{k.ikon}</span>
+                          {k.ad}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div style={{ flex: 1 }} />
+
+            {/* Desktop Auth */}
+            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12 }}>
+              <ThemeSwitch />
+              {me === null ? (
+                <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
+              ) : girisliMi ? (
+                <UserDropdown me={me} />
+              ) : (isIsletme || isMusteri) ? (
+                <>
+                  <Link
+                    href={girisHref}
+                    style={{
+                      fontSize: 14, fontWeight: 600, color: 'white',
+                      padding: '10px 18px', textDecoration: 'none', borderRadius: 10,
+                      background: accentBg, transition: 'opacity 0.2s',
+                    }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = '0.85')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = '1')}
+                  >
+                    Giriş Yap
+                  </Link>
+                  <Link href={kayitHref}>
+                    <button style={{ height: 40, padding: '0 20px', fontSize: 14, fontWeight: 700, background: 'transparent', color: accentBg, borderRadius: 10, border: `1.5px solid ${accentBg}`, cursor: 'pointer' }}>
+                      Ücretsiz Başla
                     </button>
-                  </>
-                ) : (isIsletme || isMusteri) ? (
+                  </Link>
+                </>
+              ) : null}
+            </div>
+
+            {/* Mobile burger */}
+            <button
+              className="lg:hidden"
+              style={{ padding: 10, marginRight: -8, borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}
+              onClick={() => setMenuAcik((p) => !p)}
+              aria-label="Menü"
+            >
+              {menuAcik ? (
+                <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {menuAcik && (
+          <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
+            <div className="container-main" style={{ padding: '20px 20px 28px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
+                    onClick={() => setMenuAcik(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+
+                {showKategoriler && (
                   <>
-                    <Link href={girisHref} onClick={() => setMenuAcik(false)}>
-                      <Button variant="secondary" size="sm" className="w-full">Giriş Yap</Button>
-                    </Link>
-                    <Link href={kayitHref} onClick={() => setMenuAcik(false)}>
-                      <button style={{ width: '100%', height: 44, fontSize: 14, fontWeight: 700, background: accentBg, color: 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>
-                        Ücretsiz Başla
-                      </button>
-                    </Link>
+                    <div style={{ padding: '14px 14px 6px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
+                      Kategoriler
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+                      {KATEGORILER.slice(0, 8).map((k) => (
+                        <Link
+                          key={k.slug}
+                          href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', fontSize: 14, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
+                          onClick={() => setMenuAcik(false)}
+                        >
+                          <span>{k.ikon}</span> {k.ad}
+                        </Link>
+                      ))}
+                    </div>
                   </>
-                ) : null}
+                )}
+
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {girisliMi ? (
+                    <>
+                      {(me?.rol === 'SUPER_ADMIN' || me?.rol === 'ADMIN') && (
+                        <Link href="/phyberk/admin" onClick={() => setMenuAcik(false)}>
+                          <Button variant="secondary" size="sm" className="w-full">🛡️ Yönetim Paneli</Button>
+                        </Link>
+                      )}
+                      {me?.rol === 'BUSINESS' && (
+                        <Link href="/panel" onClick={() => setMenuAcik(false)}>
+                          <Button variant="secondary" size="sm" className="w-full">🏪 İşletme Panelim</Button>
+                        </Link>
+                      )}
+                      {me?.rol === 'USER' && (
+                        <>
+                          <Link href="/musteri/genel" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
+                          <Link href="/musteri/genel/favorilerim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
+                          <Link href="/musteri/genel/randevularim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
+                          <Link href="/musteri/genel/ayarlar" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
+                        </>
+                      )}
+                      <button
+                        onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/' }) }}
+                        style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}
+                      >
+                        🚪  Hesaptan Çıkış Yap
+                      </button>
+                    </>
+                  ) : (isIsletme || isMusteri) ? (
+                    <>
+                      <Link href={girisHref} onClick={() => setMenuAcik(false)}>
+                        <button style={{ width: '100%', height: 44, fontSize: 14, fontWeight: 700, background: accentBg, color: 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>
+                          Giriş Yap
+                        </button>
+                      </Link>
+                      <Link href={kayitHref} onClick={() => setMenuAcik(false)}>
+                        <button style={{ width: '100%', height: 44, fontSize: 14, fontWeight: 600, background: 'transparent', color: accentBg, borderRadius: 12, border: `1.5px solid ${accentBg}`, cursor: 'pointer' }}>
+                          Ücretsiz Başla
+                        </button>
+                      </Link>
+                    </>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+    </>
   )
 }

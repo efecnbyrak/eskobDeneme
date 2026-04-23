@@ -29,6 +29,8 @@ model Kullanici {
   esnaf     Esnaf?
   oturumlar Oturum[]
   favoriler Favori[]
+  randevular Randevu[]
+  yorumlar   Yorum[]
 
   @@map("kullaniciler")
 }
@@ -131,12 +133,15 @@ model Randevu {
   olusturmaT     DateTime     @default(now())
   guncelleT      DateTime     @updatedAt
 
-  esnaf    Esnaf   @relation(fields: [esnafId], references: [id])
-  esnafId  Int
-  hizmet   Hizmet? @relation(fields: [hizmetId], references: [id])
-  hizmetId Int?
+  esnaf       Esnaf      @relation(fields: [esnafId], references: [id])
+  esnafId     Int
+  hizmet      Hizmet?    @relation(fields: [hizmetId], references: [id])
+  hizmetId    Int?
+  kullanici   Kullanici? @relation(fields: [kullaniciId], references: [id])
+  kullaniciId Int?
 
   @@index([esnafId, tarih])
+  @@index([kullaniciId])
   @@map("randevular")
 }
 
@@ -156,9 +161,12 @@ model Yorum {
   onaylı     Boolean  @default(false)
   olusturmaT DateTime @default(now())
 
-  esnaf   Esnaf  @relation(fields: [esnafId], references: [id])
-  esnafId Int
+  esnaf       Esnaf      @relation(fields: [esnafId], references: [id])
+  esnafId     Int
+  kullanici   Kullanici? @relation(fields: [kullaniciId], references: [id])
+  kullaniciId Int?
 
+  @@index([kullaniciId])
   @@map("yorumlar")
 }
 

@@ -75,38 +75,24 @@ export default async function MusteriSayfasi() {
       <ScrollRevealInit />
       <style>{`
         .giris-btn-musteri {
-          display: inline-block;
-          width: 140px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           height: 52px;
+          padding: 0 28px;
           border-radius: 14px;
-          border: 1px solid #F27A1A;
-          position: relative;
-          overflow: hidden;
-          transition: all 0.5s ease-in;
-          z-index: 1;
+          border: 2px solid #F27A1A;
+          background: transparent;
           color: #F27A1A;
-          background: white;
           font-size: 15px;
           font-weight: 600;
           cursor: pointer;
+          transition: background 0.2s, color 0.2s;
         }
-        .giris-btn-musteri::before,
-        .giris-btn-musteri::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          width: 0;
-          height: 100%;
-          transform: skew(15deg);
-          transition: all 0.5s;
-          overflow: hidden;
-          z-index: -1;
+        .giris-btn-musteri:hover {
+          background: #F27A1A;
+          color: #fff;
         }
-        .giris-btn-musteri::before { left: -10px; background: #c45e0a; }
-        .giris-btn-musteri::after  { right: -10px; background: #F27A1A; }
-        .giris-btn-musteri:hover::before,
-        .giris-btn-musteri:hover::after { width: 58%; }
-        .giris-btn-musteri:hover { color: #fff; border-color: #F27A1A; transition: 0.3s; }
       `}</style>
 
       {/* ═══ HERO ═══ */}
@@ -177,7 +163,7 @@ export default async function MusteriSayfasi() {
                   </button>
                 </Link>
                 <Link href="/musteri/giris">
-                  <button className="giris-btn-musteri" style={{ height: 52, padding: '0 28px', fontSize: '15px', fontWeight: 600, background: 'white', color: '#F27A1A', borderRadius: '14px', border: '2px solid #F27A1A', cursor: 'pointer' }}>
+                  <button className="giris-btn-musteri">
                     Giriş Yap
                   </button>
                 </Link>
@@ -193,6 +179,48 @@ export default async function MusteriSayfasi() {
           </div>
         </div>
       </section>
+
+      {/* ═══ HESABIM HIZLI ERİŞİM (giriş yapılmışsa) ═══ */}
+      {girisYapti && (
+        <section style={{ background: 'var(--color-bg-muted)', borderBottom: '1px solid var(--color-border)', paddingTop: '48px', paddingBottom: '48px' }}>
+          <div className="container-main">
+            <h2 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: 20, color: 'var(--color-text)' }}>
+              Hesabınıza Hızlı Erişim
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14 }}>
+              {[
+                { href: '/musteri/genel', label: 'Genel Bakış', ikon: '🏠', desc: 'Ana paneliniz' },
+                { href: '/musteri/genel/randevularim', label: 'Randevularım', ikon: '📅', desc: 'Yaklaşan randevular' },
+                { href: '/musteri/genel/favorilerim', label: 'Favorilerim', ikon: '❤️', desc: 'Kayıtlı işletmeler' },
+                { href: '/musteri/genel/yorumlarim', label: 'Yorumlarım', ikon: '⭐', desc: 'Verdiğiniz yorumlar' },
+                { href: '/musteri/genel/profil', label: 'Profilim', ikon: '👤', desc: 'Kişisel bilgiler' },
+              ].map((item) => (
+                <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
+                  <div
+                    style={{
+                      background: 'white', borderRadius: 16, border: '1px solid var(--color-border)',
+                      padding: '18px 20px', transition: 'all 0.2s', cursor: 'pointer',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = '#F27A1A'
+                      ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(242,122,26,0.12)'
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border)'
+                      ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'
+                    }}
+                  >
+                    <div style={{ fontSize: 24, marginBottom: 10 }}>{item.ikon}</div>
+                    <p style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text)', marginBottom: 4 }}>{item.label}</p>
+                    <p style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{item.desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ═══ KATEGORİLER ═══ */}
       <section style={{ background: 'var(--color-bg-muted)', paddingTop: '80px', paddingBottom: '80px', borderBottom: '1px solid var(--color-border)' }}>

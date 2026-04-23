@@ -26,17 +26,38 @@ export function ProfilForm({ kullanici }: Props) {
     setMesaj(null)
 
     const formData = new FormData(e.currentTarget)
-    const data = {
-      ad: (formData.get('ad') as string).trim(),
-      soyad: (formData.get('soyad') as string).trim(),
-      telefon: (formData.get('telefon') as string).replace(/\s+/g, '') || null,
+    const ad = (formData.get('ad') as string).trim()
+    const soyad = (formData.get('soyad') as string).trim()
+    const email = (formData.get('email') as string).trim().toLowerCase()
+    const telefon = (formData.get('telefon') as string).replace(/\s+/g, '') || null
+
+    if (ad.length < 2) {
+      setMesaj({ tip: 'err', metin: 'Ad en az 2 karakter olmalı.' })
+      setYukleniyor(false)
+      return
+    }
+    if (soyad.length < 2) {
+      setMesaj({ tip: 'err', metin: 'Soyad en az 2 karakter olmalı.' })
+      setYukleniyor(false)
+      return
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setMesaj({ tip: 'err', metin: 'Geçerli bir e-posta adresi girin.' })
+      setYukleniyor(false)
+      return
+    }
+    if (telefon && !/^(\+90|0)?[5][0-9]{9}$/.test(telefon)) {
+      setMesaj({ tip: 'err', metin: 'Geçerli bir telefon numarası girin (05XX XXX XX XX).' })
+      setYukleniyor(false)
+      return
     }
 
     try {
       const res = await fetch('/api/user/profil', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ad, soyad, email, telefon }),
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
@@ -57,15 +78,15 @@ export function ProfilForm({ kullanici }: Props) {
   return (
     <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <Input label="Ad" name="ad" defaultValue={kullanici.ad} required />
-        <Input label="Soyad" name="soyad" defaultValue={kullanici.soyad} required />
+        <Input label="Ad" name="ad" defaultValue={kullanici.ad} required minLength={2} />
+        <Input label="Soyad" name="soyad" defaultValue={kullanici.soyad} required minLength={2} />
       </div>
       <Input
         label="E-posta"
         name="email"
         type="email"
         defaultValue={kullanici.email}
-        disabled
+        required
       />
       <Input
         label="Telefon"
