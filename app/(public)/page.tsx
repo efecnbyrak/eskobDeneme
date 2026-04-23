@@ -7,6 +7,7 @@ import { HeroArama } from '@/components/public/HeroArama'
 import { KategoriSlider } from '@/components/public/KategoriSlider'
 import { StatsSection } from '@/components/public/StatsCounter'
 import { ScrollRevealInit } from '@/components/public/ScrollReveal'
+import { RolButonlari } from '@/components/public/RolButonlari'
 import { Button } from '@/components/ui/Button'
 import type { Esnaf } from '@/types'
 
@@ -176,11 +177,13 @@ export default async function AnaSayfa() {
             <span style={{ color: 'var(--color-primary)' }}>Dijitale Taşı</span>
           </h1>
 
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'var(--color-text-secondary)', maxWidth: '640px', lineHeight: 1.7, fontWeight: 500, marginBottom: '48px' }}>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'var(--color-text-secondary)', maxWidth: '640px', lineHeight: 1.7, fontWeight: 500, marginBottom: '40px' }}>
             Yeni nesil dijital vitrin çözümü ile hizmetlerini tanıt, online randevu al ve müşteri tabanını bugün büyütmeye başla.
           </p>
 
-          <div style={{ width: '100%', maxWidth: '640px', marginBottom: '32px' }}>
+          <RolButonlari />
+
+          <div style={{ width: '100%', maxWidth: '640px', marginTop: '40px', marginBottom: '32px' }}>
             <HeroArama />
           </div>
 

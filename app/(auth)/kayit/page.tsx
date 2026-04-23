@@ -268,7 +268,7 @@ function KayitForm() {
       }
       const signInRes = await signIn('credentials', { email: base.email, sifre: base.sifre, redirect: false })
       if (!signInRes || signInRes.error) { window.location.href = '/giris?kayit=basarili'; return }
-      window.location.href = tip === 'BUSINESS' ? '/panel' : '/'
+      window.location.href = tip === 'BUSINESS' ? '/panel' : '/musteri'
     } catch (err) {
       setHata(err instanceof Error ? err.message : 'Bir hata oluştu.')
     } finally {

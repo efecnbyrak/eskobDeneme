@@ -40,7 +40,7 @@ function GirisForm() {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/panel'
-        else hedef = '/'
+        else hedef = '/musteri'
       }
       window.location.href = hedef
     } catch {
