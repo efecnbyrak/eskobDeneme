@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { YildizPuan } from '@/components/shared/YildizPuan'
 import { ortalamaPuan, isletmeAcikMi, formatFiyat } from '@/lib/utils'
@@ -20,6 +21,8 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
   const minFiyat = esnaf.hizmetler?.length
     ? Math.min(...esnaf.hizmetler.map((h) => Number(h.fiyat)))
     : null
+  const fallbackSrc = `https://picsum.photos/seed/${esnaf.id}/400/400`
+  const [imgSrc, setImgSrc] = useState(esnaf.kapakFoto || fallbackSrc)
 
   return (
     <Link
@@ -38,11 +41,12 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
       <div className="relative w-full overflow-hidden" style={{ paddingBottom: '80%' }}>
         <div className="absolute inset-0" style={{ background: 'var(--color-bg-muted)' }}>
           <Image
-            src={esnaf.kapakFoto || `https://picsum.photos/seed/${esnaf.id}/400/400`}
+            src={imgSrc}
             alt={esnaf.isletmeAdi}
             fill
             className="object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+            onError={() => setImgSrc(fallbackSrc)}
           />
         </div>
 

@@ -5,57 +5,132 @@ function SocialButtons() {
   return (
     <>
       <style>{`
-        .eskob-social-main { display: flex; flex-direction: column; gap: 0.5em; }
-        .eskob-social-up { display: flex; flex-direction: row; gap: 0.5em; }
-        .eskob-social-down { display: flex; flex-direction: row; gap: 0.5em; }
-        .eskob-sc1, .eskob-sc2, .eskob-sc3, .eskob-sc4 {
-          width: 72px; height: 72px; outline: none; border: none;
-          background: #1F333D; cursor: pointer; transition: 0.2s ease-in-out;
-          display: flex; align-items: center; justify-content: center;
+        .ev-social-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
         }
-        .eskob-sc1 { border-radius: 72px 5px 5px 5px; }
-        .eskob-sc2 { border-radius: 5px 72px 5px 5px; }
-        .eskob-sc3 { border-radius: 5px 5px 5px 72px; }
-        .eskob-sc4 { border-radius: 5px 5px 72px 5px; }
-        .eskob-sc1:hover { transform: scale(1.1); background-color: #cc39a4; }
-        .eskob-sc2:hover { transform: scale(1.1); background-color: #03A9F4; }
-        .eskob-sc3:hover { transform: scale(1.1); background-color: #333; }
-        .eskob-sc4:hover { transform: scale(1.1); background-color: #8c9eff; }
-        .eskob-sc1 svg { fill: #cc39a4; }
-        .eskob-sc1:hover svg { fill: white; }
-        .eskob-sc2 svg { fill: #03A9F4; }
-        .eskob-sc2:hover svg { fill: white; }
-        .eskob-sc3 svg { fill: #90A8B2; }
-        .eskob-sc3:hover svg { fill: white; }
-        .eskob-sc4 svg { fill: #8c9eff; }
-        .eskob-sc4:hover svg { fill: white; }
+        .ev-social-item {
+          position: relative;
+        }
+        .ev-social-item .ev-tooltip {
+          position: absolute;
+          top: -36px;
+          left: 50%;
+          transform: translateX(-50%);
+          color: #fff;
+          padding: 5px 10px;
+          border-radius: 12px;
+          opacity: 0;
+          visibility: hidden;
+          font-size: 12px;
+          white-space: nowrap;
+          transition: all 0.3s ease;
+          pointer-events: none;
+          font-weight: 500;
+        }
+        .ev-social-item:hover .ev-tooltip {
+          opacity: 1;
+          visibility: visible;
+          top: -44px;
+        }
+        .ev-social-item a {
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 50px;
+          height: 50px;
+          border-radius: 14px;
+          color: #4d4d4d;
+          background-color: #ffffff;
+          transition: all 0.3s ease-in-out;
+          text-decoration: none;
+        }
+        .ev-social-item a:hover {
+          box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 50%);
+          color: white;
+        }
+        .ev-social-item a svg {
+          position: relative;
+          z-index: 1;
+          width: 26px;
+          height: 26px;
+        }
+        .ev-social-filled {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 0;
+          transition: all 0.3s ease-in-out;
+        }
+        .ev-social-item a:hover .ev-social-filled {
+          height: 100%;
+        }
+        .ev-social-item a[data-social="instagram"] .ev-social-filled,
+        .ev-social-item a[data-social="instagram"] ~ .ev-tooltip {
+          background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+        .ev-social-item a[data-social="facebook"] .ev-social-filled,
+        .ev-social-item a[data-social="facebook"] ~ .ev-tooltip {
+          background-color: #1877f2;
+        }
+        .ev-social-item a[data-social="whatsapp"] .ev-social-filled,
+        .ev-social-item a[data-social="whatsapp"] ~ .ev-tooltip {
+          background-color: #25d366;
+        }
+        .ev-social-item a[data-social="telegram"] .ev-social-filled,
+        .ev-social-item a[data-social="telegram"] ~ .ev-tooltip {
+          background-color: #0088cc;
+        }
       `}</style>
-      <div className="eskob-social-main">
-        <div className="eskob-social-up">
-          <a href="#" aria-label="Instagram" className="eskob-sc1">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" width="26px" height="26px" fillRule="nonzero">
-              <g fillRule="nonzero" stroke="none" strokeWidth={1}><g transform="scale(8,8)"><path d="M11.46875,5c-3.55078,0 -6.46875,2.91406 -6.46875,6.46875v9.0625c0,3.55078 2.91406,6.46875 6.46875,6.46875h9.0625c3.55078,0 6.46875,-2.91406 6.46875,-6.46875v-9.0625c0,-3.55078 -2.91406,-6.46875 -6.46875,-6.46875zM11.46875,7h9.0625c2.47266,0 4.46875,1.99609 4.46875,4.46875v9.0625c0,2.47266 -1.99609,4.46875 -4.46875,4.46875h-9.0625c-2.47266,0 -4.46875,-1.99609 -4.46875,-4.46875v-9.0625c0,-2.47266 1.99609,-4.46875 4.46875,-4.46875zM21.90625,9.1875c-0.50391,0 -0.90625,0.40234 -0.90625,0.90625c0,0.50391 0.40234,0.90625 0.90625,0.90625c0.50391,0 0.90625,-0.40234 0.90625,-0.90625c0,-0.50391 -0.40234,-0.90625 -0.90625,-0.90625zM16,10c-3.30078,0 -6,2.69922 -6,6c0,3.30078 2.69922,6 6,6c3.30078,0 6,-2.69922 6,-6c0,-3.30078 -2.69922,-6 -6,-6zM16,12c2.22266,0 4,1.77734 4,4c0,2.22266 -1.77734,4 -4,4c-2.22266,0 -4,-1.77734 -4,-4c0,-2.22266 1.77734,-4 4,-4z" /></g></g>
+      <ul className="ev-social-list">
+        {/* Instagram */}
+        <li className="ev-social-item">
+          <a href="#" aria-label="Instagram" data-social="instagram">
+            <div className="ev-social-filled" />
+            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
             </svg>
           </a>
-          <a href="#" aria-label="Twitter/X" className="eskob-sc2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="26px" height="26px">
-              <path d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429" />
+          <div className="ev-tooltip">Instagram</div>
+        </li>
+        {/* Facebook */}
+        <li className="ev-social-item">
+          <a href="#" aria-label="Facebook" data-social="facebook">
+            <div className="ev-social-filled" />
+            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
             </svg>
           </a>
-        </div>
-        <div className="eskob-social-down">
-          <a href="#" aria-label="GitHub" className="eskob-sc3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="26px" height="26px">
-              <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z" />
+          <div className="ev-tooltip">Facebook</div>
+        </li>
+        {/* WhatsApp */}
+        <li className="ev-social-item">
+          <a href="#" aria-label="WhatsApp" data-social="whatsapp">
+            <div className="ev-social-filled" />
+            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
           </a>
-          <a href="#" aria-label="Discord" className="eskob-sc4">
-            <svg height="26px" width="26px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M40,12c0,0-4.585-3.588-10-4l-0.488,0.976C34.408,10.174,36.654,11.891,39,14c-4.045-2.065-8.039-4-15-4s-10.955,1.935-15,4c2.346-2.109,5.018-4.015,9.488-5.024L18,8c-5.681,0.537-10,4-10,4s-5.121,7.425-6,22c5.162,5.953,13,6,13,6l1.639-2.185C13.857,36.848,10.715,35.121,8,32c3.238,2.45,8.125,5,16,5s12.762-2.55,16-5c-2.715,3.121-5.857,4.848-8.639,5.815L33,40c0,0,7.838-0.047,13-6C45.121,19.425,40,12,40,12z M17.5,30c-1.933,0-3.5-1.791-3.5-4c0-2.209,1.567-4,3.5-4s3.5,1.791,3.5,4C21,28.209,19.433,30,17.5,30z M30.5,30c-1.933,0-3.5-1.791-3.5-4c0-2.209,1.567-4,3.5-4s3.5,1.791,3.5,4C34,28.209,32.433,30,30.5,30z" />
+          <div className="ev-tooltip">WhatsApp</div>
+        </li>
+        {/* Telegram */}
+        <li className="ev-social-item">
+          <a href="https://telegram.org/" aria-label="Telegram" data-social="telegram">
+            <div className="ev-social-filled" />
+            <svg version="1.1" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M95,9.9c-1.3-1.1-3.4-1.2-7-0.1c0,0,0,0,0,0c-2.5,0.8-24.7,9.2-44.3,17.3c-17.6,7.3-31.9,13.7-33.6,14.5  c-1.9,0.6-6,2.4-6.2,5.2c-0.1,1.8,1.4,3.4,4.3,4.7c3.1,1.6,16.8,6.2,19.7,7.1c1,3.4,6.9,23.3,7.2,24.5c0.4,1.8,1.6,2.8,2.2,3.2  c0.1,0.1,0.3,0.3,0.5,0.4c0.3,0.2,0.7,0.3,1.2,0.3c0.7,0,1.5-0.3,2.2-0.8c3.7-3,10.1-9.7,11.9-11.6c7.9,6.2,16.5,13.1,17.3,13.9  c0,0,0.1,0.1,0.1,0.1c1.9,1.6,3.9,2.5,5.7,2.5c0.6,0,1.2-0.1,1.8-0.3c2.1-0.7,3.6-2.7,4.1-5.4c0-0.1,0.1-0.5,0.3-1.2  c3.4-14.8,6.1-27.8,8.3-38.7c2.1-10.7,3.8-21.2,4.8-26.8c0.2-1.4,0.4-2.5,0.5-3.2C96.3,13.5,96.5,11.2,95,9.9z M30,58.3l47.7-31.6  c0.1-0.1,0.3-0.2,0.4-0.3c0,0,0,0,0,0c0.1,0,0.1-0.1,0.2-0.1c0.1,0,0.1,0,0.2-0.1c-0.1,0.1-0.2,0.4-0.4,0.6L66,38.1  c-8.4,7.7-19.4,17.8-26.7,24.4c0,0,0,0,0,0.1c0,0-0.1,0.1-0.1,0.1c0,0,0,0.1-0.1,0.1c0,0.1,0,0.1-0.1,0.2c0,0,0,0.1,0,0.1  c0,0,0,0,0,0.1c-0.5,5.6-1.4,15.2-1.8,19.5c0,0,0,0,0-0.1C36.8,81.4,31.2,62.3,30,58.3z" />
             </svg>
           </a>
-        </div>
-      </div>
+          <div className="ev-tooltip">Telegram</div>
+        </li>
+      </ul>
     </>
   )
 }
@@ -63,18 +138,18 @@ function SocialButtons() {
 export function Footer() {
   return (
     <footer className="bg-[#15232A] text-[#B0C4CC] mt-auto">
-      <div className="container-main py-20 lg:py-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-12">
+      <div className="container-main py-12 sm:py-16 lg:py-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-12">
 
           {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-5">
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-12 h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-lg shadow-sm">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-5">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-base sm:text-lg shadow-sm flex-shrink-0">
                 EV
               </span>
-              <span className="font-bold text-2xl text-white font-display tracking-tight">Esnaf Vitrin</span>
+              <span className="font-bold text-xl sm:text-2xl text-white font-display tracking-tight">Esnaf Vitrin</span>
             </div>
-            <p className="text-base text-[#90A8B2] leading-[1.8] mb-10 max-w-sm">
+            <p className="text-sm sm:text-base text-[#90A8B2] leading-[1.8] mb-8 max-w-sm">
               Türkiye&apos;nin esnaf ve KOBİ&apos;leri için yeni nesil dijital vitrin platformu. İşletmeni bugün dijitale taşı, hizmetlerini tanıt ve randevularını kolayca yönet.
             </p>
             <SocialButtons />
@@ -82,16 +157,16 @@ export function Footer() {
 
           {/* Keşfet */}
           <div className="lg:col-span-3">
-            <h3 className="font-bold text-base mb-8 text-white tracking-wide font-display uppercase">Keşfet</h3>
-            <ul className="space-y-5">
+            <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Keşfet</h3>
+            <ul className="space-y-4 sm:space-y-5">
               <li>
-                <Link href="/ara" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
+                <Link href="/ara" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                   Tüm Esnaflar
                 </Link>
               </li>
               {KATEGORILER.slice(0, 5).map((k) => (
                 <li key={k.slug}>
-                  <Link href={`/kategori/${k.slug}`} className="flex items-center gap-3 text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
+                  <Link href={`/kategori/${k.slug}`} className="flex items-center gap-3 text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                     <span className="opacity-60">{k.ikon}</span>
                     <span>{k.ad}</span>
                   </Link>
@@ -102,25 +177,25 @@ export function Footer() {
 
           {/* İşletmeni Büyüt */}
           <div className="lg:col-span-4">
-            <h3 className="font-bold text-base mb-8 text-white tracking-wide font-display uppercase">İşletmeni Büyüt</h3>
-            <ul className="space-y-5">
+            <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">İşletmeni Büyüt</h3>
+            <ul className="space-y-4 sm:space-y-5">
               <li>
-                <Link href="/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-[15px] font-semibold leading-relaxed">
+                <Link href="/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-sm sm:text-[15px] font-semibold leading-relaxed">
                   ✨ Hemen Ücretsiz Kaydol
                 </Link>
               </li>
               <li>
-                <Link href="/giris" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
+                <Link href="/giris" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                   Giriş Yap
                 </Link>
               </li>
               <li>
-                <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
+                <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                   Yönetim Paneli
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[#90A8B2] hover:text-white transition-colors text-[15px] leading-relaxed">
+                <Link href="#" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                   Nasıl Çalışır?
                 </Link>
               </li>
@@ -130,9 +205,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-20 pt-10 border-t border-[#1F333D] flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-[#7A9AA6]">
-          <p>© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</p>
-          <div className="flex flex-wrap justify-center gap-8 font-medium">
+        <div className="mt-12 sm:mt-16 lg:mt-20 pt-8 sm:pt-10 border-t border-[#1F333D] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-xs sm:text-sm text-[#7A9AA6]">
+          <p className="text-center sm:text-left">© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</p>
+          <div className="flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
             <Link href="/gizlilik" className="hover:text-white transition-colors">Gizlilik Politikası</Link>
             <Link href="/kullanim" className="hover:text-white transition-colors">Kullanım Şartları</Link>
             <Link href="/iletisim" className="hover:text-white transition-colors">İletişim</Link>
