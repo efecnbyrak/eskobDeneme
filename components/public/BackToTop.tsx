@@ -14,7 +14,19 @@ export function BackToTop() {
   }, [])
 
   function yukariCik() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const baslangic = window.scrollY
+    const sure = 700
+    const baslamaZamani = performance.now()
+    function easeInOut(t: number) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+    }
+    function adim(simdi: number) {
+      const gecen = simdi - baslamaZamani
+      const ilerleme = Math.min(gecen / sure, 1)
+      window.scrollTo(0, baslangic * (1 - easeInOut(ilerleme)))
+      if (ilerleme < 1) requestAnimationFrame(adim)
+    }
+    requestAnimationFrame(adim)
   }
 
   return (

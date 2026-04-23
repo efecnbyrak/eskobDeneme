@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!oturum?.user) redirect('/giris?callbackUrl=/panel')
 
   const rol = oturum.user.rol
-  if (rol === 'USER') redirect('/user')
+  if (rol === 'USER') redirect('/musteri/genel')
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
 
   return (

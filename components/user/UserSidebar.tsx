@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
-  { href: '/user', label: 'Genel Bakış', ikon: '🏠' },
-  { href: '/user/randevular', label: 'Randevularım', ikon: '📅' },
-  { href: '/user/favoriler', label: 'Favorilerim', ikon: '❤️' },
-  { href: '/user/yorumlar', label: 'Yorumlarım', ikon: '⭐' },
-  { href: '/user/profil', label: 'Profilim', ikon: '👤' },
-  { href: '/user/ayarlar', label: 'Ayarlar', ikon: '⚙️' },
+  { href: '/musteri/genel', label: 'Genel Bakış', ikon: '🏠' },
+  { href: '/musteri/genel/randevularim', label: 'Randevularım', ikon: '📅' },
+  { href: '/musteri/genel/favorilerim', label: 'Favorilerim', ikon: '❤️' },
+  { href: '/musteri/genel/yorumlarim', label: 'Yorumlarım', ikon: '⭐' },
+  { href: '/musteri/genel/profil', label: 'Profilim', ikon: '👤' },
+  { href: '/musteri/genel/ayarlar', label: 'Ayarlar', ikon: '⚙️' },
 ]
 
 export function UserSidebar() {
@@ -19,7 +19,7 @@ export function UserSidebar() {
   return (
     <aside className="w-[240px] min-h-screen bg-white border-r border-[var(--color-border)] flex flex-col shrink-0">
       <div className="p-5 border-b border-[var(--color-border)]">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/musteri" className="flex items-center gap-2.5">
           <span className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-bold font-display shrink-0">
             EV
           </span>
@@ -34,7 +34,7 @@ export function UserSidebar() {
         <ul className="space-y-0.5">
           {ITEMS.map((item) => {
             const aktif =
-              pathname === item.href || (item.href !== '/user' && pathname.startsWith(item.href))
+              pathname === item.href || (item.href !== '/musteri/genel' && pathname.startsWith(item.href))
             return (
               <li key={item.href}>
                 <Link
@@ -57,7 +57,7 @@ export function UserSidebar() {
 
       <div className="p-3 border-t border-[var(--color-border)]">
         <Link
-          href="/ara"
+          href="/musteri/ara"
           className="flex items-center gap-3 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-muted)] transition-all px-3 py-2.5 rounded-[var(--radius-md)] mb-1"
         >
           <span className="w-5 text-center">🔍</span> Esnaf Keşfet

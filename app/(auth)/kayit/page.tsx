@@ -143,9 +143,9 @@ const adimAnimasyonu: React.CSSProperties = {
 }
 
 /* ─── Main Form ─────────────────────────────────────── */
-function KayitForm() {
-  const [tip, setTip] = useState<Tip | null>(null)
-  const [adim, setAdim] = useState(1)
+function KayitForm({ initialTip }: { initialTip?: Tip }) {
+  const [tip, setTip] = useState<Tip | null>(initialTip ?? null)
+  const [adim, setAdim] = useState(initialTip ? 2 : 1)
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
   const [sifre, setSifre] = useState('')
@@ -181,10 +181,11 @@ function KayitForm() {
     color: 'var(--color-text)',
   }
 
-  const userEtiketler = ['Hesap Türü', 'Kişisel Bilgiler', 'Şifre']
-  const businessEtiketler = ['Hesap Türü', 'İşletme Türü', 'İşletme Bilgileri', 'Kişisel Bilgiler', 'Şifre']
+  const userEtiketler = initialTip ? ['Kişisel Bilgiler', 'Şifre'] : ['Hesap Türü', 'Kişisel Bilgiler', 'Şifre']
+  const businessEtiketler = initialTip ? ['İşletme Türü', 'İşletme Bilgileri', 'Kişisel Bilgiler', 'Şifre'] : ['Hesap Türü', 'İşletme Türü', 'İşletme Bilgileri', 'Kişisel Bilgiler', 'Şifre']
   const etiketler = tip === 'BUSINESS' ? businessEtiketler : userEtiketler
-  const toplamAdim = tip === 'BUSINESS' ? 5 : 3
+  const toplamAdim = tip === 'BUSINESS' ? (initialTip ? 4 : 5) : (initialTip ? 2 : 3)
+  const stepBarAdim = initialTip ? adim - 1 : adim
 
   function toggleIlgi(slug: string) {
     setSeciliIlgilar((prev) =>
@@ -303,7 +304,7 @@ function KayitForm() {
 
       <div style={{ background: 'white', borderRadius: 24, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', padding: 32 }}>
         {tip && (
-          <StepBar adim={adim} toplam={toplamAdim} etiketler={etiketler} />
+          <StepBar adim={stepBarAdim} toplam={toplamAdim} etiketler={etiketler} />
         )}
 
         {/* ── Step 1: Hesap Türü ── */}
@@ -350,6 +351,7 @@ function KayitForm() {
         {tip === 'BUSINESS' && adim === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, ...adimAnimasyonu }}>
             <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>İşletme türünüzü seçin</p>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {TURLER.map((tur) => (
                 <button
@@ -396,7 +398,9 @@ function KayitForm() {
             {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
 
             <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-              <button type="button" onClick={() => setAdim(1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              {!initialTip && (
+                <button type="button" onClick={() => setAdim(1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              )}
               <button type="button" onClick={ileri} style={{ flex: 2, height: 48, fontSize: 15, fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>Devam Et →</button>
             </div>
           </div>
@@ -544,7 +548,9 @@ function KayitForm() {
             {hata && <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14 }}>{hata}</div>}
 
             <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-              <button type="button" onClick={() => setAdim((p) => p - 1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              {!(initialTip === 'USER' && adim === 2) && (
+                <button type="button" onClick={() => setAdim((p) => p - 1)} style={{ flex: 1, height: 48, fontSize: 14, fontWeight: 600, background: 'var(--color-bg-muted)', color: 'var(--color-text)', borderRadius: 12, border: 'none', cursor: 'pointer' }}>← Geri</button>
+              )}
               <button
                 type="button"
                 onClick={ileri}
@@ -626,6 +632,8 @@ function KayitForm() {
     </>
   )
 }
+
+export { KayitForm }
 
 export default function KayitSayfasi() {
   return (

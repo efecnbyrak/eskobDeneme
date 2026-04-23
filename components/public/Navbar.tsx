@@ -93,10 +93,10 @@ function UserDropdown({ me }: { me: Me }) {
     : isBusiness
     ? [{ href: '/panel', label: '🏪  İşletme Panelim' }]
     : [
-        { href: '/user/favoriler', label: '❤️  Favorilerim' },
-        { href: '/user/randevular', label: '📅  Geçmiş Randevularım' },
-        { href: '/user/yorumlar', label: '⭐  Yorumlarım' },
-        { href: '/user/ayarlar', label: '⚙️  Ayarlar' },
+        { href: '/musteri/genel/favorilerim', label: '❤️  Favorilerim' },
+        { href: '/musteri/genel/randevularim', label: '📅  Geçmiş Randevularım' },
+        { href: '/musteri/genel/yorumlarim', label: '⭐  Yorumlarım' },
+        { href: '/musteri/genel/ayarlar', label: '⚙️  Ayarlar' },
       ]
 
   return (
@@ -311,7 +311,7 @@ export function Navbar() {
                     {KATEGORILER.map((k) => (
                       <Link
                         key={k.slug}
-                        href={`/kategori/${k.slug}`}
+                        href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
                         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px', fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}
                       >
                         <span style={{ fontSize: 18 }}>{k.ikon}</span>
@@ -395,7 +395,7 @@ export function Navbar() {
                     {KATEGORILER.slice(0, 8).map((k) => (
                       <Link
                         key={k.slug}
-                        href={`/kategori/${k.slug}`}
+                        href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
                         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', fontSize: 14, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
                         onClick={() => setMenuAcik(false)}
                       >
@@ -421,9 +421,9 @@ export function Navbar() {
                     )}
                     {me?.rol === 'USER' && (
                       <>
-                        <Link href="/user/favoriler" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
-                        <Link href="/user/randevular" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
-                        <Link href="/user/ayarlar" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
+                        <Link href="/musteri/genel/favorilerim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
+                        <Link href="/musteri/genel/randevularim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
+                        <Link href="/musteri/genel/ayarlar" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
                       </>
                     )}
                     <button

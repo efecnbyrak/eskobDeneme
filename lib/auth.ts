@@ -13,6 +13,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: 'E-posta', type: 'email' },
         sifre: { label: 'Şifre', type: 'password' },
+        rememberMe: { label: 'Beni Hatırla', type: 'text' },
       },
       async authorize(credentials) {
         try {
@@ -26,6 +27,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const dogru = await bcrypt.compare(sifre, kullanici.sifreHash)
           if (!dogru) return null
 
+          const rememberMe = credentials?.rememberMe === 'true'
+
           return {
             id: String(kullanici.id),
             email: kullanici.email,
@@ -34,6 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             rol: kullanici.rol,
             ad: kullanici.ad,
             soyad: kullanici.soyad,
+            rememberMe,
           }
         } catch (err) {
           console.error('authorize error:', err)
@@ -45,11 +49,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
-        const u = user as { id: string; rol: Rol; ad: string; soyad: string }
+        const u = user as { id: string; rol: Rol; ad: string; soyad: string; rememberMe?: boolean }
         token.id = u.id
         token.rol = u.rol
         token.ad = u.ad
         token.soyad = u.soyad
+        token.rememberMe = u.rememberMe ?? true
+        if (u.rememberMe === false) {
+          // 24 saat sonra süresi dolar
+          token.exp = Math.floor(Date.now() / 1000) + 24 * 60 * 60
+        }
       }
       if (trigger === 'update' && token.id) {
         const taze = await prisma.kullanici.findUnique({
@@ -96,6 +105,6 @@ export function girisYoluByRol(rol?: Rol | string | null): string {
       return '/panel'
     case 'USER':
     default:
-      return '/user'
+      return '/musteri/genel'
   }
 }

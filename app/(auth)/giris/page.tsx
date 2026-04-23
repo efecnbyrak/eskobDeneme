@@ -5,6 +5,7 @@ import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
+import { LockCheckbox } from '@/components/ui/LockCheckbox'
 
 function GirisForm() {
   const searchParams = useSearchParams()
@@ -12,6 +13,7 @@ function GirisForm() {
 
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
+  const [beniHatirla, setBeniHatirla] = useState(false)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -26,6 +28,7 @@ function GirisForm() {
       const res = await signIn('credentials', {
         email,
         sifre,
+        rememberMe: beniHatirla ? 'true' : 'false',
         redirect: false,
       })
 
@@ -40,7 +43,7 @@ function GirisForm() {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/panel'
-        else hedef = '/musteri'
+        else hedef = '/musteri/genel'
       }
       window.location.href = hedef
     } catch {
@@ -151,6 +154,8 @@ function GirisForm() {
               }}
             />
           </div>
+
+          <LockCheckbox checked={beniHatirla} onChange={setBeniHatirla} />
 
           {hata && (
             <div

@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const rol = oturum.user.rol
   if (rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
     if (rol === 'BUSINESS') redirect('/panel')
-    redirect('/user')
+    redirect('/musteri/genel')
   }
 
   return (

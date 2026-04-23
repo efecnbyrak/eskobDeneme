@@ -102,11 +102,11 @@ export default async function MusteriSayfasi() {
           overflow: hidden;
           z-index: -1;
         }
-        .giris-btn-musteri::before { left: -10px; background: #240046; }
-        .giris-btn-musteri::after  { right: -10px; background: #5a189a; }
+        .giris-btn-musteri::before { left: -10px; background: #c45e0a; }
+        .giris-btn-musteri::after  { right: -10px; background: #F27A1A; }
         .giris-btn-musteri:hover::before,
         .giris-btn-musteri:hover::after { width: 58%; }
-        .giris-btn-musteri:hover { color: #e0aaff; border-color: #5a189a; transition: 0.3s; }
+        .giris-btn-musteri:hover { color: #fff; border-color: #F27A1A; transition: 0.3s; }
       `}</style>
 
       {/* ═══ HERO ═══ */}
@@ -184,7 +184,7 @@ export default async function MusteriSayfasi() {
               </>
             )}
             {girisYapti && (
-              <Link href="/user">
+              <Link href="/musteri/genel">
                 <button style={{ height: 52, padding: '0 32px', fontSize: '15px', fontWeight: 700, background: '#F27A1A', color: 'white', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px rgba(242,122,26,0.35)' }}>
                   Hesabıma Git →
                 </button>

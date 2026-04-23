@@ -6,8 +6,12 @@ type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
 const ADMIN_PATHS = ['/phyberk/admin']
 const BUSINESS_PATHS = ['/panel']
-const USER_PATHS = ['/user']
-const AUTH_PATHS = ['/giris', '/kayit']
+const MUSTERI_GENEL_PATHS = ['/musteri/genel']
+const AUTH_PATHS = [
+  '/giris', '/kayit',
+  '/musteri/giris', '/musteri/kayit',
+  '/isletme/giris', '/isletme/kayit',
+]
 
 function matchesAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
@@ -16,7 +20,7 @@ function matchesAny(pathname: string, prefixes: string[]) {
 function homeForRole(rol?: Rol | string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
   if (rol === 'BUSINESS') return '/panel'
-  if (rol === 'USER') return '/user'
+  if (rol === 'USER') return '/musteri/genel'
   return '/'
 }
 
@@ -27,6 +31,15 @@ export async function proxy(request: NextRequest) {
   const rol = oturum?.user?.rol as Rol | undefined
   const isAuthenticated = !!oturum?.user
 
+  // ── Ana sayfa: giriş yapmış kullanıcıları kendi alanına yönlendir ──
+  if (pathname === '/') {
+    if (isAuthenticated && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
+      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
+    }
+    return NextResponse.next()
+  }
+
+  // ── Auth sayfaları: giriş yapmışları yönlendir ──
   if (matchesAny(pathname, AUTH_PATHS)) {
     if (isAuthenticated) {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
@@ -34,6 +47,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // ── Admin rotaları ──
   if (matchesAny(pathname, ADMIN_PATHS)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/giris', request.url))
@@ -44,9 +58,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // ── İşletme paneli ──
   if (matchesAny(pathname, BUSINESS_PATHS)) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/giris', request.url))
+      return NextResponse.redirect(new URL('/isletme/giris', request.url))
     }
     if (rol !== 'BUSINESS' && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
@@ -54,12 +69,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  if (matchesAny(pathname, USER_PATHS)) {
+  // ── Müşteri hesap alanı (/musteri/genel/*) ──
+  if (matchesAny(pathname, MUSTERI_GENEL_PATHS)) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/giris', request.url))
+      return NextResponse.redirect(new URL('/musteri/giris', request.url))
     }
     if (rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/panel', request.url))
+    }
+    if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') {
+      return NextResponse.redirect(new URL('/phyberk/admin', request.url))
+    }
+    return NextResponse.next()
+  }
+
+  // ── İşletme landing (/isletme/*): USER girişli kullanıcılar erişemez ──
+  if (pathname === '/isletme' || (pathname.startsWith('/isletme/') && !pathname.startsWith('/isletme/giris') && !pathname.startsWith('/isletme/kayit'))) {
+    if (isAuthenticated && rol === 'USER') {
+      return NextResponse.redirect(new URL('/musteri/genel', request.url))
     }
     return NextResponse.next()
   }
@@ -69,10 +96,17 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/giris',
     '/kayit',
     '/panel/:path*',
-    '/user/:path*',
+    '/musteri/genel/:path*',
+    '/musteri/giris',
+    '/musteri/kayit',
+    '/isletme/giris',
+    '/isletme/kayit',
+    '/isletme',
+    '/isletme/:path*',
     '/phyberk/:path*',
   ],
 }

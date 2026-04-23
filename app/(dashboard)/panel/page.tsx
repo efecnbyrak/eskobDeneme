@@ -37,7 +37,7 @@ export default async function PanelSayfasi() {
   })
 
   if (!kullanici?.esnaf) {
-    redirect('/user')
+    redirect('/musteri/genel')
   }
 
   const esnaf = kullanici.esnaf

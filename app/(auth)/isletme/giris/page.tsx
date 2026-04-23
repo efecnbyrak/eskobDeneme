@@ -5,6 +5,7 @@ import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
+import { LockCheckbox } from '@/components/ui/LockCheckbox'
 
 function IsletmeGirisForm() {
   const searchParams = useSearchParams()
@@ -12,6 +13,7 @@ function IsletmeGirisForm() {
 
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
+  const [beniHatirla, setBeniHatirla] = useState(false)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -23,7 +25,12 @@ function IsletmeGirisForm() {
     const sifre = formData.get('sifre') as string
 
     try {
-      const res = await signIn('credentials', { email, sifre, redirect: false })
+      const res = await signIn('credentials', {
+        email,
+        sifre,
+        rememberMe: beniHatirla ? 'true' : 'false',
+        redirect: false,
+      })
 
       if (!res || res.error) {
         setHata('E-posta veya şifre hatalı.')
@@ -31,12 +38,12 @@ function IsletmeGirisForm() {
       }
 
       const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
-      let hedef = '/isletme'
+      let hedef = '/panel'
       if (meRes.ok) {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/panel'
-        else hedef = '/user'
+        else hedef = '/musteri/genel'
       }
       window.location.href = hedef
     } catch {
@@ -85,6 +92,8 @@ function IsletmeGirisForm() {
             />
           </div>
 
+          <LockCheckbox checked={beniHatirla} onChange={setBeniHatirla} />
+
           {hata && (
             <div style={{ padding: '12px 16px', borderRadius: 12, background: '#FEE2E2', color: '#991B1B', fontSize: 14, fontWeight: 500, border: '1px solid #FCA5A5' }}>
               {hata}
@@ -102,7 +111,7 @@ function IsletmeGirisForm() {
 
         <div style={{ marginTop: 28, textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: 15 }}>
           Hesabınız yok mu?{' '}
-          <Link href="/kayit" style={{ color: '#1A2744', fontWeight: 700 }}>Ücretsiz Başla</Link>
+          <Link href="/isletme/kayit" style={{ color: '#1A2744', fontWeight: 700 }}>Ücretsiz Başla</Link>
         </div>
 
         <div style={{ marginTop: 16, textAlign: 'center' }}>

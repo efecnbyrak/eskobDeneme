@@ -141,11 +141,11 @@ export default async function IsletmeSayfasi() {
           overflow: hidden;
           z-index: -1;
         }
-        .giris-btn-isletme::before { left: -10px; background: #240046; }
-        .giris-btn-isletme::after  { right: -10px; background: #5a189a; }
+        .giris-btn-isletme::before { left: -10px; background: #0f1a30; }
+        .giris-btn-isletme::after  { right: -10px; background: #253a6e; }
         .giris-btn-isletme:hover::before,
         .giris-btn-isletme:hover::after { width: 58%; }
-        .giris-btn-isletme:hover { color: #e0aaff; border-color: #5a189a; transition: 0.3s; }
+        .giris-btn-isletme:hover { color: #fff; border-color: rgba(255,255,255,0.7); transition: 0.3s; }
       `}</style>
 
       {/* ═══ HERO — tam karanlık #1A2744 arka plan ═══ */}

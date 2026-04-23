@@ -27,28 +27,28 @@ export default async function UserLayout({ children }: { children: React.ReactNo
             </span>
             <nav className="flex items-center gap-1">
               <a
-                href="/user/randevular"
+                href="/musteri/genel/randevularim"
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Randevular"
               >
                 📅
               </a>
               <a
-                href="/user/favoriler"
+                href="/musteri/genel/favorilerim"
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Favoriler"
               >
                 ❤️
               </a>
               <a
-                href="/user/yorumlar"
+                href="/musteri/genel/yorumlarim"
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Yorumlarım"
               >
                 ⭐
               </a>
               <a
-                href="/user/ayarlar"
+                href="/musteri/genel/ayarlar"
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Ayarlar"
               >

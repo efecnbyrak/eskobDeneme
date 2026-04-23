@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 
 export const dynamic = 'force-dynamic'
 
-export default async function UserAnaSayfa() {
+export default async function MusteriGenelSayfa() {
   const oturum = await auth()
   const userId = oturum!.user!.id!
 
@@ -66,7 +66,7 @@ export default async function UserAnaSayfa() {
               <p style={{ color: 'var(--color-text-secondary)', marginBottom: 16 }}>
                 Yaklaşan randevunuz yok.
               </p>
-              <Link href="/ara">
+              <Link href="/musteri/ara">
                 <Button size="sm">Esnaf Keşfet</Button>
               </Link>
             </div>
