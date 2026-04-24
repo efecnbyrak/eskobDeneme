@@ -26,7 +26,7 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
 
   return (
     <Link
-      href={`/musteri/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
+      href={`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`}
       className="group block"
       style={{
         background: 'white',

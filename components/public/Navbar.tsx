@@ -16,6 +16,7 @@ type Me = {
   soyad?: string | null
   avatarUrl?: string | null
   rol?: 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
+  kullaniciAdi?: string | null
 }
 
 function basTurlari(ad?: string | null, soyad?: string | null) {
@@ -98,13 +99,16 @@ function UserDropdown({ me }: { me: Me }) {
     ? [{ href: '/phyberk/admin', label: '🛡️  Yönetim Paneli' }]
     : isBusiness
     ? [{ href: '/isletme/panel', label: '🏪  İşletme Panelim' }]
-    : [
-        { href: '/musteri/genel', label: '🏠  Genel Bakış' },
-        { href: '/musteri/genel/favorilerim', label: '❤️  Favorilerim' },
-        { href: '/musteri/genel/randevularim', label: '📅  Randevularım' },
-        { href: '/musteri/genel/yorumlarim', label: '⭐  Yorumlarım' },
-        { href: '/musteri/genel/ayarlar', label: '⚙️  Ayarlar' },
-      ]
+    : (() => {
+        const base = me.kullaniciAdi ? `/${me.kullaniciAdi}` : '/hesabim'
+        return [
+          { href: `${base}/genel`, label: '🏠  Genel Bakış' },
+          { href: `${base}/favorilerim`, label: '❤️  Favorilerim' },
+          { href: `${base}/randevularim`, label: '📅  Randevularım' },
+          { href: `${base}/yorumlarim`, label: '⭐  Yorumlarım' },
+          { href: `${base}/ayarlar`, label: '⚙️  Ayarlar' },
+        ]
+      })()
 
   return (
     <>
@@ -448,14 +452,17 @@ export function Navbar() {
                           <Button variant="secondary" size="sm" className="w-full">🏪 İşletme Panelim</Button>
                         </Link>
                       )}
-                      {me?.rol === 'USER' && (
-                        <>
-                          <Link href="/musteri/genel" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
-                          <Link href="/musteri/genel/favorilerim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
-                          <Link href="/musteri/genel/randevularim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
-                          <Link href="/musteri/genel/ayarlar" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
-                        </>
-                      )}
+                      {me?.rol === 'USER' && (() => {
+                        const base = me.kullaniciAdi ? `/${me.kullaniciAdi}` : '/hesabim'
+                        return (
+                          <>
+                            <Link href={`${base}/genel`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
+                            <Link href={`${base}/favorilerim`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
+                            <Link href={`${base}/randevularim`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
+                            <Link href={`${base}/ayarlar`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
+                          </>
+                        )
+                      })()}
                       <button
                         onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/' }) }}
                         style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}

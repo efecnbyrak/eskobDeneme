@@ -9,12 +9,10 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: '/user', destination: '/musteri/genel', permanent: false },
-      { source: '/user/favoriler', destination: '/musteri/genel/favorilerim', permanent: false },
-      { source: '/user/randevular', destination: '/musteri/genel/randevularim', permanent: false },
-      { source: '/user/yorumlar', destination: '/musteri/genel/yorumlarim', permanent: false },
-      { source: '/user/profil', destination: '/musteri/genel/profil', permanent: false },
-      { source: '/user/ayarlar', destination: '/musteri/genel/ayarlar', permanent: false },
+      { source: '/user', destination: '/hesabim', permanent: false },
+      { source: '/user/:path*', destination: '/hesabim', permanent: false },
+      { source: '/musteri/genel', destination: '/hesabim', permanent: false },
+      { source: '/musteri/genel/:path*', destination: '/hesabim', permanent: false },
     ]
   },
 }

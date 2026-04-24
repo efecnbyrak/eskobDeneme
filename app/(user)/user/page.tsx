@@ -54,7 +54,7 @@ export default async function UserAnaSayfa() {
       <Card>
         <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
           <h2 className="font-semibold font-display">Yaklaşan Randevularım</h2>
-          <Link href="/musteri/genel/randevularim">
+          <Link href="randevularim">
             <Button variant="ghost" size="sm">
               Tümü →
             </Button>
@@ -90,7 +90,7 @@ export default async function UserAnaSayfa() {
                       {new Date(r.tarih).toLocaleString('tr-TR')}
                     </p>
                   </div>
-                  <Link href={`/musteri/${r.esnaf.sehir.toLowerCase()}/${r.esnaf.slug}`}>
+                  <Link href={`/${r.esnaf.sehir.toLowerCase()}/${r.esnaf.slug}`}>
                     <Button variant="secondary" size="sm">
                       Görüntüle
                     </Button>

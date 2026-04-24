@@ -104,12 +104,12 @@ function MusteriGirisForm() {
       }
 
       const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
-      let hedef = '/musteri/genel'
+      let hedef = '/hesabim'
       if (meRes.ok) {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/isletme/panel'
-        else hedef = '/musteri/genel'
+        else hedef = me.kullaniciAdi ? `/${me.kullaniciAdi}/genel` : '/hesabim'
         if (me.ad) sessionStorage.setItem('hosgeldin', me.ad)
         else sessionStorage.setItem('hosgeldin', '1')
       }

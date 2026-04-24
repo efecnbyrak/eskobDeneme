@@ -109,7 +109,7 @@ function IsletmeGirisForm() {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/isletme/panel'
-        else hedef = '/musteri/genel'
+        else hedef = '/hesabim'
         if (me.ad) sessionStorage.setItem('hosgeldin', me.ad)
         else sessionStorage.setItem('hosgeldin', '1')
       }

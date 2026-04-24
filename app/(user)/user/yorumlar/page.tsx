@@ -76,7 +76,7 @@ export default async function YorumlarPage() {
                   >
                     {new Date(y.olusturmaT).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
-                  <Link href={`/musteri/${y.esnaf.sehir.toLowerCase()}/${y.esnaf.slug}`}>
+                  <Link href={`/${y.esnaf.sehir.toLowerCase()}/${y.esnaf.slug}`}>
                     <Button variant="secondary" size="sm">İşletme</Button>
                   </Link>
                 </div>

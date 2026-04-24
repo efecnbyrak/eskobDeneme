@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 function useMenuItems() {
   const { data: session } = useSession()
   const username = session?.user?.kullaniciAdi ?? ''
-  const base = username ? `/${username}` : '/hesabim'
+  const base = `/${username}`
   return [
     { href: `${base}/genel`, label: 'Genel Bakış', ikon: '🏠', exact: true },
     { href: `${base}/randevularim`, label: 'Randevularım', ikon: '📅', exact: false },

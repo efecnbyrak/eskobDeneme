@@ -96,7 +96,7 @@ export async function proxy(request: NextRequest) {
     (pathname.startsWith('/musteri/') &&
       !pathname.startsWith('/musteri/giris') &&
       !pathname.startsWith('/musteri/kayit') &&
-      !pathname.startsWith('/musteri/genel'))
+      !pathname.startsWith('/musteri/panel'))
   ) {
     if (isAuthenticated && (rol === 'BUSINESS' || rol === 'SUPER_ADMIN' || rol === 'ADMIN')) {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))

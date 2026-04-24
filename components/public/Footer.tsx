@@ -248,17 +248,17 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/musteri/genel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                      Genel Bakış
+                    <Link href="/hesabim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                      Hesabım
                     </Link>
                   </li>
                   <li>
-                    <Link href="/musteri/genel/randevularim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/hesabim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Randevularım
                     </Link>
                   </li>
                   <li>
-                    <Link href="/musteri/genel/favorilerim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/hesabim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Favorilerim
                     </Link>
                   </li>

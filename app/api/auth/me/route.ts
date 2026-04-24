@@ -10,7 +10,7 @@ export async function GET() {
 
   const kullanici = await prisma.kullanici.findUnique({
     where: { id: parseInt(oturum.user.id) },
-    select: { id: true, ad: true, soyad: true, email: true, rol: true, avatarUrl: true, telefon: true },
+    select: { id: true, ad: true, soyad: true, email: true, rol: true, avatarUrl: true, telefon: true, kullaniciAdi: true },
   })
 
   if (!kullanici) {
@@ -27,5 +27,6 @@ export async function GET() {
     avatarUrl: kullanici.avatarUrl,
     telefon: kullanici.telefon,
     rol: kullanici.rol,
+    kullaniciAdi: kullanici.kullaniciAdi,
   })
 }

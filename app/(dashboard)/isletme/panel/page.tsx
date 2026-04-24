@@ -70,7 +70,7 @@ export default async function PanelSayfasi() {
   const whatsappT = esnaf.istatistikler.reduce((s: number, i: { whatsappT: number }) => s + i.whatsappT, 0)
   const bekleyenRandevu = esnaf.randevular.filter((r: { durum: string }) => r.durum === 'BEKLIYOR').length
 
-  const vitrinUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/musteri/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`
+  const vitrinUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`
 
   return (
     <div>
