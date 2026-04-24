@@ -6,7 +6,7 @@ type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
 const ADMIN_PATHS = ['/phyberk/admin']
 const BUSINESS_PATHS = ['/panel', '/isletme/panel']
-const MUSTERI_GENEL_PATHS = ['/musteri/genel']
+const MUSTERI_GENEL_PATHS = ['/musteri/genel', '/hesabim']
 const AUTH_PATHS = [
   '/giris', '/kayit',
   '/musteri/kayit',
@@ -22,7 +22,7 @@ function matchesAny(pathname: string, prefixes: string[]) {
 function homeForRole(rol?: Rol | string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
   if (rol === 'BUSINESS') return '/isletme/panel'
-  if (rol === 'USER') return '/musteri'
+  if (rol === 'USER') return '/hesabim'
   return '/'
 }
 
@@ -40,6 +40,9 @@ export async function proxy(request: NextRequest) {
     }
     if (isAuthenticated && rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/isletme/panel', request.url))
+    }
+    if (isAuthenticated && rol === 'USER') {
+      return NextResponse.redirect(new URL('/hesabim', request.url))
     }
     return NextResponse.next()
   }
@@ -111,7 +114,7 @@ export async function proxy(request: NextRequest) {
       !pathname.startsWith('/isletme/panel'))
   ) {
     if (isAuthenticated && rol === 'USER') {
-      return NextResponse.redirect(new URL('/musteri/genel', request.url))
+      return NextResponse.redirect(new URL('/hesabim', request.url))
     }
     return NextResponse.next()
   }
@@ -124,6 +127,7 @@ export const config = {
     '/',
     '/giris',
     '/kayit',
+    '/hesabim',
     '/panel/:path*',
     '/isletme/panel/:path*',
     '/musteri',

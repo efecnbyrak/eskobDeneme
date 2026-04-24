@@ -6,11 +6,13 @@ import { HosgeldinToast } from '@/components/ui/HosgeldinToast'
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
-  if (!oturum?.user) redirect('/musteri/giris')
+  if (!oturum?.user) redirect('/giris')
 
   const rol = oturum.user.rol
   if (rol === 'BUSINESS') redirect('/isletme/panel')
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
+
+  const base = oturum.user.kullaniciAdi ? `/${oturum.user.kullaniciAdi}` : '/hesabim'
 
   return (
     <ToastProvider>
@@ -29,28 +31,28 @@ export default async function UserLayout({ children }: { children: React.ReactNo
             </span>
             <nav className="flex items-center gap-1">
               <a
-                href="/musteri/genel/randevularim"
+                href={`${base}/randevularim`}
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Randevular"
               >
                 📅
               </a>
               <a
-                href="/musteri/genel/favorilerim"
+                href={`${base}/favorilerim`}
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Favoriler"
               >
                 ❤️
               </a>
               <a
-                href="/musteri/genel/yorumlarim"
+                href={`${base}/yorumlarim`}
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Yorumlarım"
               >
                 ⭐
               </a>
               <a
-                href="/musteri/genel/ayarlar"
+                href={`${base}/ayarlar`}
                 className="p-2 rounded-lg hover:bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]"
                 title="Ayarlar"
               >

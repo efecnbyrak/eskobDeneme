@@ -41,6 +41,14 @@ export const KullaniciKayitSchema = z.object({
   soyad: adSchema,
   email: emailSchema,
   sifre: sifreSchema,
+  kullaniciAdi: z
+    .string()
+    .min(3, 'Kullanıcı adı en az 3 karakter olmalı')
+    .max(30, 'Kullanıcı adı en fazla 30 karakter olabilir')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Sadece İngilizce harf, rakam ve alt çizgi (_) kullanılabilir')
+    .refine((v) => !/^[0-9_]+$/.test(v), 'En az bir harf içermeli')
+    .optional()
+    .or(z.literal('')),
   telefon: telefonSchema.optional().or(z.literal('')),
   sehir: z.string().min(1, 'Şehir seçin'),
   ilce: z.string().min(1, 'İlçe girin'),

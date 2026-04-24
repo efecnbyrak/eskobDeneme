@@ -270,7 +270,7 @@ function KayitForm({ initialTip }: { initialTip?: Tip }) {
       const signInRes = await signIn('credentials', { email: base.email, sifre: base.sifre, redirect: false })
       if (!signInRes || signInRes.error) { window.location.href = '/giris?kayit=basarili'; return }
       sessionStorage.setItem('hosgeldin', ad.trim())
-      window.location.href = tip === 'BUSINESS' ? '/isletme/panel' : '/musteri/genel'
+      window.location.href = tip === 'BUSINESS' ? '/isletme/panel' : '/hesabim'
     } catch (err) {
       setHata(err instanceof Error ? err.message : 'Bir hata oluştu.')
     } finally {

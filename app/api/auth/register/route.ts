@@ -27,11 +27,18 @@ export async function POST(req: NextRequest) {
     const sifreHash = await bcrypt.hash(veri.sifre, 12)
 
     if (veri.tip === 'USER') {
+      if (veri.kullaniciAdi) {
+        const mevcutAd = await prisma.kullanici.findUnique({ where: { kullaniciAdi: veri.kullaniciAdi } })
+        if (mevcutAd) {
+          return NextResponse.json({ error: 'Bu kullanıcı adı zaten alınmış.' }, { status: 400 })
+        }
+      }
       const kullanici = await prisma.kullanici.create({
         data: {
           ad: veri.ad.trim(),
           soyad: veri.soyad.trim(),
           email,
+          kullaniciAdi: veri.kullaniciAdi?.trim() || null,
           telefon,
           sifreHash,
           rol: 'USER',

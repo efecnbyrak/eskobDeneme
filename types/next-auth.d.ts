@@ -7,6 +7,7 @@ declare module 'next-auth' {
     rol?: Rol
     ad?: string
     soyad?: string
+    kullaniciAdi?: string | null
   }
 
   interface Session {
@@ -15,6 +16,7 @@ declare module 'next-auth' {
       rol?: Rol
       ad?: string
       soyad?: string
+      kullaniciAdi?: string | null
       name?: string | null
       email?: string | null
       image?: string | null
@@ -28,5 +30,6 @@ declare module 'next-auth/jwt' {
     rol?: Rol
     ad?: string
     soyad?: string
+    kullaniciAdi?: string | null
   }
 }

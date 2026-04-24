@@ -10,6 +10,7 @@ datasource db {
 model Kullanici {
   id              Int       @id @default(autoincrement())
   email           String    @unique
+  kullaniciAdi    String?   @unique
   telefon         String?
   sifreHash       String
   ad              String

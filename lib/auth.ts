@@ -37,6 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             rol: kullanici.rol,
             ad: kullanici.ad,
             soyad: kullanici.soyad,
+            kullaniciAdi: kullanici.kullaniciAdi ?? null,
             rememberMe,
           }
         } catch (err) {
@@ -49,11 +50,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
-        const u = user as { id: string; rol: Rol; ad: string; soyad: string; rememberMe?: boolean }
+        const u = user as { id: string; rol: Rol; ad: string; soyad: string; kullaniciAdi?: string | null; rememberMe?: boolean }
         token.id = u.id
         token.rol = u.rol
         token.ad = u.ad
         token.soyad = u.soyad
+        token.kullaniciAdi = u.kullaniciAdi ?? null
         token.rememberMe = u.rememberMe ?? true
         if (u.rememberMe === false) {
           // 24 saat sonra süresi dolar
@@ -63,12 +65,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (trigger === 'update' && token.id) {
         const taze = await prisma.kullanici.findUnique({
           where: { id: parseInt(token.id as string) },
-          select: { rol: true, ad: true, soyad: true, avatarUrl: true, email: true },
+          select: { rol: true, ad: true, soyad: true, kullaniciAdi: true, avatarUrl: true, email: true },
         })
         if (taze) {
           token.rol = taze.rol
           token.ad = taze.ad
           token.soyad = taze.soyad
+          token.kullaniciAdi = taze.kullaniciAdi ?? null
           token.picture = taze.avatarUrl ?? undefined
           token.email = taze.email
         }
@@ -81,6 +84,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.rol = token.rol as Rol
         session.user.ad = token.ad as string
         session.user.soyad = token.soyad as string
+        session.user.kullaniciAdi = (token.kullaniciAdi as string | null) ?? null
       }
       return session
     },
@@ -105,6 +109,6 @@ export function girisYoluByRol(rol?: Rol | string | null): string {
       return '/isletme/panel'
     case 'USER':
     default:
-      return '/musteri/genel'
+      return '/hesabim'
   }
 }
