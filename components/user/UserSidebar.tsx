@@ -3,23 +3,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { signOut, useSession } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/lib/utils'
 
-function useMenuItems() {
-  const { data: session } = useSession()
-  const username = session?.user?.kullaniciAdi ?? ''
-  const base = `/${username}`
-  return [
-    { href: `${base}/genel`, label: 'Genel Bakış', ikon: '🏠', exact: true },
-    { href: `${base}/randevularim`, label: 'Randevularım', ikon: '📅', exact: false },
-    { href: `${base}/favorilerim`, label: 'Favorilerim', ikon: '❤️', exact: false },
-    { href: `${base}/yorumlarim`, label: 'Yorumlarım', ikon: '⭐', exact: false },
-    { href: `${base}/profil`, label: 'Profilim', ikon: '👤', exact: false },
-    { href: `${base}/ayarlar`, label: 'Ayarlar', ikon: '⚙️', exact: false },
-  ]
-}
+const MENU_ITEMS = [
+  { href: '/hesabim/genel', label: 'Genel Bakış', ikon: '🏠', exact: true },
+  { href: '/hesabim/genel/randevularim', label: 'Randevularım', ikon: '📅', exact: false },
+  { href: '/hesabim/genel/favorilerim', label: 'Favorilerim', ikon: '❤️', exact: false },
+  { href: '/hesabim/genel/yorumlarim', label: 'Yorumlarım', ikon: '⭐', exact: false },
+  { href: '/hesabim/genel/profil', label: 'Profilim', ikon: '👤', exact: false },
+  { href: '/hesabim/genel/ayarlar', label: 'Ayarlar', ikon: '⚙️', exact: false },
+]
 
 function CikisModal({ onOnayla, onIptal }: { onOnayla: () => void; onIptal: () => void }) {
   return (
@@ -76,7 +71,7 @@ export function UserSidebar() {
   const pathname = usePathname()
   const [cikisModal, setCikisModal] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const items = useMenuItems()
+  const items = MENU_ITEMS
 
   useEffect(() => setMounted(true), [])
 

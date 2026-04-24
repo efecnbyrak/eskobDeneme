@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
@@ -70,12 +71,12 @@ export function AdminSidebar({ rol }: { rol?: string }) {
       </nav>
 
       <div className="p-3 border-t border-white/10">
-        <a
-          href="/api/auth/signout"
-          className="flex items-center gap-3 text-sm text-white/70 hover:text-red-300 hover:bg-red-500/10 transition-all px-3 py-2.5 rounded-[var(--radius-md)]"
+        <button
+          onClick={() => signOut({ callbackUrl: '/giris' })}
+          className="flex w-full items-center gap-3 text-sm text-white/70 hover:text-red-300 hover:bg-red-500/10 transition-all px-3 py-2.5 rounded-[var(--radius-md)]"
         >
-          <span className="w-5 text-center">🚪</span> Çıkış Yap
-        </a>
+          <span className="w-5 text-center">🚪</span> Hesaptan Çıkış Yap
+        </button>
       </div>
     </aside>
   )

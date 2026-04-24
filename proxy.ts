@@ -17,10 +17,10 @@ function matchesAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
 }
 
-function homeForRole(rol?: Rol | string | null, kullaniciAdi?: string | null): string {
+function homeForRole(rol?: Rol | string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
   if (rol === 'BUSINESS') return '/isletme/panel'
-  if (rol === 'USER') return kullaniciAdi ? `/${kullaniciAdi}/genel` : '/'
+  if (rol === 'USER') return '/hesabim/genel'
   return '/'
 }
 
@@ -29,10 +29,9 @@ export async function proxy(request: NextRequest) {
 
   const oturum = await auth()
   const rol = oturum?.user?.rol as Rol | undefined
-  const kullaniciAdi = oturum?.user?.kullaniciAdi ?? null
   const isAuthenticated = !!oturum?.user
 
-  // ── Ana sayfa: BUSINESS ve admin kendi alanına, USER kullanıcı adı varsa profiline ──
+  // ── Ana sayfa: BUSINESS ve admin kendi alanına, USER hesabım/genel'e ──
   if (pathname === '/') {
     if (isAuthenticated && (rol === 'SUPER_ADMIN' || rol === 'ADMIN')) {
       return NextResponse.redirect(new URL('/phyberk/admin', request.url))
@@ -40,8 +39,8 @@ export async function proxy(request: NextRequest) {
     if (isAuthenticated && rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/isletme/panel', request.url))
     }
-    if (isAuthenticated && rol === 'USER' && kullaniciAdi) {
-      return NextResponse.redirect(new URL(`/${kullaniciAdi}/genel`, request.url))
+    if (isAuthenticated && rol === 'USER') {
+      return NextResponse.redirect(new URL('/hesabim/genel', request.url))
     }
     return NextResponse.next()
   }
@@ -49,7 +48,7 @@ export async function proxy(request: NextRequest) {
   // ── Auth sayfaları: giriş yapmışları yönlendir ──
   if (matchesAny(pathname, AUTH_PATHS)) {
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL(homeForRole(rol, kullaniciAdi), request.url))
+      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
     }
     return NextResponse.next()
   }
@@ -60,7 +59,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/giris', request.url))
     }
     if (rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
-      return NextResponse.redirect(new URL(homeForRole(rol, kullaniciAdi), request.url))
+      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
     }
     return NextResponse.next()
   }
@@ -71,12 +70,12 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/isletme/giris', request.url))
     }
     if (rol !== 'BUSINESS' && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
-      return NextResponse.redirect(new URL(homeForRole(rol, kullaniciAdi), request.url))
+      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
     }
     return NextResponse.next()
   }
 
-  // ── /hesabim: sadece USER'ı profiline yönlendiren geçiş sayfası ──
+  // ── /hesabim ve /hesabim/genel/**: sadece USER ──
   if (matchesAny(pathname, HESABIM_PATHS)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/musteri/giris', request.url))
@@ -113,7 +112,7 @@ export async function proxy(request: NextRequest) {
       !pathname.startsWith('/isletme/panel'))
   ) {
     if (isAuthenticated && rol === 'USER') {
-      return NextResponse.redirect(new URL('/hesabim', request.url))
+      return NextResponse.redirect(new URL('/hesabim/genel', request.url))
     }
     return NextResponse.next()
   }
@@ -127,6 +126,7 @@ export const config = {
     '/giris',
     '/kayit',
     '/hesabim',
+    '/hesabim/:path*',
     '/panel/:path*',
     '/isletme/panel/:path*',
     '/musteri',
