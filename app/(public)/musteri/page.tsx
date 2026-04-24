@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { ScrollRevealInit } from '@/components/public/ScrollReveal'
 import { HeroArama } from '@/components/public/HeroArama'
 import { KategoriSlider } from '@/components/public/KategoriSlider'
+import { HizliErisimKart } from '@/components/public/HizliErisimKart'
 
 export const metadata = {
   title: 'Müşteriler İçin | Eskob',
@@ -195,27 +196,7 @@ export default async function MusteriSayfasi() {
                 { href: '/musteri/genel/yorumlarim', label: 'Yorumlarım', ikon: '⭐', desc: 'Verdiğiniz yorumlar' },
                 { href: '/musteri/genel/profil', label: 'Profilim', ikon: '👤', desc: 'Kişisel bilgiler' },
               ].map((item) => (
-                <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
-                  <div
-                    style={{
-                      background: 'white', borderRadius: 16, border: '1px solid var(--color-border)',
-                      padding: '18px 20px', transition: 'all 0.2s', cursor: 'pointer',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = '#F27A1A'
-                      ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(242,122,26,0.12)'
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border)'
-                      ;(e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'
-                    }}
-                  >
-                    <div style={{ fontSize: 24, marginBottom: 10 }}>{item.ikon}</div>
-                    <p style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text)', marginBottom: 4 }}>{item.label}</p>
-                    <p style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{item.desc}</p>
-                  </div>
-                </Link>
+                <HizliErisimKart key={item.href} href={item.href} ikon={item.ikon} label={item.label} desc={item.desc} />
               ))}
             </div>
           </div>
