@@ -20,7 +20,7 @@ export function FavoriButon({ esnafId, baslangicFavori = false, authenticated = 
     e.stopPropagation()
 
     if (!authenticated) {
-      router.push('/giris')
+      router.push('/musteri/giris')
       return
     }
 

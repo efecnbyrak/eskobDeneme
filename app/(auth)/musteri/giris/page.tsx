@@ -75,7 +75,7 @@ function MusteriGirisForm() {
         const rol = d.rol
         let hedef = '/musteri'
         if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') hedef = '/phyberk/admin'
-        else if (rol === 'BUSINESS') hedef = '/panel'
+        else if (rol === 'BUSINESS') hedef = '/isletme/panel'
         setZatenGirisli(hedef)
       })
       .catch(() => {})
@@ -108,7 +108,7 @@ function MusteriGirisForm() {
       if (meRes.ok) {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
-        else if (me.rol === 'BUSINESS') hedef = '/panel'
+        else if (me.rol === 'BUSINESS') hedef = '/isletme/panel'
         else hedef = '/musteri'
       }
       window.location.href = hedef

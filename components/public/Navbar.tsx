@@ -97,7 +97,7 @@ function UserDropdown({ me }: { me: Me }) {
   const menuLinks = isAdmin
     ? [{ href: '/phyberk/admin', label: '🛡️  Yönetim Paneli' }]
     : isBusiness
-    ? [{ href: '/panel', label: '🏪  İşletme Panelim' }]
+    ? [{ href: '/isletme/panel', label: '🏪  İşletme Panelim' }]
     : [
         { href: '/musteri/genel', label: '🏠  Genel Bakış' },
         { href: '/musteri/genel/favorilerim', label: '❤️  Favorilerim' },
@@ -253,9 +253,9 @@ export function Navbar() {
 
   const isletmeNavLinks = [
     { href: '/isletme', label: 'Anasayfa' },
-    { href: '/isletme#ozellikler', label: 'Özellikler' },
-    { href: '/isletme#nasil-calisir', label: 'Nasıl Çalışır?' },
-    { href: '/iletisim', label: 'İletişim' },
+    { href: '/isletme/ozellikler', label: 'Özellikler' },
+    { href: '/isletme/nasil-calisir', label: 'Nasıl Çalışır?' },
+    { href: '/isletme/iletisim', label: 'İletişim' },
   ]
 
   const musteriNavLinks = [
@@ -289,7 +289,7 @@ export function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
             {/* Logo */}
             <Link
-              href="/"
+              href={isIsletme ? '/isletme' : isMusteri ? '/musteri' : '/'}
               style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 18, color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }}
               className="font-display"
             >
@@ -453,7 +453,7 @@ export function Navbar() {
                         </Link>
                       )}
                       {me?.rol === 'BUSINESS' && (
-                        <Link href="/panel" onClick={() => setMenuAcik(false)}>
+                        <Link href="/isletme/panel" onClick={() => setMenuAcik(false)}>
                           <Button variant="secondary" size="sm" className="w-full">🏪 İşletme Panelim</Button>
                         </Link>
                       )}

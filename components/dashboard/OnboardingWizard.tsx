@@ -40,7 +40,7 @@ export function OnboardingWizard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (res.ok) router.push('/panel')
+      if (res.ok) router.push('/isletme/panel')
     } finally {
       setYukleniyor(false)
     }

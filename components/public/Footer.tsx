@@ -193,12 +193,12 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/isletme#ozellikler" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/ozellikler" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Özellikler
                     </Link>
                   </li>
                   <li>
-                    <Link href="/isletme#nasil-calisir" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/nasil-calisir" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Nasıl Çalışır?
                     </Link>
                   </li>
@@ -279,17 +279,17 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       İşletme Paneli
                     </Link>
                   </li>
                   <li>
-                    <Link href="/panel/vitrin" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/panel/vitrin" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Vitrinim
                     </Link>
                   </li>
                   <li>
-                    <Link href="/panel/randevular" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/panel/randevular" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Randevular
                     </Link>
                   </li>
@@ -310,7 +310,7 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/panel" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       İşletme Paneli
                     </Link>
                   </li>

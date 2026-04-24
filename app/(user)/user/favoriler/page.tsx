@@ -72,7 +72,7 @@ export default async function FavorilerPage() {
           {favoriler.map((f) => (
             <Link
               key={f.id}
-              href={`/${f.esnaf.sehir.toLowerCase()}/${f.esnaf.slug}`}
+              href={`/musteri/${f.esnaf.sehir.toLowerCase()}/${f.esnaf.slug}`}
               style={{
                 background: 'white',
                 borderRadius: 16,

@@ -90,7 +90,7 @@ export default async function UserAnaSayfa() {
                       {new Date(r.tarih).toLocaleString('tr-TR')}
                     </p>
                   </div>
-                  <Link href={`/${r.esnaf.sehir.toLowerCase()}/${r.esnaf.slug}`}>
+                  <Link href={`/musteri/${r.esnaf.sehir.toLowerCase()}/${r.esnaf.slug}`}>
                     <Button variant="secondary" size="sm">
                       Görüntüle
                     </Button>

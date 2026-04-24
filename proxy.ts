@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
 const ADMIN_PATHS = ['/phyberk/admin']
-const BUSINESS_PATHS = ['/panel']
+const BUSINESS_PATHS = ['/panel', '/isletme/panel']
 const MUSTERI_GENEL_PATHS = ['/musteri/genel']
 const AUTH_PATHS = [
   '/giris', '/kayit',
@@ -21,7 +21,7 @@ function matchesAny(pathname: string, prefixes: string[]) {
 
 function homeForRole(rol?: Rol | string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
-  if (rol === 'BUSINESS') return '/panel'
+  if (rol === 'BUSINESS') return '/isletme/panel'
   if (rol === 'USER') return '/musteri'
   return '/'
 }
@@ -77,7 +77,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/musteri/giris', request.url))
     }
     if (rol === 'BUSINESS') {
-      return NextResponse.redirect(new URL('/panel', request.url))
+      return NextResponse.redirect(new URL('/isletme/panel', request.url))
     }
     if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') {
       return NextResponse.redirect(new URL('/phyberk/admin', request.url))
@@ -104,7 +104,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/isletme' ||
     (pathname.startsWith('/isletme/') &&
       !pathname.startsWith('/isletme/giris') &&
-      !pathname.startsWith('/isletme/kayit'))
+      !pathname.startsWith('/isletme/kayit') &&
+      !pathname.startsWith('/isletme/panel'))
   ) {
     if (isAuthenticated && rol === 'USER') {
       return NextResponse.redirect(new URL('/musteri/genel', request.url))
@@ -121,6 +122,7 @@ export const config = {
     '/giris',
     '/kayit',
     '/panel/:path*',
+    '/isletme/panel/:path*',
     '/musteri',
     '/musteri/:path*',
     '/isletme',

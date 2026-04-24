@@ -8,7 +8,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
   if (!oturum?.user) redirect('/musteri/giris')
 
   const rol = oturum.user.rol
-  if (rol === 'BUSINESS') redirect('/panel')
+  if (rol === 'BUSINESS') redirect('/isletme/panel')
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
 
   return (

@@ -141,7 +141,7 @@ function RandevuKart({
         >
           {r.durum}
         </Badge>
-        <Link href={`/${r.esnaf.sehir.toLowerCase()}/${r.esnaf.slug}`}>
+        <Link href={`/musteri/${r.esnaf.sehir.toLowerCase()}/${r.esnaf.slug}`}>
           <Button variant="secondary" size="sm">
             İşletme
           </Button>

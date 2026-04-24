@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 const MENU_ITEMS = [
   {
-    href: '/panel',
+    href: '/isletme/panel',
     label: 'Genel Bakış',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +15,7 @@ const MENU_ITEMS = [
     ),
   },
   {
-    href: '/panel/vitrin',
+    href: '/isletme/panel/vitrin',
     label: 'Vitrinim',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,7 +24,7 @@ const MENU_ITEMS = [
     ),
   },
   {
-    href: '/panel/hizmetler',
+    href: '/isletme/panel/hizmetler',
     label: 'Hizmetler',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@ const MENU_ITEMS = [
     ),
   },
   {
-    href: '/panel/randevular',
+    href: '/isletme/panel/randevular',
     label: 'Randevular',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@ const MENU_ITEMS = [
     ),
   },
   {
-    href: '/panel/musteriler',
+    href: '/isletme/panel/musteriler',
     label: 'Müşteriler',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@ const MENU_ITEMS = [
     ),
   },
   {
-    href: '/panel/yorumlar',
+    href: '/isletme/panel/yorumlar',
     label: 'Yorumlar',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +60,7 @@ const MENU_ITEMS = [
     ),
   },
   {
-    href: '/panel/ayarlar',
+    href: '/isletme/panel/ayarlar',
     label: 'Ayarlar',
     ikon: (
       <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@ export function Sidebar() {
         </p>
         <ul className="space-y-0.5">
           {MENU_ITEMS.map((item) => {
-            const aktif = pathname === item.href || (item.href !== '/panel' && pathname.startsWith(item.href))
+            const aktif = pathname === item.href || (item.href !== '/isletme/panel' && pathname.startsWith(item.href))
             return (
               <li key={item.href}>
                 <Link

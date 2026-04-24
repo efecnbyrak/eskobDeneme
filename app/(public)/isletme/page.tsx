@@ -207,7 +207,7 @@ export default async function IsletmeSayfasi() {
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {girisYapti ? (
-              <Link href="/panel">
+              <Link href="/isletme/panel">
                 <button style={{ height: 56, padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: '#1A2744', borderRadius: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
                   Panele Git →
                 </button>
