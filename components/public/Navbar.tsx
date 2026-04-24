@@ -212,6 +212,7 @@ export function Navbar() {
   const [kategoriAcik, setKategoriAcik] = useState(false)
   const [me, setMe] = useState<Me | null>(null)
   const [visible, setVisible] = useState(true)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
   const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
@@ -227,9 +228,11 @@ export function Navbar() {
   }, [])
 
   useEffect(() => {
+    setScrolled(window.scrollY > 20)
     let prevY = window.scrollY
     function handleScroll() {
       const currentY = window.scrollY
+      setScrolled(currentY > 20)
       if (currentY < prevY || currentY < 10) {
         setVisible(true)
       } else if (currentY > prevY && currentY > 60) {
@@ -273,12 +276,13 @@ export function Navbar() {
       <nav
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-          background: isIsletme ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.92)',
+          background: scrolled ? 'rgba(255,255,255,0.98)' : (isIsletme ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.92)'),
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: isIsletme ? '1px solid rgba(255,255,255,0.25)' : '1px solid var(--color-border)',
+          borderBottom: scrolled ? '1px solid var(--color-border)' : (isIsletme ? '1px solid rgba(255,255,255,0.25)' : '1px solid var(--color-border)'),
+          boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none',
           transform: visible ? 'translateY(0)' : 'translateY(-100%)',
-          transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
+          transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s ease, box-shadow 0.3s ease',
         }}
       >
         <div className="container-main">

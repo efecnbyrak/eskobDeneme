@@ -1,15 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { auth } from '@/lib/auth'
 import { RandevuSchema } from '@/lib/validations'
 
 export async function GET(req: NextRequest) {
   try {
+    const oturum = await auth()
+    if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+
+    const kullanici = await prisma.kullanici.findUnique({
+      where: { email: oturum.user.email },
+      include: { esnaf: true },
+    })
+    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+
     const { searchParams } = new URL(req.url)
     const esnafIdStr = searchParams.get('esnafId')
-    if (!esnafIdStr) return NextResponse.json({ error: 'esnafId gerekli' }, { status: 400 })
+
+    const esnafId = esnafIdStr ? parseInt(esnafIdStr) : kullanici.esnaf.id
+    if (esnafId !== kullanici.esnaf.id) {
+      return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
+    }
 
     const randevular = await prisma.randevu.findMany({
-      where: { esnafId: parseInt(esnafIdStr) },
+      where: { esnafId },
       include: { hizmet: true },
       orderBy: { tarih: 'desc' },
     })
@@ -45,9 +59,23 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
+    const oturum = await auth()
+    if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+
+    const kullanici = await prisma.kullanici.findUnique({
+      where: { email: oturum.user.email },
+      include: { esnaf: true },
+    })
+    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
+
+    const mevcut = await prisma.randevu.findUnique({ where: { id: parseInt(id) } })
+    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) {
+      return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
+    }
 
     const body = await req.json()
     const randevu = await prisma.randevu.update({

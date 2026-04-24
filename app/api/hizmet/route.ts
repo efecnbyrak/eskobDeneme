@@ -31,6 +31,12 @@ export async function POST(req: NextRequest) {
     const oturum = await auth()
     if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
+    const kullanici = await prisma.kullanici.findUnique({
+      where: { email: oturum.user.email },
+      include: { esnaf: true },
+    })
+    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+
     const body = await req.json()
     const veri = HizmetSchema.parse(body)
 
@@ -41,7 +47,7 @@ export async function POST(req: NextRequest) {
         sure: veri.sure,
         aciklama: veri.aciklama,
         kategori: veri.kategori,
-        esnafId: parseInt(body.esnafId),
+        esnafId: kullanici.esnaf.id,
       },
     })
 
@@ -56,9 +62,20 @@ export async function PUT(req: NextRequest) {
     const oturum = await auth()
     if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
+    const kullanici = await prisma.kullanici.findUnique({
+      where: { email: oturum.user.email },
+      include: { esnaf: true },
+    })
+    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
+
+    const mevcut = await prisma.hizmet.findUnique({ where: { id: parseInt(id) } })
+    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) {
+      return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
+    }
 
     const body = await req.json()
     const veri = HizmetSchema.parse(body)
@@ -79,9 +96,20 @@ export async function DELETE(req: NextRequest) {
     const oturum = await auth()
     if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
 
+    const kullanici = await prisma.kullanici.findUnique({
+      where: { email: oturum.user.email },
+      include: { esnaf: true },
+    })
+    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
+
+    const mevcut = await prisma.hizmet.findUnique({ where: { id: parseInt(id) } })
+    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) {
+      return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
+    }
 
     await prisma.hizmet.update({ where: { id: parseInt(id) }, data: { aktif: false } })
     return NextResponse.json({ ok: true })

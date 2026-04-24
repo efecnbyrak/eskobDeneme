@@ -5,10 +5,10 @@ import { ToastProvider } from '@/components/ui/Toast'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
-  if (!oturum?.user) redirect('/giris?callbackUrl=/panel')
+  if (!oturum?.user) redirect('/isletme/giris')
 
   const rol = oturum.user.rol
-  if (rol === 'USER') redirect('/musteri/genel')
+  if (rol === 'USER') redirect('/musteri')
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
 
   return (

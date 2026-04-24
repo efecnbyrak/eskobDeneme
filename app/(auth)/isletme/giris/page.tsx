@@ -1,11 +1,62 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 import { LockCheckbox } from '@/components/ui/LockCheckbox'
+
+function ZatenGirisliModal({ hedef }: { hedef: string }) {
+  const [saniye, setSaniye] = useState(3)
+
+  useEffect(() => {
+    if (saniye <= 0) {
+      window.location.href = hedef
+      return
+    }
+    const t = setTimeout(() => setSaniye((s) => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [saniye, hedef])
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 99999,
+        background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      <div
+        style={{
+          background: 'white', borderRadius: 20, padding: '36px 32px',
+          maxWidth: 360, width: '90%', textAlign: 'center',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
+        }}
+      >
+        <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
+        <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: 'var(--color-text)' }}>
+          Zaten Giriş Yapıldı
+        </h3>
+        <p style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 8, lineHeight: 1.6 }}>
+          Hesabınıza zaten giriş yapılmış.
+        </p>
+        <p style={{ fontSize: 13, color: '#1A2744', fontWeight: 600, marginBottom: 28 }}>
+          {saniye} saniye içinde panele yönlendiriliyorsunuz...
+        </p>
+        <button
+          onClick={() => { window.location.href = hedef }}
+          style={{
+            width: '100%', height: 44, borderRadius: 12, border: 'none',
+            background: '#1A2744', color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+          }}
+        >
+          Hemen Git →
+        </button>
+      </div>
+    </div>
+  )
+}
 
 function IsletmeGirisForm() {
   const searchParams = useSearchParams()
@@ -14,6 +65,21 @@ function IsletmeGirisForm() {
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
   const [beniHatirla, setBeniHatirla] = useState(false)
+  const [zatenGirisli, setZatenGirisli] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d?.authenticated) return
+        const rol = d.rol
+        let hedef = '/panel'
+        if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') hedef = '/phyberk/admin'
+        else if (rol === 'USER') hedef = '/musteri'
+        setZatenGirisli(hedef)
+      })
+      .catch(() => {})
+  }, [])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -43,7 +109,7 @@ function IsletmeGirisForm() {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/panel'
-        else hedef = '/musteri/genel'
+        else hedef = '/musteri'
       }
       window.location.href = hedef
     } catch {
@@ -55,6 +121,8 @@ function IsletmeGirisForm() {
 
   return (
     <>
+      {zatenGirisli !== null && <ZatenGirisliModal hedef={zatenGirisli} />}
+
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <Link href="/isletme" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 28, textDecoration: 'none' }}>
           <span style={{ width: 48, height: 48, borderRadius: 12, background: '#1A2744', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 20, boxShadow: '0 4px 16px rgba(26,39,68,0.3)' }}>

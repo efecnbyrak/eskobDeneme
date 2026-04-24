@@ -9,9 +9,11 @@ const BUSINESS_PATHS = ['/panel']
 const MUSTERI_GENEL_PATHS = ['/musteri/genel']
 const AUTH_PATHS = [
   '/giris', '/kayit',
-  '/musteri/giris', '/musteri/kayit',
-  '/isletme/giris', '/isletme/kayit',
+  '/musteri/kayit',
+  '/isletme/kayit',
 ]
+
+// /musteri/giris ve /isletme/giris client-side handle edilir (zaten giriş popup'u için)
 
 function matchesAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
@@ -20,7 +22,7 @@ function matchesAny(pathname: string, prefixes: string[]) {
 function homeForRole(rol?: Rol | string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
   if (rol === 'BUSINESS') return '/panel'
-  if (rol === 'USER') return '/musteri/genel'
+  if (rol === 'USER') return '/musteri'
   return '/'
 }
 

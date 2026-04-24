@@ -5,7 +5,7 @@ import { ToastProvider } from '@/components/ui/Toast'
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
-  if (!oturum?.user) redirect('/giris')
+  if (!oturum?.user) redirect('/musteri/giris')
 
   const rol = oturum.user.rol
   if (rol === 'BUSINESS') redirect('/panel')
