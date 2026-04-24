@@ -181,9 +181,11 @@ export default async function AnaSayfa() {
           </p>
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '16px' }}>
-            <a href="/musteri/kayit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: '14px', textDecoration: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}>
-              Ücretsiz Üye Ol
-            </a>
+            {!authenticated && (
+              <a href="/musteri/kayit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: '14px', textDecoration: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}>
+                Ücretsiz Üye Ol
+              </a>
+            )}
             <a href="/ara" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 600, background: 'white', color: 'var(--color-primary)', borderRadius: '14px', textDecoration: 'none', border: '1.5px solid var(--color-border)' }}>
               İşletmelere Göz At
             </a>

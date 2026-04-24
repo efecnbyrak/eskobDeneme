@@ -8,11 +8,11 @@ export function KategoriSlider() {
 
   return (
     <>
-      {/* Mobil: yatay kaydırmalı tek satır */}
+      {/* Mobil: yatay kaydırmalı */}
       <div className="lg:hidden">
         <div
           style={{
-            display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8,
+            display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12,
             scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'],
           }}
           className="no-scrollbar"
@@ -23,14 +23,26 @@ export function KategoriSlider() {
               href={`/kategori/${k.slug}`}
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                minWidth: 90, padding: '16px 12px', gap: 8,
-                background: 'white', borderRadius: 16, border: '1px solid var(--color-border)',
-                textDecoration: 'none', boxShadow: 'var(--shadow-sm)', flexShrink: 0,
+                minWidth: 96, padding: '18px 12px', gap: 10,
+                background: `${k.renk}18`,
+                border: `1.5px solid ${k.renk}40`,
+                borderRadius: 20, textDecoration: 'none', flexShrink: 0,
                 transition: 'all 0.2s',
               }}
             >
-              <span style={{ fontSize: 26 }}>{k.ikon}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text)', textAlign: 'center', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 80 }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: 14,
+                background: `${k.renk}25`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 24,
+              }}>
+                {k.ikon}
+              </div>
+              <span style={{
+                fontSize: 11, fontWeight: 700, color: 'var(--color-text)',
+                textAlign: 'center', lineHeight: 1.3,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 80,
+              }}>
                 {k.ad}
               </span>
             </Link>
@@ -38,47 +50,85 @@ export function KategoriSlider() {
         </div>
       </div>
 
-      {/* Desktop: tek satır grid + Daha Fazla butonu */}
+      {/* Desktop: 6 kolon grid */}
       <div className="hidden lg:block">
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gorsel.length}, 1fr)`, gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
           {gorsel.map((k) => (
             <Link
               key={k.slug}
               href={`/kategori/${k.slug}`}
-              className="group card-elite"
+              className="group"
               style={{
-                padding: '24px 12px', display: 'flex', flexDirection: 'column',
+                padding: '28px 16px 24px',
+                display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center', textAlign: 'center',
-                minWidth: 0,
+                borderRadius: 20,
+                background: `${k.renk}12`,
+                border: `1.5px solid ${k.renk}30`,
+                textDecoration: 'none',
+                transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLAnchorElement
+                el.style.transform = 'translateY(-4px)'
+                el.style.boxShadow = `0 12px 32px ${k.renk}30`
+                el.style.background = `${k.renk}22`
+                el.style.borderColor = `${k.renk}60`
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLAnchorElement
+                el.style.transform = 'translateY(0)'
+                el.style.boxShadow = 'none'
+                el.style.background = `${k.renk}12`
+                el.style.borderColor = `${k.renk}30`
               }}
             >
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12, transition: 'all 0.3s' }} className="group-hover:scale-110">
-                <span style={{ fontSize: 24 }}>{k.ikon}</span>
+              <div style={{
+                width: 64, height: 64, borderRadius: 18,
+                background: `${k.renk}30`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 14, fontSize: 30,
+                transition: 'transform 0.25s',
+                boxShadow: `0 4px 16px ${k.renk}25`,
+              }} className="group-hover:scale-110">
+                {k.ikon}
               </div>
-              <span
-                className="group-hover:text-[var(--color-primary)]"
-                style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)', transition: 'color 0.2s', lineHeight: 1.3, wordBreak: 'break-word', hyphens: 'auto' as React.CSSProperties['hyphens'], textAlign: 'center' }}
-              >
+              <span style={{
+                fontSize: 13, fontWeight: 700,
+                color: 'var(--color-text)',
+                lineHeight: 1.3,
+                transition: 'color 0.2s',
+              }} className={`group-hover:text-[${k.renk}]`}>
                 {k.ad}
               </span>
             </Link>
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
           <Link
             href="/ara"
             style={{
-              display: 'inline-block',
-              padding: '10px 28px', fontSize: 14, fontWeight: 600,
-              color: 'var(--color-primary)', background: 'transparent',
-              border: '1.5px solid var(--color-primary)', borderRadius: 12,
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '12px 32px', fontSize: 14, fontWeight: 700,
+              color: 'var(--color-primary)', background: 'var(--color-primary-light)',
+              border: '1.5px solid var(--color-primary)', borderRadius: 14,
               textDecoration: 'none', transition: 'all 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--color-primary-light)' }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = 'var(--color-primary)'
+              el.style.color = 'white'
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = 'var(--color-primary-light)'
+              el.style.color = 'var(--color-primary)'
+            }}
           >
-            Daha Fazla →
+            Tüm Kategorileri Gör →
           </Link>
         </div>
       </div>

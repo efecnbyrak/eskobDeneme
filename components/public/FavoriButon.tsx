@@ -7,9 +7,11 @@ interface FavoriButonProps {
   esnafId: number | string
   baslangicFavori?: boolean
   authenticated?: boolean
+  /** 'inline' = büyük etiketli buton (profil başlığı için), 'icon' = küçük ikon (kart için) */
+  variant?: 'inline' | 'icon'
 }
 
-export function FavoriButon({ esnafId, baslangicFavori = false, authenticated = false }: FavoriButonProps) {
+export function FavoriButon({ esnafId, baslangicFavori = false, authenticated = false, variant = 'icon' }: FavoriButonProps) {
   const [favori, setFavori] = useState(baslangicFavori)
   const [celebrate, setCelebrate] = useState(false)
   const [yukleniyor, setYukleniyor] = useState(false)
@@ -47,6 +49,52 @@ export function FavoriButon({ esnafId, baslangicFavori = false, authenticated = 
     }
   }
 
+  if (variant === 'inline') {
+    return (
+      <>
+        <style>{`
+          @keyframes fv-pop-inline {
+            0%   { transform: scale(0.8); }
+            50%  { transform: scale(1.25); }
+            100% { transform: scale(1); }
+          }
+          .fv-inline-icon.aktif {
+            animation: fv-pop-inline 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+        `}</style>
+        <button
+          onClick={toggle}
+          disabled={yukleniyor}
+          title={favori ? 'Favorilerden Kaldır' : 'Favorilere Ekle'}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '10px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
+            background: favori ? '#FFF0F0' : 'var(--color-bg-muted)',
+            color: favori ? '#E11D48' : 'var(--color-text-secondary)',
+            fontWeight: 600, fontSize: 14,
+            transition: 'all 0.2s', opacity: yukleniyor ? 0.6 : 1,
+            boxShadow: favori ? '0 0 0 1.5px #fca5a5' : '0 0 0 1.5px var(--color-border)',
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            if (!favori) (e.currentTarget as HTMLButtonElement).style.background = '#FFF0F0'
+          }}
+          onMouseLeave={(e) => {
+            if (!favori) (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-bg-muted)'
+          }}
+        >
+          <span
+            className={`fv-inline-icon${celebrate ? ' aktif' : ''}`}
+            style={{ fontSize: 18, lineHeight: 1, display: 'flex' }}
+          >
+            {favori ? '❤️' : '🤍'}
+          </span>
+          {favori ? 'Favoride' : 'Favorilere Ekle'}
+        </button>
+      </>
+    )
+  }
+
   return (
     <>
       <style>{`
@@ -75,27 +123,19 @@ export function FavoriButon({ esnafId, baslangicFavori = false, authenticated = 
           height: 20px;
           transition: all 0.2s;
         }
-        .fv-filled {
-          display: none;
-        }
+        .fv-filled { display: none; }
         .fv-wrap.aktif .fv-outline { display: none; }
         .fv-wrap.aktif .fv-filled {
           display: block;
           animation: fv-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .fv-celebrate {
-          position: absolute;
-          top: 50%;
-          left: 50%;
+          position: absolute; top: 50%; left: 50%;
           transform: translate(-50%, -50%);
-          width: 60px;
-          height: 60px;
-          pointer-events: none;
-          opacity: 0;
+          width: 60px; height: 60px;
+          pointer-events: none; opacity: 0;
         }
-        .fv-celebrate.show {
-          animation: fv-celebrate 0.6s ease-out forwards;
-        }
+        .fv-celebrate.show { animation: fv-celebrate 0.6s ease-out forwards; }
         .fv-poly { stroke: var(--red); fill: var(--red); }
         @keyframes fv-pop {
           0%   { transform: scale(0.3); opacity: 0; }

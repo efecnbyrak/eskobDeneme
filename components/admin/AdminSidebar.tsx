@@ -8,6 +8,8 @@ const ITEMS = [
   { href: '/phyberk/admin', label: 'Genel Bakış', ikon: '📊' },
   { href: '/phyberk/admin/kullanicilar', label: 'Kullanıcılar', ikon: '👥' },
   { href: '/phyberk/admin/esnaflar', label: 'İşletmeler', ikon: '🏪' },
+  { href: '/phyberk/admin/randevular', label: 'Randevular', ikon: '📅' },
+  { href: '/phyberk/admin/yorumlar', label: 'Yorumlar', ikon: '⭐' },
   { href: '/phyberk/admin/kategoriler', label: 'Kategoriler', ikon: '🗂' },
 ]
 

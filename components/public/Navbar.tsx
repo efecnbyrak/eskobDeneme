@@ -100,13 +100,13 @@ function UserDropdown({ me }: { me: Me }) {
     : isBusiness
     ? [{ href: '/isletme/panel', label: '🏪  İşletme Panelim' }]
     : (() => {
-        const base = me.kullaniciAdi ? `/${me.kullaniciAdi}` : '/hesabim'
+        const base = me.kullaniciAdi ? `/${me.kullaniciAdi}` : null
         return [
-          { href: `${base}/genel`, label: '🏠  Genel Bakış' },
-          { href: `${base}/favorilerim`, label: '❤️  Favorilerim' },
-          { href: `${base}/randevularim`, label: '📅  Randevularım' },
-          { href: `${base}/yorumlarim`, label: '⭐  Yorumlarım' },
-          { href: `${base}/ayarlar`, label: '⚙️  Ayarlar' },
+          { href: base ? `${base}/genel` : '/hesabim', label: '🏠  Genel Bakış' },
+          { href: base ? `${base}/favorilerim` : '/hesabim', label: '❤️  Favorilerim' },
+          { href: base ? `${base}/randevularim` : '/hesabim', label: '📅  Randevularım' },
+          { href: base ? `${base}/yorumlarim` : '/hesabim', label: '⭐  Yorumlarım' },
+          { href: base ? `${base}/ayarlar` : '/hesabim', label: '⚙️  Ayarlar' },
         ]
       })()
 
@@ -453,13 +453,13 @@ export function Navbar() {
                         </Link>
                       )}
                       {me?.rol === 'USER' && (() => {
-                        const base = me.kullaniciAdi ? `/${me.kullaniciAdi}` : '/hesabim'
+                        const base2 = me.kullaniciAdi ? `/${me.kullaniciAdi}` : null
                         return (
                           <>
-                            <Link href={`${base}/genel`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
-                            <Link href={`${base}/favorilerim`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
-                            <Link href={`${base}/randevularim`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
-                            <Link href={`${base}/ayarlar`} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
+                            <Link href={base2 ? `${base2}/genel` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
+                            <Link href={base2 ? `${base2}/favorilerim` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
+                            <Link href={base2 ? `${base2}/randevularim` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
+                            <Link href={base2 ? `${base2}/ayarlar` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
                           </>
                         )
                       })()}

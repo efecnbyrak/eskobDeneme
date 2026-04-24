@@ -27,18 +27,31 @@ export async function POST(req: NextRequest) {
     const sifreHash = await bcrypt.hash(veri.sifre, 12)
 
     if (veri.tip === 'USER') {
-      if (veri.kullaniciAdi) {
-        const mevcutAd = await prisma.kullanici.findUnique({ where: { kullaniciAdi: veri.kullaniciAdi } })
+      let kullaniciAdi = veri.kullaniciAdi?.trim() || null
+      if (kullaniciAdi) {
+        const mevcutAd = await prisma.kullanici.findUnique({ where: { kullaniciAdi } })
         if (mevcutAd) {
           return NextResponse.json({ error: 'Bu kullanıcı adı zaten alınmış.' }, { status: 400 })
         }
+      } else {
+        // Otomatik kullanıcı adı üret: ad+soyad lowercase + random suffix
+        const base = `${veri.ad}${veri.soyad}`.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16)
+        let candidate = base
+        let mevcut = await prisma.kullanici.findUnique({ where: { kullaniciAdi: candidate } })
+        let deneme = 0
+        while (mevcut && deneme < 10) {
+          candidate = `${base}${Math.floor(100 + Math.random() * 900)}`
+          mevcut = await prisma.kullanici.findUnique({ where: { kullaniciAdi: candidate } })
+          deneme++
+        }
+        kullaniciAdi = candidate
       }
       const kullanici = await prisma.kullanici.create({
         data: {
           ad: veri.ad.trim(),
           soyad: veri.soyad.trim(),
           email,
-          kullaniciAdi: veri.kullaniciAdi?.trim() || null,
+          kullaniciAdi,
           telefon,
           sifreHash,
           rol: 'USER',
