@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
@@ -42,19 +42,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function EsnafProfilSayfasi({ params }: Props) {
-  const { sehir, slug } = await params
+  const { slug } = await params
   const [esnaf, oturum] = await Promise.all([getEsnaf(slug), auth()])
 
   if (!esnaf || !esnaf.aktif) notFound()
 
-  if (!oturum?.user) {
-    redirect(`/musteri/giris?callbackUrl=/${sehir}/${esnaf.slug}`)
-  }
-
-  const kullaniciAd = `${oturum.user.ad ?? ''} ${oturum.user.soyad ?? ''}`.trim() || oturum.user.name || null
+  const authenticated = !!oturum?.user
+  const kullaniciAd = authenticated
+    ? `${oturum!.user.ad ?? ''} ${oturum!.user.soyad ?? ''}`.trim() || oturum!.user.name || null
+    : null
 
   let favoriMi = false
-  if (oturum.user.id) {
+  if (oturum?.user?.id) {
     const favori = await prisma.favori.findUnique({
       where: { kullaniciId_esnafId: { kullaniciId: parseInt(oturum.user.id), esnafId: esnaf.id } },
     })
@@ -74,7 +73,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
         )}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
         <div className="absolute" style={{ top: 16, right: 16 }}>
-          <FavoriButon esnafId={esnaf.id} baslangicFavori={favoriMi} authenticated={true} />
+          <FavoriButon esnafId={esnaf.id} baslangicFavori={favoriMi} authenticated={authenticated} />
         </div>
       </div>
 
@@ -124,10 +123,41 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
               <HizmetListesi hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
             </section>
 
+            {/* Randevu Al — sadece mobilde görünür */}
+            <section className="lg:hidden" style={{ marginBottom: '48px' }}>
+              <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '24px', boxShadow: 'var(--shadow-card)' }}>
+                <RandevuWidget
+                  esnafId={esnaf.id}
+                  hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]}
+                />
+              </div>
+
+              {/* İletişim — mobil */}
+              {(esnaf.whatsapp || esnaf.telefon) && (
+                <div style={{ marginTop: '16px', background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-card)' }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>İletişim</p>
+                  {esnaf.whatsapp && <WhatsAppButon telefon={esnaf.whatsapp} className="w-full justify-center" />}
+                  {esnaf.telefon && (
+                    <a href={`tel:${esnaf.telefon}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '14px 20px', border: '1px solid var(--color-border)', borderRadius: '12px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text)' }}>
+                      📞 {esnaf.telefon}
+                    </a>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Yorumlar */}
             <section style={{ marginBottom: '48px' }}>
-              <h2 className="font-display" style={{ fontWeight: 700, fontSize: '20px', marginBottom: '24px' }}>Yorumlar</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <YorumFormu esnafId={esnaf.id} authenticated={true} kullaniciAd={kullaniciAd} />
+              <h2 className="font-display" style={{ fontWeight: 700, fontSize: '22px', marginBottom: '28px' }}>
+                Müşteri Yorumları
+                {esnaf.yorumlar.length > 0 && (
+                  <span style={{ marginLeft: 10, fontSize: 16, fontWeight: 500, color: 'var(--color-text-secondary)' }}>
+                    ({esnaf.yorumlar.length})
+                  </span>
+                )}
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                <YorumFormu esnafId={esnaf.id} authenticated={authenticated} kullaniciAd={kullaniciAd} />
                 <YorumListesi yorumlar={esnaf.yorumlar as unknown as import('@/types').Yorum[]} />
               </div>
             </section>
@@ -150,34 +180,23 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
                 />
               </div>
 
-              <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>İletişim</p>
-                {esnaf.whatsapp && <WhatsAppButon telefon={esnaf.whatsapp} className="w-full justify-center" />}
-                {esnaf.telefon && (
-                  <a href={`tel:${esnaf.telefon}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '12px 20px', border: '1px solid var(--color-border)', borderRadius: '12px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text)' }}>
-                    📞 {esnaf.telefon}
-                  </a>
-                )}
-              </div>
+              {(esnaf.whatsapp || esnaf.telefon) && (
+                <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>İletişim</p>
+                  {esnaf.whatsapp && <WhatsAppButon telefon={esnaf.whatsapp} className="w-full justify-center" />}
+                  {esnaf.telefon && (
+                    <a href={`tel:${esnaf.telefon}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '12px 20px', border: '1px solid var(--color-border)', borderRadius: '12px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text)' }}>
+                      📞 {esnaf.telefon}
+                    </a>
+                  )}
+                </div>
+              )}
 
               <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>QR Kod ile Paylaş</p>
                 <QRKodWidget url={sayfaUrl} />
               </div>
             </div>
-          </div>
-
-          {/* Mobile sidebar */}
-          <div className="lg:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '24px' }}>
-              <RandevuWidget esnafId={esnaf.id} hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
-            </div>
-            {esnaf.whatsapp && <WhatsAppButon telefon={esnaf.whatsapp} className="w-full justify-center" />}
-            {esnaf.telefon && (
-              <a href={`tel:${esnaf.telefon}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '16px 24px', border: '1px solid var(--color-border)', borderRadius: '16px', fontSize: '14px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text)' }}>
-                📞 {esnaf.telefon}
-              </a>
-            )}
           </div>
         </div>
       </div>
