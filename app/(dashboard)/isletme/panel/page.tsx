@@ -37,7 +37,28 @@ export default async function PanelSayfasi() {
   })
 
   if (!kullanici?.esnaf) {
-    redirect('/musteri/genel')
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center', padding: '40px 24px' }}>
+        <div style={{ fontSize: 64, marginBottom: 24 }}>🏪</div>
+        <h1 className="font-display" style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-text)', marginBottom: 12 }}>
+          İşletme Kaydınızı Tamamlayın
+        </h1>
+        <p style={{ fontSize: 16, color: 'var(--color-text-secondary)', maxWidth: 480, lineHeight: 1.7, marginBottom: 32 }}>
+          Henüz bir işletme profiliniz oluşturulmamış. Vitrinizi kurmak ve müşteri kazanmaya başlamak için işletme bilgilerinizi ekleyin.
+        </p>
+        <a
+          href="/isletme/panel/vitrin"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            height: 52, padding: '0 32px', fontSize: 16, fontWeight: 700,
+            background: 'var(--color-primary)', color: 'white',
+            borderRadius: 14, textDecoration: 'none', boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          Vitrin Oluştur →
+        </a>
+      </div>
+    )
   }
 
   const esnaf = kullanici.esnaf

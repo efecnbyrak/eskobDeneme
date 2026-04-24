@@ -33,10 +33,13 @@ export async function proxy(request: NextRequest) {
   const rol = oturum?.user?.rol as Rol | undefined
   const isAuthenticated = !!oturum?.user
 
-  // ── Ana sayfa: giriş yapmış kullanıcıları kendi alanına yönlendir ──
+  // ── Ana sayfa: sadece BUSINESS ve admin kendi alanına, USER ana sayfada kalabilir ──
   if (pathname === '/') {
-    if (isAuthenticated && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
-      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
+    if (isAuthenticated && (rol === 'SUPER_ADMIN' || rol === 'ADMIN')) {
+      return NextResponse.redirect(new URL('/phyberk/admin', request.url))
+    }
+    if (isAuthenticated && rol === 'BUSINESS') {
+      return NextResponse.redirect(new URL('/isletme/panel', request.url))
     }
     return NextResponse.next()
   }

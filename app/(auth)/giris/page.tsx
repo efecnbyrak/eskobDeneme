@@ -38,12 +38,14 @@ function GirisForm() {
       }
 
       const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
-      let hedef = '/'
+      let hedef = '/musteri/genel'
       if (meRes.ok) {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/isletme/panel'
         else hedef = '/musteri/genel'
+        if (me.ad) sessionStorage.setItem('hosgeldin', me.ad)
+        else sessionStorage.setItem('hosgeldin', '1')
       }
       window.location.href = hedef
     } catch {
@@ -205,7 +207,7 @@ function GirisForm() {
           }}
         >
           Henüz hesabınız yok mu?{' '}
-          <Link href="/kayit" style={{ color: 'var(--color-primary)', fontWeight: 700 }}>
+          <Link href="/musteri/kayit" style={{ color: 'var(--color-primary)', fontWeight: 700 }}>
             Ücretsiz Kaydol
           </Link>
         </div>

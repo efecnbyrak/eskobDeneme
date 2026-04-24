@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { UserSidebar } from '@/components/user/UserSidebar'
 import { ToastProvider } from '@/components/ui/Toast'
+import { HosgeldinToast } from '@/components/ui/HosgeldinToast'
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
@@ -13,6 +14,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
 
   return (
     <ToastProvider>
+      <HosgeldinToast />
       <div className="flex min-h-screen bg-[var(--color-bg)]">
         <div className="hidden lg:flex">
           <UserSidebar />

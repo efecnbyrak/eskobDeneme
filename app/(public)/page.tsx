@@ -7,7 +7,6 @@ import { HeroArama } from '@/components/public/HeroArama'
 import { KategoriSlider } from '@/components/public/KategoriSlider'
 import { StatsSection } from '@/components/public/StatsCounter'
 import { ScrollRevealInit } from '@/components/public/ScrollReveal'
-import { RolButonlari } from '@/components/public/RolButonlari'
 import { Button } from '@/components/ui/Button'
 import type { Esnaf } from '@/types'
 
@@ -162,7 +161,7 @@ export default async function AnaSayfa() {
               <span className="animate-ping" style={{ position: 'absolute', display: 'inline-flex', width: '100%', height: '100%', borderRadius: '9999px', background: 'var(--color-success)', opacity: 0.75 }} />
               <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '9999px', width: 8, height: 8, background: 'var(--color-success)' }} />
             </span>
-            Platformda 3.200+ Aktif İşletme
+            3.200+ İşletme Sizi Bekliyor
           </div>
 
           <h1
@@ -173,22 +172,29 @@ export default async function AnaSayfa() {
               maxWidth: '900px', marginBottom: '32px'
             }}
           >
-            <span style={{ color: 'var(--color-text)' }}>İşletmeni Dakikalar İçinde </span>
-            <span style={{ color: 'var(--color-primary)' }}>Dijitale Taşı</span>
+            <span style={{ color: 'var(--color-text)' }}>Yakınındaki En İyi </span>
+            <span style={{ color: 'var(--color-primary)' }}>İşletmeleri Keşfet</span>
           </h1>
 
           <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'var(--color-text-secondary)', maxWidth: '640px', lineHeight: 1.7, fontWeight: 500, marginBottom: '40px' }}>
-            Yeni nesil dijital vitrin çözümü ile hizmetlerini tanıt, online randevu al ve müşteri tabanını bugün büyütmeye başla.
+            Berber, güzellik salonu, restoran ve daha fazlası — online randevu al, yorum yap, favori işletmelerini takip et.
           </p>
 
-          <RolButonlari />
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '16px' }}>
+            <a href="/musteri/kayit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: '14px', textDecoration: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}>
+              Ücretsiz Üye Ol
+            </a>
+            <a href="/ara" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 600, background: 'white', color: 'var(--color-primary)', borderRadius: '14px', textDecoration: 'none', border: '1.5px solid var(--color-border)' }}>
+              İşletmelere Göz At
+            </a>
+          </div>
 
           <div style={{ width: '100%', maxWidth: '640px', marginTop: '40px', marginBottom: '32px' }}>
             <HeroArama />
           </div>
 
           <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500, letterSpacing: '0.02em', marginTop: '8px' }}>
-            Kredi kartı gerekmez · Modern altyapı · 7/24 randevu
+            Ücretsiz üyelik · Kolay randevu · 7/24 erişim
           </p>
         </div>
       </section>
@@ -267,9 +273,9 @@ export default async function AnaSayfa() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '28px', maxWidth: '1000px', margin: '0 auto' }}>
             {[
-              { ikon: '📝', adim: '01', baslik: 'Ücretsiz Kaydol', aciklama: 'Platforma hızlıca ücretsiz hesap oluştur ve işletmeni detaylıca tanımla.' },
-              { ikon: '🏪', adim: '02', baslik: 'Vitrinini Kur', aciklama: 'Hizmetlerini, personellerini ve işletmene ait harika fotoğrafları yükle.' },
-              { ikon: '🎯', adim: '03', baslik: 'Müşteri Kazan', aciklama: 'Arama sonuçlarında üstte çık, randevuları 7/24 otomatik olarak yönet.' },
+              { ikon: '🔍', adim: '01', baslik: 'İşletme Ara', aciklama: 'Şehrine, kategorine veya hizmet türüne göre yakınındaki en iyi işletmeleri bul.' },
+              { ikon: '📅', adim: '02', baslik: 'Randevu Al', aciklama: 'Beğendiğin işletmeden tek tıkla online randevu al, 7/24 müsaitlik görüntüle.' },
+              { ikon: '⭐', adim: '03', baslik: 'Değerlendir', aciklama: 'Aldığın hizmeti puanla, yorum yaz ve diğer kullanıcılara yol göster.' },
             ].map((item, i) => (
               <div
                 key={item.adim}
@@ -307,20 +313,20 @@ export default async function AnaSayfa() {
         <div className="container-main relative" style={{ zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div data-reveal="up">
             <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 4vw, 3.5rem)', fontWeight: 700, color: 'white', marginBottom: '32px', lineHeight: 1.15, maxWidth: '800px', letterSpacing: '-0.01em' }}>
-              Sen de Kurumsal Platformumuza Katıl
+              Hemen Üye Ol, Kolayca Randevu Al
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '56px', fontSize: 'clamp(1rem, 2vw, 1.25rem)', maxWidth: '600px', fontWeight: 500, lineHeight: 1.7 }}>
-              3 binden fazla esnaf halihazırda dijitale taşındı ve işini büyüttü. Hedef kitlene hemen şimdi ulaş!
+              3 binden fazla aktif işletme seni bekliyor. Ücretsiz hesap aç, favori işletmeni bul, anında randevunu oluştur.
             </p>
             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-              <Link href="/kayit">
+              <Link href="/musteri/kayit">
                 <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: 'var(--color-primary)', borderRadius: '16px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
-                  Hemen Ücretsiz Başla
+                  Ücretsiz Hesap Oluştur
                 </button>
               </Link>
               <Link href="/ara">
                 <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 600, background: 'transparent', color: 'white', borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
-                  Esnafları İncele
+                  İşletmelere Göz At
                 </button>
               </Link>
             </div>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ToastProvider } from '@/components/ui/Toast'
+import { HosgeldinToast } from '@/components/ui/HosgeldinToast'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
@@ -13,6 +14,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <ToastProvider>
+      <HosgeldinToast />
       <div className="flex min-h-screen bg-[var(--color-bg)]">
         {/* Desktop Sidebar */}
         <div className="hidden lg:flex">

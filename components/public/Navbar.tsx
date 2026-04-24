@@ -216,7 +216,7 @@ export function Navbar() {
   const pathname = usePathname()
 
   const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
-  const isMusteri = pathname === '/musteri' || pathname?.startsWith('/musteri/')
+  const isMusteri = !isIsletme
 
   useEffect(() => {
     let iptal = false
@@ -246,10 +246,10 @@ export function Navbar() {
 
   const girisliMi = !!me?.authenticated
 
-  const girisHref = isIsletme ? '/isletme/giris' : isMusteri ? '/musteri/giris' : '/giris'
-  const kayitHref = isIsletme ? '/isletme/kayit' : isMusteri ? '/musteri/kayit' : '/kayit'
+  const girisHref = isIsletme ? '/isletme/giris' : '/giris'
+  const kayitHref = isIsletme ? '/isletme/kayit' : '/musteri/kayit'
 
-  const accentBg = isIsletme ? '#1A2744' : isMusteri ? '#F27A1A' : 'var(--color-primary)'
+  const accentBg = isIsletme ? '#1A2744' : 'var(--color-primary)'
 
   const isletmeNavLinks = [
     { href: '/isletme', label: 'Anasayfa' },
@@ -259,16 +259,12 @@ export function Navbar() {
   ]
 
   const musteriNavLinks = [
-    { href: '/musteri', label: 'Anasayfa' },
-    { href: '/musteri/ara', label: 'İşletmeleri Keşfet' },
-  ]
-
-  const defaultNavLinks = [
     { href: '/', label: 'Anasayfa' },
+    { href: '/ara', label: 'İşletmeleri Keşfet' },
   ]
 
-  const navLinks = isIsletme ? isletmeNavLinks : isMusteri ? musteriNavLinks : defaultNavLinks
-  const showKategoriler = isMusteri || (!isIsletme && !isMusteri)
+  const navLinks = isIsletme ? isletmeNavLinks : musteriNavLinks
+  const showKategoriler = !isIsletme
 
   return (
     <>
@@ -289,7 +285,7 @@ export function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
             {/* Logo */}
             <Link
-              href={isIsletme ? '/isletme' : isMusteri ? '/musteri' : '/'}
+              href={isIsletme ? '/isletme' : '/'}
               style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 18, color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }}
               className="font-display"
             >
@@ -300,11 +296,6 @@ export function Navbar() {
               {isIsletme && (
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#1A2744', background: 'rgba(26,39,68,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
                   İşletme
-                </span>
-              )}
-              {isMusteri && (
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#F27A1A', background: 'rgba(242,122,26,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
-                  Müşteri
                 </span>
               )}
             </Link>
@@ -343,7 +334,7 @@ export function Navbar() {
                       {KATEGORILER.map((k) => (
                         <Link
                           key={k.slug}
-                          href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
+                          href={`/kategori/${k.slug}`}
                           style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px', fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}
                         >
                           <span style={{ fontSize: 18 }}>{k.ikon}</span>
@@ -365,7 +356,7 @@ export function Navbar() {
                 <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
               ) : girisliMi ? (
                 <UserDropdown me={me} />
-              ) : (isIsletme || isMusteri) ? (
+              ) : (
                 <>
                   <Link
                     href={girisHref}
@@ -385,7 +376,7 @@ export function Navbar() {
                     </button>
                   </Link>
                 </>
-              ) : null}
+              )}
             </div>
 
             {/* Mobile burger */}
@@ -433,7 +424,7 @@ export function Navbar() {
                       {KATEGORILER.slice(0, 8).map((k) => (
                         <Link
                           key={k.slug}
-                          href={isMusteri ? `/musteri/kategori/${k.slug}` : `/kategori/${k.slug}`}
+                          href={`/kategori/${k.slug}`}
                           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', fontSize: 14, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
                           onClick={() => setMenuAcik(false)}
                         >
@@ -472,7 +463,7 @@ export function Navbar() {
                         🚪  Hesaptan Çıkış Yap
                       </button>
                     </>
-                  ) : (isIsletme || isMusteri) ? (
+                  ) : (
                     <>
                       <Link href={girisHref} onClick={() => setMenuAcik(false)}>
                         <button style={{ width: '100%', height: 44, fontSize: 14, fontWeight: 700, background: accentBg, color: 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>
@@ -485,7 +476,7 @@ export function Navbar() {
                         </button>
                       </Link>
                     </>
-                  ) : null}
+                  )}
                 </div>
               </div>
             </div>
