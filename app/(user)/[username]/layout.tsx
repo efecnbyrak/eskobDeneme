@@ -18,7 +18,7 @@ export default async function KullaniciLayout({
     if (kullaniciAdi) {
       redirect(`/${kullaniciAdi}/genel`)
     } else {
-      redirect('/')
+      redirect('/musteri/kayit')
     }
   }
 

@@ -12,7 +12,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
   if (rol === 'BUSINESS') redirect('/isletme/panel')
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
 
-  const base = oturum.user.kullaniciAdi ? `/${oturum.user.kullaniciAdi}` : '/hesabim'
+  const base = `/${oturum.user.kullaniciAdi}`
 
   return (
     <ToastProvider>

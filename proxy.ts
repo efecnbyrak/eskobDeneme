@@ -6,23 +6,21 @@ type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
 const ADMIN_PATHS = ['/phyberk/admin']
 const BUSINESS_PATHS = ['/panel', '/isletme/panel']
-const MUSTERI_GENEL_PATHS = ['/musteri/genel', '/hesabim']
+const HESABIM_PATHS = ['/hesabim']
 const AUTH_PATHS = [
   '/giris', '/kayit',
   '/musteri/kayit',
   '/isletme/kayit',
 ]
 
-// /musteri/giris ve /isletme/giris client-side handle edilir (zaten giriş popup'u için)
-
 function matchesAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
 }
 
-function homeForRole(rol?: Rol | string | null): string {
+function homeForRole(rol?: Rol | string | null, kullaniciAdi?: string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
   if (rol === 'BUSINESS') return '/isletme/panel'
-  if (rol === 'USER') return '/hesabim'
+  if (rol === 'USER') return kullaniciAdi ? `/${kullaniciAdi}/genel` : '/'
   return '/'
 }
 
@@ -31,9 +29,10 @@ export async function proxy(request: NextRequest) {
 
   const oturum = await auth()
   const rol = oturum?.user?.rol as Rol | undefined
+  const kullaniciAdi = oturum?.user?.kullaniciAdi ?? null
   const isAuthenticated = !!oturum?.user
 
-  // ── Ana sayfa: sadece BUSINESS ve admin kendi alanına, USER ana sayfada kalabilir ──
+  // ── Ana sayfa: BUSINESS ve admin kendi alanına, USER kullanıcı adı varsa profiline ──
   if (pathname === '/') {
     if (isAuthenticated && (rol === 'SUPER_ADMIN' || rol === 'ADMIN')) {
       return NextResponse.redirect(new URL('/phyberk/admin', request.url))
@@ -41,8 +40,8 @@ export async function proxy(request: NextRequest) {
     if (isAuthenticated && rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/isletme/panel', request.url))
     }
-    if (isAuthenticated && rol === 'USER') {
-      return NextResponse.redirect(new URL('/hesabim', request.url))
+    if (isAuthenticated && rol === 'USER' && kullaniciAdi) {
+      return NextResponse.redirect(new URL(`/${kullaniciAdi}/genel`, request.url))
     }
     return NextResponse.next()
   }
@@ -50,7 +49,7 @@ export async function proxy(request: NextRequest) {
   // ── Auth sayfaları: giriş yapmışları yönlendir ──
   if (matchesAny(pathname, AUTH_PATHS)) {
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
+      return NextResponse.redirect(new URL(homeForRole(rol, kullaniciAdi), request.url))
     }
     return NextResponse.next()
   }
@@ -61,7 +60,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/giris', request.url))
     }
     if (rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
-      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
+      return NextResponse.redirect(new URL(homeForRole(rol, kullaniciAdi), request.url))
     }
     return NextResponse.next()
   }
@@ -72,13 +71,13 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/isletme/giris', request.url))
     }
     if (rol !== 'BUSINESS' && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
-      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
+      return NextResponse.redirect(new URL(homeForRole(rol, kullaniciAdi), request.url))
     }
     return NextResponse.next()
   }
 
-  // ── Müşteri hesap alanı (/musteri/genel/*) ──
-  if (matchesAny(pathname, MUSTERI_GENEL_PATHS)) {
+  // ── /hesabim: sadece USER'ı profiline yönlendiren geçiş sayfası ──
+  if (matchesAny(pathname, HESABIM_PATHS)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/musteri/giris', request.url))
     }
