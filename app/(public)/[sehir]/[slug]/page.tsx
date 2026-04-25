@@ -20,6 +20,26 @@ interface Props {
   params: Promise<{ sehir: string; slug: string }>
 }
 
+// ISR — 1 saatte bir tazele (admin onay/yorum onay sonrası revalidatePath ile anlık güncellenir)
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  try {
+    const aktif = await prisma.esnaf.findMany({
+      where: { aktif: true, onaylı: true },
+      select: { slug: true, sehir: true },
+      take: 200,
+      orderBy: { olusturmaT: 'desc' },
+    })
+    return aktif.map((e) => ({
+      sehir: e.sehir.toLowerCase(),
+      slug: e.slug,
+    }))
+  } catch {
+    return []
+  }
+}
+
 async function getEsnaf(slug: string) {
   return prisma.esnaf.findUnique({
     where: { slug },
@@ -193,13 +213,19 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
 
             <section style={{ marginBottom: '48px' }}>
               <SectionBaslik baslik="Hizmetler" ikon="✨" />
-              <HizmetListesi hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
+              <HizmetListesi hizmetler={esnaf.hizmetler.map((h) => ({
+                  ...h,
+                  fiyat: Number(h.fiyat),
+                })) as unknown as import('@/types').Hizmet[]} />
             </section>
 
             {/* Randevu Al — sadece mobilde */}
             <section className="lg:hidden" style={{ marginBottom: '48px' }}>
               <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, padding: 24, boxShadow: 'var(--shadow-card)' }}>
-                <RandevuWidget esnafId={esnaf.id} hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
+                <RandevuWidget esnafId={esnaf.id} hizmetler={esnaf.hizmetler.map((h) => ({
+                  ...h,
+                  fiyat: Number(h.fiyat),
+                })) as unknown as import('@/types').Hizmet[]} />
               </div>
               {(esnaf.whatsapp || esnaf.telefon) && (
                 <div style={{ marginTop: 16, background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 12, boxShadow: 'var(--shadow-card)' }}>
@@ -223,7 +249,10 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
               />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <YorumFormu esnafId={esnaf.id} authenticated={authenticated} kullaniciAd={kullaniciAd} />
-                <YorumListesi yorumlar={esnaf.yorumlar as unknown as import('@/types').Yorum[]} />
+                <YorumListesi yorumlar={esnaf.yorumlar.map((y) => ({
+                  ...y,
+                  olusturmaT: y.olusturmaT.toISOString(),
+                })) as unknown as import('@/types').Yorum[]} />
               </div>
             </section>
 
@@ -239,7 +268,10 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
           <div style={{ width: '360px', flexShrink: 0 }} className="hidden lg:block">
             <div className="sticky" style={{ top: '96px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, padding: 28, boxShadow: 'var(--shadow-card)' }}>
-                <RandevuWidget esnafId={esnaf.id} hizmetler={esnaf.hizmetler as unknown as import('@/types').Hizmet[]} />
+                <RandevuWidget esnafId={esnaf.id} hizmetler={esnaf.hizmetler.map((h) => ({
+                  ...h,
+                  fiyat: Number(h.fiyat),
+                })) as unknown as import('@/types').Hizmet[]} />
               </div>
 
               {(esnaf.whatsapp || esnaf.telefon) && (

@@ -2,11 +2,20 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from './db'
+import { logger } from './logger'
 
 export type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
+const isProd = process.env.NODE_ENV === 'production'
+
+if (isProd && !process.env.AUTH_SECRET) {
+  // Build/runtime'da hızlı fail — sessiz random secret üretmesin
+  throw new Error('AUTH_SECRET env değişkeni production için zorunludur.')
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
+  // Vercel preview / yerel dev için trustHost; prod'da AUTH_URL set'liyse devre dışı kalır
+  trustHost: !isProd || !process.env.AUTH_URL,
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -23,6 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const kullanici = await prisma.kullanici.findUnique({ where: { email } })
           if (!kullanici) return null
+          if (kullanici.deletedAt) return null
 
           const dogru = await bcrypt.compare(sifre, kullanici.sifreHash)
           if (!dogru) return null
@@ -41,7 +51,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             rememberMe,
           }
         } catch (err) {
-          console.error('authorize error:', err)
+          logger.error('auth.authorize', { err: String(err) })
           return null
         }
       },
@@ -50,7 +60,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
-        const u = user as { id: string; rol: Rol; ad: string; soyad: string; kullaniciAdi?: string | null; rememberMe?: boolean }
+        const u = user as {
+          id: string
+          rol: Rol
+          ad: string
+          soyad: string
+          kullaniciAdi?: string | null
+          rememberMe?: boolean
+        }
         token.id = u.id
         token.rol = u.rol
         token.ad = u.ad
@@ -58,22 +75,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.kullaniciAdi = u.kullaniciAdi ?? null
         token.rememberMe = u.rememberMe ?? true
         if (u.rememberMe === false) {
-          // 24 saat sonra süresi dolar
           token.exp = Math.floor(Date.now() / 1000) + 24 * 60 * 60
         }
       }
+
       if (trigger === 'update' && token.id) {
-        const taze = await prisma.kullanici.findUnique({
-          where: { id: parseInt(token.id as string) },
-          select: { rol: true, ad: true, soyad: true, kullaniciAdi: true, avatarUrl: true, email: true },
-        })
-        if (taze) {
+        const idNum = Number(token.id)
+        if (!Number.isInteger(idNum)) return token
+        try {
+          const taze = await prisma.kullanici.findUnique({
+            where: { id: idNum },
+            select: {
+              rol: true,
+              ad: true,
+              soyad: true,
+              kullaniciAdi: true,
+              avatarUrl: true,
+              email: true,
+              deletedAt: true,
+            },
+          })
+          if (!taze || taze.deletedAt) {
+            // hesap anonimleştirildiyse oturumu sonlandır
+            return {}
+          }
           token.rol = taze.rol
           token.ad = taze.ad
           token.soyad = taze.soyad
           token.kullaniciAdi = taze.kullaniciAdi ?? null
           token.picture = taze.avatarUrl ?? undefined
           token.email = taze.email
+        } catch (err) {
+          logger.error('auth.jwt_update', { err: String(err) })
         }
       }
       return token

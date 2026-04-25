@@ -24,8 +24,11 @@ const emailSchema = z
 
 const sifreSchema = z
   .string()
-  .min(6, 'Şifre en az 6 karakter olmalı')
+  .min(8, 'Şifre en az 8 karakter olmalı')
+  .max(128, 'Şifre en fazla 128 karakter olabilir')
   .refine((v) => /[A-Z]/.test(v), 'Şifre en az 1 büyük harf içermeli')
+  .refine((v) => /[a-z]/.test(v), 'Şifre en az 1 küçük harf içermeli')
+  .refine((v) => /[0-9]/.test(v), 'Şifre en az 1 rakam içermeli')
   .refine((v) => /[^A-Za-z0-9]/.test(v), 'Şifre en az 1 sembol içermeli (!@#$... vb.)')
 
 const telefonSchema = z

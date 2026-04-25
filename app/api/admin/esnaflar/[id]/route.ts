@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 const Schema = z.object({
   aktif: z.boolean().optional(),
@@ -19,7 +21,12 @@ export async function PATCH(
   }
 
   const { id } = await params
-  const parsed = Schema.safeParse(await req.json())
+  const numId = parseInt(id)
+  if (!Number.isInteger(numId)) {
+    return NextResponse.json({ error: 'Geçersiz ID' }, { status: 400 })
+  }
+
+  const parsed = Schema.safeParse(await req.json().catch(() => ({})))
   if (!parsed.success) {
     return NextResponse.json({ error: 'Geçersiz veri.' }, { status: 400 })
   }
@@ -29,10 +36,19 @@ export async function PATCH(
   if (parsed.data.onayli !== undefined) data.onaylı = parsed.data.onayli
 
   const guncel = await prisma.esnaf.update({
-    where: { id: parseInt(id) },
+    where: { id: numId },
     data,
-    select: { id: true, aktif: true, onaylı: true },
+    select: { id: true, slug: true, sehir: true, aktif: true, onaylı: true },
   })
 
-  return NextResponse.json(guncel)
+  revalidatePath(`/${guncel.sehir.toLowerCase()}/${guncel.slug}`)
+  revalidatePath('/ara')
+  revalidatePath('/')
+
+  logger.info('admin.esnaf_patch', { esnafId: guncel.id, adminId: oturum?.user?.id, data })
+  return NextResponse.json({
+    id: guncel.id,
+    aktif: guncel.aktif,
+    onaylı: guncel.onaylı,
+  })
 }

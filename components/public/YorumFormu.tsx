@@ -50,14 +50,20 @@ export function YorumFormu({ esnafId, authenticated, kullaniciAd, onYorumEklendi
     try {
       const res = await fetch('/api/yorum', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Client': 'web' },
         body: JSON.stringify({ esnafId, puan, yorum: yorum.trim(), musteriAd: kullaniciAd || 'Anonim' }),
       })
-      if (!res.ok) throw new Error('Hata')
+      const cevap = await res.json().catch(() => null)
+      if (!res.ok) {
+        throw new Error(
+          (cevap && typeof cevap.error === 'string' ? cevap.error : null) ??
+            'Yorum gönderilemedi'
+        )
+      }
       setBasarili(true)
       onYorumEklendi?.()
-    } catch {
-      setHata('Yorum gönderilemedi. Tekrar deneyin.')
+    } catch (e) {
+      setHata(e instanceof Error ? e.message : 'Yorum gönderilemedi. Tekrar deneyin.')
     } finally {
       setYukleniyor(false)
     }

@@ -13,11 +13,17 @@ export function useRandevu() {
     try {
       const res = await fetch('/api/randevu', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Client': 'web' },
         body: JSON.stringify(data),
       })
-      if (!res.ok) throw new Error('Randevu oluşturulamadı')
-      return await res.json()
+      const cevap = await res.json().catch(() => null)
+      if (!res.ok) {
+        throw new Error(
+          (cevap && typeof cevap.error === 'string' ? cevap.error : null) ??
+            'Randevu oluşturulamadı'
+        )
+      }
+      return cevap
     } catch (e) {
       setHata(e instanceof Error ? e.message : 'Hata oluştu')
       return null

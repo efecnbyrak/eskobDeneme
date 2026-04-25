@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { signOut } from 'next-auth/react'
 import { createPortal } from 'react-dom'
 import { SifreForm } from './SifreForm'
+import { HesapSilCard } from '@/components/user/HesapSilCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,6 +132,8 @@ export default function AyarlarPage() {
           Çıkış Yap
         </button>
       </div>
+
+      <HesapSilCard />
     </div>
   )
 }

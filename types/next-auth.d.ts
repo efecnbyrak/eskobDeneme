@@ -8,6 +8,7 @@ declare module 'next-auth' {
     ad?: string
     soyad?: string
     kullaniciAdi?: string | null
+    rememberMe?: boolean
   }
 
   interface Session {
@@ -31,5 +32,6 @@ declare module 'next-auth/jwt' {
     ad?: string
     soyad?: string
     kullaniciAdi?: string | null
+    rememberMe?: boolean
   }
 }

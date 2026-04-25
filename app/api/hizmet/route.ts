@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { HizmetSchema } from '@/lib/validations'
+import { temizMetin, temizMetinOpsiyonel } from '@/lib/sanitize'
+import { logger } from '@/lib/logger'
 
 export async function GET(req: NextRequest) {
   try {
@@ -37,16 +39,23 @@ export async function POST(req: NextRequest) {
     })
     if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
 
-    const body = await req.json()
-    const veri = HizmetSchema.parse(body)
+    const body = await req.json().catch(() => null)
+    const parsed = HizmetSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? 'Geçersiz veri' },
+        { status: 400 }
+      )
+    }
+    const veri = parsed.data
 
     const hizmet = await prisma.hizmet.create({
       data: {
-        ad: veri.ad,
+        ad: temizMetin(veri.ad, 120),
         fiyat: veri.fiyat,
         sure: veri.sure,
-        aciklama: veri.aciklama,
-        kategori: veri.kategori,
+        aciklama: temizMetinOpsiyonel(veri.aciklama, 500),
+        kategori: temizMetinOpsiyonel(veri.kategori, 60),
         esnafId: kullanici.esnaf.id,
       },
     })
@@ -77,12 +86,24 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
     }
 
-    const body = await req.json()
-    const veri = HizmetSchema.parse(body)
+    const body = await req.json().catch(() => null)
+    const parsed = HizmetSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? 'Geçersiz veri' },
+        { status: 400 }
+      )
+    }
+    const veri = parsed.data
 
     const hizmet = await prisma.hizmet.update({
       where: { id: parseInt(id) },
-      data: { ad: veri.ad, fiyat: veri.fiyat, sure: veri.sure, aciklama: veri.aciklama },
+      data: {
+        ad: temizMetin(veri.ad, 120),
+        fiyat: veri.fiyat,
+        sure: veri.sure,
+        aciklama: temizMetinOpsiyonel(veri.aciklama, 500),
+      },
     })
 
     return NextResponse.json(hizmet)

@@ -23,16 +23,26 @@ model Kullanici {
   olusturmaT      DateTime  @default(now())
   guncelleT       DateTime  @updatedAt
 
-  sehir           String?
-  ilce            String?
-  ilgiAlanlari    String[]
+  sehir        String?
+  ilce         String?
+  ilgiAlanlari String[]
 
-  esnaf     Esnaf?
-  oturumlar Oturum[]
-  favoriler Favori[]
+  // Mobil push bildirimi
+  expoPushToken  String?
+  cihazPlatformu String? // 'ios' | 'android' | 'web'
+  pushIzni       Boolean @default(false)
+
+  // KVKK / soft delete
+  deletedAt DateTime?
+
+  esnaf      Esnaf?
+  oturumlar  Oturum[]
+  favoriler  Favori[]
   randevular Randevu[]
   yorumlar   Yorum[]
+  kvkkLoglari KvkkLog[]
 
+  @@index([deletedAt])
   @@map("kullaniciler")
 }
 
@@ -88,6 +98,7 @@ model Esnaf {
 
   @@index([sehir, kategoriId])
   @@index([slug])
+  @@index([aktif, onaylı])
   @@map("esnaflar")
 }
 
@@ -120,6 +131,7 @@ model Hizmet {
   esnafId    Int
   randevular Randevu[]
 
+  @@index([esnafId, aktif])
   @@map("hizmetler")
 }
 
@@ -142,6 +154,7 @@ model Randevu {
   kullaniciId Int?
 
   @@index([esnafId, tarih])
+  @@index([esnafId, tarih, durum])
   @@index([kullaniciId])
   @@map("randevular")
 }
@@ -168,6 +181,7 @@ model Yorum {
   kullaniciId Int?
 
   @@index([kullaniciId])
+  @@index([esnafId, onaylı])
   @@map("yorumlar")
 }
 
@@ -208,4 +222,21 @@ model Istatistik {
 
   @@unique([esnafId, tarih])
   @@map("istatistikler")
+}
+
+// KVKK uyumu için işlem audit log'u (Madde 7 — silme talebi vb.)
+model KvkkLog {
+  id          Int      @id @default(autoincrement())
+  kullaniciId Int
+  islem       String // 'SIL_TALEBI' | 'IHRACAT_TALEBI' | 'DUZELTME' | ...
+  aciklama    String?  @db.Text
+  ipAdres     String?
+  userAgent   String?
+  olusturmaT  DateTime @default(now())
+
+  kullanici Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
+
+  @@index([kullaniciId, olusturmaT])
+  @@index([islem, olusturmaT])
+  @@map("kvkk_loglari")
 }

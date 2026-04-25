@@ -4,10 +4,22 @@ import { prisma } from '@/lib/db'
 import { benzersizSlug } from '@/lib/slug'
 import { kategorileriGarantile } from '@/lib/bootstrap'
 import { KayitSchema } from '@/lib/validations'
+import { rateLimit, istemciKimligi } from '@/lib/rateLimit'
+import { logger } from '@/lib/logger'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    // Rate limit: IP başına saatte 10 kayıt denemesi
+    const ip = istemciKimligi(req)
+    const limit = rateLimit(`register:${ip}`, 10, 3600)
+    if (!limit.basarili) {
+      return NextResponse.json(
+        { error: 'Çok fazla kayıt denemesi. Lütfen daha sonra tekrar deneyin.' },
+        { status: 429 }
+      )
+    }
+
+    const body = await req.json().catch(() => null)
     const parsed = KayitSchema.safeParse(body)
 
     if (!parsed.success) {
@@ -97,7 +109,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ id: kullanici.id, rol: kullanici.rol }, { status: 201 })
   } catch (err) {
-    console.error('register error', err)
+    logger.error('register', { err: String(err) })
     return NextResponse.json({ error: 'Sunucu hatası.' }, { status: 500 })
   }
 }
