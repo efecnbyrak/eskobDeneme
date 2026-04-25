@@ -1,3 +1,5 @@
+'use client'
+
 import { formatFiyat, formatSure } from '@/lib/utils'
 import type { Hizmet } from '@/types'
 

@@ -8,6 +8,7 @@ import { Card, CardBody } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { QRKodWidget } from '@/components/shared/QRKodWidget'
+import { QuickActionCard } from '@/components/dashboard/QuickActionCard'
 import { formatTarih } from '@/lib/utils'
 
 const HIZLI_EYLEMLER = [
@@ -189,24 +190,7 @@ export default async function PanelSayfasi() {
         <CardBody>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
             {HIZLI_EYLEMLER.map((e) => (
-              <Link key={e.href} href={e.href} style={{ textDecoration: 'none' }}>
-                <div
-                  style={{
-                    padding: '20px',
-                    borderRadius: 14,
-                    border: '1.5px solid var(--color-border)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    background: 'var(--color-bg)',
-                  }}
-                  onMouseEnter={(el) => { (el.currentTarget as HTMLElement).style.borderColor = e.renk; (el.currentTarget as HTMLElement).style.background = 'white' }}
-                  onMouseLeave={(el) => { (el.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; (el.currentTarget as HTMLElement).style.background = 'var(--color-bg)' }}
-                >
-                  <div style={{ fontSize: 28, marginBottom: 10 }}>{e.ikon}</div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text)', marginBottom: 4 }}>{e.baslik}</div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{e.aciklama}</div>
-                </div>
-              </Link>
+              <QuickActionCard key={e.href} {...e} />
             ))}
           </div>
         </CardBody>
