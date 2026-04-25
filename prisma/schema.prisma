@@ -41,6 +41,7 @@ model Kullanici {
   randevular Randevu[]
   yorumlar   Yorum[]
   kvkkLoglari KvkkLog[]
+  gezilenler  GezilenEsnaf[]
 
   @@index([deletedAt])
   @@map("kullaniciler")
@@ -95,6 +96,7 @@ model Esnaf {
   yorumlar      Yorum[]
   istatistikler Istatistik[]
   favoriler     Favori[]
+  gezilenler    GezilenEsnaf[]
 
   @@index([sehir, kategoriId])
   @@index([slug])
@@ -109,6 +111,10 @@ model Kategori {
   ikon String
   renk String
   sira Int    @default(0)
+
+  ustKategoriId  Int?
+  ustKategori    Kategori?  @relation("KategoriHiyerarsi", fields: [ustKategoriId], references: [id])
+  altKategoriler Kategori[] @relation("KategoriHiyerarsi")
 
   esnaflar Esnaf[]
 
@@ -130,6 +136,10 @@ model Hizmet {
   esnaf      Esnaf     @relation(fields: [esnafId], references: [id], onDelete: Cascade)
   esnafId    Int
   randevular Randevu[]
+
+  indirimYuzde     Int?
+  indirimBaslangic DateTime?
+  indirimBitis     DateTime?
 
   @@index([esnafId, aktif])
   @@map("hizmetler")
@@ -239,4 +249,17 @@ model KvkkLog {
   @@index([kullaniciId, olusturmaT])
   @@index([islem, olusturmaT])
   @@map("kvkk_loglari")
+}
+
+model GezilenEsnaf {
+  id          Int       @id @default(autoincrement())
+  kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
+  kullaniciId Int
+  esnaf       Esnaf     @relation(fields: [esnafId], references: [id], onDelete: Cascade)
+  esnafId     Int
+  sonGorulmeT DateTime  @default(now())
+
+  @@unique([kullaniciId, esnafId])
+  @@index([kullaniciId, sonGorulmeT(sort: Desc)])
+  @@map("gezilen_esnaflar")
 }

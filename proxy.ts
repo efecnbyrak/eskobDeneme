@@ -6,7 +6,7 @@ type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
 const ADMIN_PATHS = ['/phyberk/admin']
 const BUSINESS_PATHS = ['/panel', '/isletme/panel']
-const HESABIM_PATHS = ['/hesabim']
+const ACCOUNT_PATHS = ['/genel', '/favorilerim', '/randevularim', '/ayarlar', '/yorumlarim', '/profil']
 const AUTH_PATHS = [
   '/giris',
   '/kayit',
@@ -34,7 +34,7 @@ function matchesAny(pathname: string, prefixes: string[]) {
 function homeForRole(rol?: Rol | string | null): string {
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
   if (rol === 'BUSINESS') return '/isletme/panel'
-  if (rol === 'USER') return '/hesabim/genel'
+  if (rol === 'USER') return '/'
   return '/'
 }
 
@@ -57,9 +57,6 @@ export async function proxy(request: NextRequest) {
     }
     if (isAuthenticated && rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/isletme/panel', request.url))
-    }
-    if (isAuthenticated && rol === 'USER') {
-      return NextResponse.redirect(new URL('/hesabim/genel', request.url))
     }
     return NextResponse.next()
   }
@@ -94,8 +91,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // ── /hesabim ve /hesabim/genel/**: sadece USER ──
-  if (matchesAny(pathname, HESABIM_PATHS)) {
+  // ── Hesap sayfaları: sadece USER ──
+  if (matchesAny(pathname, ACCOUNT_PATHS)) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/musteri/giris', request.url))
     }
@@ -137,7 +134,7 @@ export async function proxy(request: NextRequest) {
       !pathname.startsWith('/isletme/panel'))
   ) {
     if (isAuthenticated && rol === 'USER') {
-      return NextResponse.redirect(new URL('/hesabim/genel', request.url))
+      return NextResponse.redirect(new URL('/', request.url))
     }
     return NextResponse.next()
   }
@@ -150,8 +147,12 @@ export const config = {
     '/',
     '/giris',
     '/kayit',
-    '/hesabim',
-    '/hesabim/:path*',
+    '/genel',
+    '/favorilerim',
+    '/randevularim',
+    '/ayarlar',
+    '/yorumlarim',
+    '/profil',
     '/panel/:path*',
     '/isletme/panel/:path*',
     '/musteri',

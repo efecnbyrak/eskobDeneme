@@ -2,339 +2,308 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
-import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
-import { HeroArama } from '@/components/public/HeroArama'
-import { KategoriSlider } from '@/components/public/KategoriSlider'
-import { StatsSection } from '@/components/public/StatsCounter'
-import { ScrollRevealInit } from '@/components/public/ScrollReveal'
-import { Button } from '@/components/ui/Button'
-import type { Esnaf } from '@/types'
 
-async function onecikarilan(): Promise<Esnaf[]> {
+async function getCategories() {
   try {
-    const esnaflar = await prisma.esnaf.findMany({
-      where: { aktif: true, onaylı: true },
-      include: {
-        kategori: true,
-        yorumlar: { select: { puan: true } },
-        hizmetler: { where: { aktif: true }, take: 3 },
-      },
-      orderBy: { olusturmaT: 'desc' },
-      take: 10,
+    return await prisma.kategori.findMany({
+      where: { ustKategoriId: null },
+      orderBy: { sira: 'asc' },
     })
-    if (esnaflar.length === 0) {
-      return [
-        {
-          id: '1', slug: 'ozkan-berber', isletmeAdi: 'Özkan Erkek Kuaförü', aktif: true, onaylı: true,
-          sehir: 'İstanbul', ilce: 'Kadıköy', adres: 'Moda Cd.', kategoriId: '1',
-          kategori: { id: '1', ad: 'Berber', ikon: '✂️', renk: '#F27A1A', slug: 'berber', sira: 1 },
-          yorumlar: [{ id: '1', puan: 5, musteriAd: 'A', esnafId: '1', olusturmaT: new Date(), onaylı: true }],
-          hizmetler: [{ id: '1', ad: 'Saç Kesimi', fiyat: 200, aktif: true, esnafId: '1', sira: 1, olusturmaT: new Date() }]
-        },
-        {
-          id: '2', slug: 'lezzet-duragi', isletmeAdi: 'Lezzet Durağı Ev Yemekleri', aktif: true, onaylı: true,
-          sehir: 'Ankara', ilce: 'Çankaya', adres: 'Tunalı Hilmi Cd.', kategoriId: '2',
-          kategori: { id: '2', ad: 'Restoran', ikon: '🍽️', renk: '#0BC15C', slug: 'restoran', sira: 2 },
-          yorumlar: [{ id: '2', puan: 4, musteriAd: 'B', esnafId: '2', olusturmaT: new Date(), onaylı: true }],
-          hizmetler: [{ id: '2', ad: 'Günün Menüsü', fiyat: 150, aktif: true, esnafId: '2', sira: 1, olusturmaT: new Date() }]
-        },
-        {
-          id: '3', slug: 'fit-life-gym', isletmeAdi: 'Fit Life Spor Salonu', aktif: true, onaylı: true,
-          sehir: 'Antalya', ilce: 'Muratpaşa', adres: 'Lara', kategoriId: '3',
-          kategori: { id: '3', ad: 'Spor', ikon: '💪', renk: '#81B29A', slug: 'spor', sira: 3 },
-          yorumlar: [{ id: '3', puan: 5, musteriAd: 'C', esnafId: '3', olusturmaT: new Date(), onaylı: true }],
-          hizmetler: [{ id: '3', ad: 'Aylık Üyelik', fiyat: 800, aktif: true, esnafId: '3', sira: 1, olusturmaT: new Date() }]
-        },
-        {
-          id: '4', slug: 'papatya-cicekcilik', isletmeAdi: 'Papatya Çiçekçilik', aktif: true, onaylı: true,
-          sehir: 'Bursa', ilce: 'Nilüfer', adres: 'FSM Bulvarı', kategoriId: '4',
-          kategori: { id: '4', ad: 'Çiçekçi', ikon: '🌸', renk: '#E07A5F', slug: 'cicekci', sira: 4 },
-          yorumlar: [{ id: '4', puan: 5, musteriAd: 'D', esnafId: '4', olusturmaT: new Date(), onaylı: true }],
-          hizmetler: [{ id: '4', ad: 'Buket', fiyat: 400, aktif: true, esnafId: '4', sira: 1, olusturmaT: new Date() }]
-        },
-        {
-          id: '5', slug: 'guzellik-kosesi', isletmeAdi: 'Güzellik Köşesi', aktif: true, onaylı: true,
-          sehir: 'İzmir', ilce: 'Bornova', adres: 'Sanayi Sitesi', kategoriId: '5',
-          kategori: { id: '5', ad: 'Güzellik', ikon: '💅', renk: '#F2CC8F', slug: 'guzellik', sira: 5 },
-          yorumlar: [],
-          hizmetler: []
-        }
-      ] as unknown as Esnaf[]
-    }
-    return esnaflar as unknown as Esnaf[]
   } catch {
     return []
   }
 }
 
-const DEMO_FOTO_SEED = ['berber', 'kafe', 'spor', 'guzellik', 'tamirci', 'restoran']
+async function getCampaigns() {
+  try {
+    return await prisma.hizmet.findMany({
+      where: {
+        aktif: true,
+        indirimYuzde: { gt: 0 },
+        indirimBitis: { gte: new Date() }
+      },
+      take: 8,
+      include: {
+        esnaf: {
+          select: { id: true, isletmeAdi: true, slug: true, sehir: true, ilce: true }
+        }
+      },
+      orderBy: { indirimYuzde: 'desc' }
+    })
+  } catch {
+    return []
+  }
+}
+
+async function getRecommendations(userId?: string) {
+  try {
+    let categoryIds: number[] = []
+    if (userId) {
+      const uId = parseInt(userId, 10)
+      const recentlyViewed = await prisma.gezilenEsnaf.findMany({
+        where: { kullaniciId: uId },
+        include: { esnaf: { select: { kategoriId: true } } },
+        orderBy: { sonGorulmeT: 'desc' },
+        take: 5
+      })
+      categoryIds = [...new Set(recentlyViewed.map(rv => rv.esnaf.kategoriId))]
+    }
+
+    const whereClause: any = { aktif: true, onaylı: true }
+    if (categoryIds.length > 0) {
+      whereClause.kategoriId = { in: categoryIds }
+    }
+
+    let recommendations = await prisma.esnaf.findMany({
+      where: whereClause,
+      include: {
+        kategori: true,
+        yorumlar: { select: { puan: true } },
+        hizmetler: { where: { aktif: true }, take: 2 }
+      },
+      take: 8,
+      orderBy: { olusturmaT: 'desc' }
+    })
+
+    if (recommendations.length === 0 && categoryIds.length > 0) {
+      recommendations = await prisma.esnaf.findMany({
+        where: { aktif: true, onaylı: true },
+        include: {
+          kategori: true,
+          yorumlar: { select: { puan: true } },
+          hizmetler: { where: { aktif: true }, take: 2 }
+        },
+        take: 8,
+        orderBy: { olusturmaT: 'desc' }
+      })
+    }
+    return recommendations
+  } catch {
+    return []
+  }
+}
+
+async function getRecentlyViewed(userId?: string) {
+  if (!userId) return []
+  try {
+    const uId = parseInt(userId, 10)
+    const recentlyViewed = await prisma.gezilenEsnaf.findMany({
+      where: { kullaniciId: uId },
+      orderBy: { sonGorulmeT: 'desc' },
+      take: 10,
+      include: {
+        esnaf: {
+          include: {
+            kategori: true,
+            yorumlar: { select: { puan: true } },
+            hizmetler: { where: { aktif: true }, take: 2 }
+          }
+        }
+      }
+    })
+    return recentlyViewed.map(rv => rv.esnaf)
+  } catch {
+    return []
+  }
+}
+
+async function getTopEsnaf() {
+  try {
+    return await prisma.esnaf.findMany({
+      where: { aktif: true, onaylı: true },
+      include: {
+        kategori: true,
+        yorumlar: { select: { puan: true } },
+        hizmetler: { where: { aktif: true }, take: 2 },
+      },
+      orderBy: { olusturmaT: 'desc' },
+      take: 8,
+    })
+  } catch {
+    return []
+  }
+}
 
 export default async function AnaSayfa() {
-  const [esnaflar, oturum] = await Promise.all([onecikarilan(), auth()])
-  const authenticated = !!oturum?.user?.id
+  const session = await auth()
+  const userId = session?.user?.id
+  const authenticated = !!userId
+
+  const [
+    kategoriler, 
+    kampanyalar, 
+    recommendations, 
+    recentlyViewed, 
+    topEsnaf
+  ] = await Promise.all([
+    getCategories(),
+    getCampaigns(),
+    getRecommendations(userId),
+    getRecentlyViewed(userId),
+    getTopEsnaf()
+  ])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <ScrollRevealInit />
-
-      {/* ═══ HERO ═══ */}
-      <section
-        className="relative overflow-hidden"
-        style={{ background: 'var(--color-bg)', paddingTop: '120px', paddingBottom: '100px' }}
-      >
-        {/* Grid BG */}
-        <div
-          className="absolute inset-0 z-0 pointer-events-none"
-          style={{
-            opacity: 0.2,
-            backgroundImage: `
-              linear-gradient(to right, var(--color-border) 1px, transparent 1px),
-              linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)
-            `,
-            backgroundSize: '48px 48px',
-            maskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)'
-          }}
-        />
-
-        {/* Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: 800, height: 500, background: 'var(--color-primary-light)', filter: 'blur(120px)', borderRadius: '100%', opacity: 0.6 }} />
-
-        {/* Floating business photos */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-          {DEMO_FOTO_SEED.map((seed, i) => {
-            const positions = [
-              { top: '8%', left: '3%' },
-              { top: '60%', left: '1%' },
-              { top: '15%', right: '2%' },
-              { top: '55%', right: '4%' },
-              { top: '38%', left: '8%' },
-              { top: '35%', right: '8%' },
-            ]
-            const pos = positions[i] ?? { top: '50%', left: '50%' }
-            return (
-              <div
-                key={seed}
-                className="hidden xl:block"
-                style={{
-                  position: 'absolute',
-                  ...pos,
-                  width: 88, height: 88,
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-                  border: '3px solid white',
-                  opacity: 0.75,
-                  animation: `floatCard ${3.5 + i * 0.7}s ease-in-out infinite alternate`,
-                  animationDelay: `${i * 0.4}s`,
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#F5F6F8' }}>
+      
+      {/* 1. KATEGORİLER (Trendyol Style Circular Items) */}
+      <section style={{ background: 'white', padding: '32px 0 24px', borderBottom: '1px solid #EAEAEA' }}>
+        <div className="container-main">
+          <div style={{ display: 'flex', gap: 28, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 12 }}>
+            {kategoriler.map((k) => (
+              <Link 
+                key={k.slug} 
+                href={`/kategori/${k.slug}`} 
+                style={{ 
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', 
+                  gap: 12, textDecoration: 'none', minWidth: 84 
                 }}
               >
-                <img
-                  src={`https://picsum.photos/seed/${seed}/88/88`}
-                  alt=""
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-            )
-          })}
-        </div>
-
-        <style>{`
-          @keyframes floatCard {
-            from { transform: translateY(0px) rotate(-2deg); }
-            to   { transform: translateY(-18px) rotate(2deg); }
-          }
-        `}</style>
-
-        <div className="container-main relative" style={{ zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <div
-            className="backdrop-blur-md"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '10px',
-              padding: '10px 20px', borderRadius: '9999px',
-              background: 'rgba(255,255,255,0.8)', border: '1px solid var(--color-border)',
-              boxShadow: 'var(--shadow-sm)', fontSize: '14px', fontWeight: 600,
-              color: 'var(--color-primary)', marginBottom: '40px'
-            }}
-          >
-            <span style={{ position: 'relative', display: 'flex', width: 8, height: 8 }}>
-              <span className="animate-ping" style={{ position: 'absolute', display: 'inline-flex', width: '100%', height: '100%', borderRadius: '9999px', background: 'var(--color-success)', opacity: 0.75 }} />
-              <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '9999px', width: 8, height: 8, background: 'var(--color-success)' }} />
-            </span>
-            3.200+ İşletme Sizi Bekliyor
-          </div>
-
-          <h1
-            className="font-display"
-            style={{
-              fontSize: 'clamp(2.25rem, 5vw, 4.5rem)',
-              fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.1,
-              maxWidth: '900px', marginBottom: '32px'
-            }}
-          >
-            <span style={{ color: 'var(--color-text)' }}>Yakınındaki En İyi </span>
-            <span style={{ color: 'var(--color-primary)' }}>İşletmeleri Keşfet</span>
-          </h1>
-
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'var(--color-text-secondary)', maxWidth: '640px', lineHeight: 1.7, fontWeight: 500, marginBottom: '40px' }}>
-            Berber, güzellik salonu, restoran ve daha fazlası — online randevu al, yorum yap, favori işletmelerini takip et.
-          </p>
-
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '16px' }}>
-            {!authenticated && (
-              <a href="/musteri/kayit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 700, background: 'var(--color-primary)', color: 'white', borderRadius: '14px', textDecoration: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}>
-                Ücretsiz Üye Ol
-              </a>
-            )}
-            <a href="/ara" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '52px', padding: '0 32px', fontSize: '16px', fontWeight: 600, background: 'white', color: 'var(--color-primary)', borderRadius: '14px', textDecoration: 'none', border: '1.5px solid var(--color-border)' }}>
-              İşletmelere Göz At
-            </a>
-          </div>
-
-          <div style={{ width: '100%', maxWidth: '640px', marginTop: '40px', marginBottom: '32px' }}>
-            <HeroArama />
-          </div>
-
-          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500, letterSpacing: '0.02em', marginTop: '8px' }}>
-            Ücretsiz üyelik · Kolay randevu · 7/24 erişim
-          </p>
-        </div>
-      </section>
-
-      {/* ═══ STATS (animated counter) ═══ */}
-      <StatsSection />
-
-      {/* ═══ KATEGORİLER ═══ */}
-      <section style={{ background: 'var(--color-bg-muted)', paddingTop: '80px', paddingBottom: '80px', borderBottom: '1px solid var(--color-border)' }}>
-        <div className="container-main">
-          <div data-reveal="up" style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '12px' }}>
-              Popüler Kategoriler
-            </h2>
-            <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', lineHeight: 1.7, maxWidth: '500px', margin: '0 auto' }}>
-              İhtiyacın olan hizmeti kolayca bul, en iyisi ile çalış.
-            </p>
-          </div>
-          <div data-reveal="up" data-reveal-delay="2">
-            <KategoriSlider />
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ ÖNE ÇIKAN ESNAFLAR ═══ */}
-      <section style={{ background: 'white', paddingTop: '80px', paddingBottom: '80px' }}>
-        <div className="container-main">
-          <div data-reveal="left" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px', marginBottom: '48px' }}>
-            <div>
-              <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '12px' }}>
-                Öne Çıkan Esnaflar
-              </h2>
-              <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', lineHeight: 1.7, maxWidth: '600px' }}>
-                Yakınındaki en popüler işletmeleri keşfet, hemen randevunu oluştur.
-              </p>
-            </div>
-            <Link href="/ara">
-              <Button variant="secondary" size="sm">Tümünü İncele →</Button>
-            </Link>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
-            {esnaflar.length > 0
-              ? esnaflar.map((e, i) => (
-                  <div key={e.id} data-reveal="up" data-reveal-delay={String(Math.min(i % 4 + 1, 5))}>
-                    <EsnafKart esnaf={e} authenticated={authenticated} />
-                  </div>
-                ))
-              : Array.from({ length: 5 }).map((_, i) => <EsnafKartSkeleton key={i} />)
-            }
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ NASIL ÇALIŞIR ═══ */}
-      <section style={{ background: 'var(--color-bg)', paddingTop: '100px', paddingBottom: '100px', borderTop: '1px solid var(--color-border)' }}>
-        <div className="container-main">
-          <div data-reveal="up" style={{ textAlign: 'center', marginBottom: '72px' }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: '10px',
-              padding: '10px 24px', borderRadius: '9999px',
-              background: 'white', fontSize: '13px', fontWeight: 700,
-              letterSpacing: '0.05em', textTransform: 'uppercase' as const,
-              color: 'var(--color-primary)', boxShadow: 'var(--shadow-sm)',
-              border: '1px solid var(--color-border)', marginBottom: '32px'
-            }}>
-              Basit · Hızlı · Etkili
-            </div>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 3rem)', fontWeight: 700, color: 'var(--color-text)', marginBottom: '24px', letterSpacing: '-0.01em' }}>
-              Nasıl Çalışır?
-            </h2>
-            <p style={{ color: 'var(--color-text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '17px', lineHeight: 1.7, fontWeight: 500 }}>
-              Sadece 3 adımda işletmeni dijitale taşı ve hemen yeni müşteriler kazanmaya başla.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '28px', maxWidth: '1000px', margin: '0 auto' }}>
-            {[
-              { ikon: '🔍', adim: '01', baslik: 'İşletme Ara', aciklama: 'Şehrine, kategorine veya hizmet türüne göre yakınındaki en iyi işletmeleri bul.' },
-              { ikon: '📅', adim: '02', baslik: 'Randevu Al', aciklama: 'Beğendiğin işletmeden tek tıkla online randevu al, 7/24 müsaitlik görüntüle.' },
-              { ikon: '⭐', adim: '03', baslik: 'Değerlendir', aciklama: 'Aldığın hizmeti puanla, yorum yaz ve diğer kullanıcılara yol göster.' },
-            ].map((item, i) => (
-              <div
-                key={item.adim}
-                className="card-elite"
-                data-reveal={i === 0 ? 'left' : i === 2 ? 'right' : 'up'}
-                data-reveal-delay={String(i + 1)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '44px 28px', borderRadius: '24px' }}
-              >
-                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: '20px' }}>
-                  Aşama {item.adim}
-                </span>
-                <div style={{ width: 72, height: 72, borderRadius: 16, background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '28px' }}>
-                  {item.ikon}
+                <div 
+                  style={{ 
+                    width: 76, height: 76, borderRadius: '50%', border: '2px solid #F0F0F0', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    fontSize: 32, background: 'white', transition: 'all 0.2s',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+                  }} 
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-primary)'
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(242, 122, 26, 0.15)' 
+                  }} 
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#F0F0F0'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)'
+                  }}
+                >
+                  {k.ikon}
                 </div>
-                <h3 className="font-display" style={{ fontWeight: 700, fontSize: '20px', color: 'var(--color-text)', marginBottom: '14px' }}>
-                  {item.baslik}
-                </h3>
-                <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.7, fontWeight: 500 }}>
-                  {item.aciklama}
-                </p>
-              </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#333', textAlign: 'center', letterSpacing: '-0.01em' }}>
+                  {k.ad}
+                </span>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ CTA ═══ */}
-      <section
-        className="relative overflow-hidden"
-        style={{ background: 'var(--color-primary)', paddingTop: '100px', paddingBottom: '100px' }}
-      >
-        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
-        <div className="absolute pointer-events-none" style={{ top: -128, right: -128, width: 384, height: 384, background: 'white', opacity: 0.07, borderRadius: '50%', filter: 'blur(80px)' }} />
+      {/* 2. SANA ÖZEL (Only for logged in users) */}
+      {authenticated && recommendations.length > 0 && (
+        <section style={{ padding: '32px 0 0' }}>
+          <div className="container-main">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#333', display: 'flex', alignItems: 'center', gap: 8 }}>
+                Sana Özel Hizmetler <span style={{ fontSize: 24 }}>✨</span>
+              </h2>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+              {recommendations.map((e: any) => (
+                <EsnafKart key={`rec-${e.id}`} esnaf={e} authenticated={authenticated} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-        <div className="container-main relative" style={{ zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div data-reveal="up">
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 4vw, 3.5rem)', fontWeight: 700, color: 'white', marginBottom: '32px', lineHeight: 1.15, maxWidth: '800px', letterSpacing: '-0.01em' }}>
-              Hemen Üye Ol, Kolayca Randevu Al
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '56px', fontSize: 'clamp(1rem, 2vw, 1.25rem)', maxWidth: '600px', fontWeight: 500, lineHeight: 1.7 }}>
-              3 binden fazla aktif işletme seni bekliyor. Ücretsiz hesap aç, favori işletmeni bul, anında randevunu oluştur.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-              <Link href="/musteri/kayit">
-                <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 700, background: 'white', color: 'var(--color-primary)', borderRadius: '16px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
-                  Ücretsiz Hesap Oluştur
-                </button>
-              </Link>
-              <Link href="/ara">
-                <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 40px', fontSize: '16px', fontWeight: 600, background: 'transparent', color: 'white', borderRadius: '16px', border: '2px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
-                  İşletmelere Göz At
-                </button>
+      {/* 3. CAMPAIGNS / DISCOUNT SECTION */}
+      {kampanyalar.length > 0 && (
+        <section style={{ padding: '32px 0 0' }}>
+          <div className="container-main">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#333' }}>
+                Fırsatları Kaçırma <span style={{ color: '#EF4444', marginLeft: 4 }}>% İndirim</span>
+              </h2>
+              <Link href="/ara?kampanyali=true" style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
+                Tüm Fırsatlar {'>'}
               </Link>
             </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+              {kampanyalar.map((kampanya: any) => {
+                const discount = kampanya.indirimYuzde || 0
+                const oldPrice = Number(kampanya.fiyat)
+                const newPrice = oldPrice - (oldPrice * discount / 100)
+                
+                return (
+                  <Link 
+                    href={`/isletme/${kampanya.esnaf.slug}`}
+                    key={`camp-${kampanya.id}`} 
+                    style={{ 
+                      background: 'white', borderRadius: 16, overflow: 'hidden', 
+                      border: '1px solid #EAEAEA', transition: 'box-shadow 0.2s', cursor: 'pointer',
+                      textDecoration: 'none', display: 'block'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'}
+                    onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+                  >
+                    <div style={{ height: 160, background: '#F5F5F5', position: 'relative' }}>
+                      {kampanya.fotoUrl ? (
+                        <img src={kampanya.fotoUrl} alt={kampanya.ad} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EAEAEA', color: '#999' }}>
+                          Görsel Yok
+                        </div>
+                      )}
+                      <div style={{ position: 'absolute', top: 12, left: 12, background: '#EF4444', color: 'white', fontWeight: 800, fontSize: 14, padding: '4px 10px', borderRadius: 8 }}>
+                        %{discount} İndirim
+                      </div>
+                    </div>
+                    <div style={{ padding: 16 }}>
+                      <h3 style={{ fontSize: 15, fontWeight: 700, color: '#333', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {kampanya.ad}
+                      </h3>
+                      <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>{kampanya.esnaf.isletmeAdi}</p>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <span style={{ fontSize: 14, color: '#999', textDecoration: 'line-through', fontWeight: 500 }}>
+                          {oldPrice.toFixed(2)} TL
+                        </span>
+                        <span style={{ fontSize: 20, color: 'var(--color-primary)', fontWeight: 800 }}>
+                          {newPrice.toFixed(2)} TL
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 4. GENEL LİSTE / ÖNE ÇIKANLAR */}
+      <section style={{ padding: '32px 0 64px' }}>
+        <div className="container-main">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#333' }}>En Çok Tercih Edilenler</h2>
+            <Link href="/ara" style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
+              Tümünü Gör {'>'}
+            </Link>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+            {topEsnaf.map((e: any) => (
+              <EsnafKart key={`top-${e.id}`} esnaf={e} authenticated={authenticated} />
+            ))}
           </div>
         </div>
       </section>
+
+      {/* 5. PREVIOUSLY VIEWED (If logged in) */}
+      {authenticated && recentlyViewed.length > 0 && (
+        <section style={{ padding: '0 0 64px' }}>
+          <div className="container-main">
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#333', marginBottom: 20 }}>Son Gezdiklerin</h2>
+            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 16 }}>
+              {recentlyViewed.map((e: any) => (
+                <div key={`history-${e.id}`} style={{ minWidth: 260, flexShrink: 0 }}>
+                  <EsnafKart esnaf={e} authenticated={authenticated} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
     </div>
   )

@@ -7,7 +7,6 @@ import { signOut } from 'next-auth/react'
 import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/Button'
 import { ThemeSwitch } from '@/components/ui/ThemeSwitch'
-import { KATEGORILER } from '@/lib/constants'
 
 type Me = {
   authenticated: boolean
@@ -99,16 +98,13 @@ function UserDropdown({ me }: { me: Me }) {
     ? [{ href: '/phyberk/admin', label: '🛡️  Yönetim Paneli' }]
     : isBusiness
     ? [{ href: '/isletme/panel', label: '🏪  İşletme Panelim' }]
-    : (() => {
-        const base = me.kullaniciAdi ? `/${me.kullaniciAdi}` : null
-        return [
-          { href: base ? `${base}/genel` : '/hesabim', label: '🏠  Genel Bakış' },
-          { href: base ? `${base}/favorilerim` : '/hesabim', label: '❤️  Favorilerim' },
-          { href: base ? `${base}/randevularim` : '/hesabim', label: '📅  Randevularım' },
-          { href: base ? `${base}/yorumlarim` : '/hesabim', label: '⭐  Yorumlarım' },
-          { href: base ? `${base}/ayarlar` : '/hesabim', label: '⚙️  Ayarlar' },
-        ]
-      })()
+    : [
+        { href: '/genel', label: '🏠  Genel Bakış' },
+        { href: '/favorilerim', label: '❤️  Favorilerim' },
+        { href: '/randevularim', label: '📅  Randevularım' },
+        { href: '/yorumlarim', label: '⭐  Yorumlarım' },
+        { href: '/ayarlar', label: '⚙️  Ayarlar' },
+      ]
 
   return (
     <>
@@ -215,6 +211,7 @@ export function Navbar() {
   const [menuAcik, setMenuAcik] = useState(false)
   const [kategoriAcik, setKategoriAcik] = useState(false)
   const [me, setMe] = useState<Me | null>(null)
+  const [dbKategoriler, setDbKategoriler] = useState<any[]>([])
   const [visible, setVisible] = useState(true)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
@@ -228,6 +225,12 @@ export function Navbar() {
       .then((r) => (r.ok ? r.json() : { authenticated: false }))
       .then((d) => { if (!iptal) setMe(d) })
       .catch(() => { if (!iptal) setMe({ authenticated: false }) })
+
+    fetch('/api/v1/categories')
+      .then((r) => r.json())
+      .then((d) => { if (!iptal && d.success) setDbKategoriler(d.data) })
+      .catch(console.error)
+
     return () => { iptal = true }
   }, [])
 
@@ -272,7 +275,7 @@ export function Navbar() {
 
   return (
     <>
-      <div style={{ height: 72, flexShrink: 0 }} />
+      <div style={{ height: (showKategoriler && !scrolled) ? 116 : 72, flexShrink: 0, transition: 'height 0.3s' }} />
       <nav
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
@@ -316,50 +319,32 @@ export function Navbar() {
                 </Link>
               ))}
 
-              {showKategoriler && (
-                <div style={{ position: 'relative' }}>
-                  <button
-                    style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer' }}
-                    onMouseEnter={() => setKategoriAcik(true)}
-                    onMouseLeave={() => setKategoriAcik(false)}
-                  >
-                    Kategoriler
-                    <svg style={{ width: 14, height: 14, transition: 'transform 0.2s', transform: kategoriAcik ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {kategoriAcik && (
-                    <div
-                      className="animate-fade-in"
-                      style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 240, background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, boxShadow: 'var(--shadow-lg)', padding: '8px 0', zIndex: 100 }}
-                      onMouseEnter={() => setKategoriAcik(true)}
-                      onMouseLeave={() => setKategoriAcik(false)}
-                    >
-                      {KATEGORILER.map((k) => (
-                        <Link
-                          key={k.slug}
-                          href={`/kategori/${k.slug}`}
-                          style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px', fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}
-                        >
-                          <span style={{ fontSize: 18 }}>{k.ikon}</span>
-                          {k.ad}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Kategoriler now in horizontal bar below */}
             </div>
 
             <div style={{ flex: 1 }} />
 
             {/* Desktop Auth */}
-            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12 }}>
+            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 16 }}>
               <ThemeSwitch />
               {me === null ? (
                 <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
               ) : girisliMi ? (
-                <UserDropdown me={me} />
+                <>
+                  {me.rol === 'USER' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginRight: 8 }}>
+                      <Link href="/favorilerim" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text)', textDecoration: 'none', fontWeight: 600, fontSize: 14, transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')} onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text)')}>
+                        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                        Favorilerim
+                      </Link>
+                      <Link href="/randevularim" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text)', textDecoration: 'none', fontWeight: 600, fontSize: 14, transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')} onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text)')}>
+                        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        Randevularım
+                      </Link>
+                    </div>
+                  )}
+                  <UserDropdown me={me} />
+                </>
               ) : (
                 <>
                   <Link
@@ -425,7 +410,7 @@ export function Navbar() {
                       Kategoriler
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
-                      {KATEGORILER.slice(0, 8).map((k) => (
+                      {dbKategoriler.slice(0, 8).map((k) => (
                         <Link
                           key={k.slug}
                           href={`/kategori/${k.slug}`}
@@ -452,17 +437,14 @@ export function Navbar() {
                           <Button variant="secondary" size="sm" className="w-full">🏪 İşletme Panelim</Button>
                         </Link>
                       )}
-                      {me?.rol === 'USER' && (() => {
-                        const base2 = me.kullaniciAdi ? `/${me.kullaniciAdi}` : null
-                        return (
-                          <>
-                            <Link href={base2 ? `${base2}/genel` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
-                            <Link href={base2 ? `${base2}/favorilerim` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
-                            <Link href={base2 ? `${base2}/randevularim` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
-                            <Link href={base2 ? `${base2}/ayarlar` : '/hesabim'} onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
-                          </>
-                        )
-                      })()}
+                      {me?.rol === 'USER' && (
+                        <>
+                          <Link href="/genel" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>🏠  Genel Bakış</Link>
+                          <Link href="/favorilerim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>❤️  Favorilerim</Link>
+                          <Link href="/randevularim" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>📅  Randevularım</Link>
+                          <Link href="/ayarlar" onClick={() => setMenuAcik(false)} style={{ padding: '13px 14px', fontSize: 15, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}>⚙️  Ayarlar</Link>
+                        </>
+                      )}
                       <button
                         onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/' }) }}
                         style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}
@@ -485,6 +467,33 @@ export function Navbar() {
                     </>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop Category Bar (Trendyol Style) */}
+        {showKategoriler && !scrolled && (
+          <div className="hidden lg:flex" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
+            <div className="container-main">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 32, height: 44, overflowX: 'auto', scrollbarWidth: 'none', padding: '0 8px' }}>
+                {dbKategoriler.map((k) => (
+                  <Link
+                    key={k.slug}
+                    href={`/kategori/${k.slug}`}
+                    style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'color 0.2s', padding: '10px 0', borderBottom: '2px solid transparent' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'var(--color-primary)'
+                      e.currentTarget.style.borderBottomColor = 'var(--color-primary)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'var(--color-text-secondary)'
+                      e.currentTarget.style.borderBottomColor = 'transparent'
+                    }}
+                  >
+                    {k.ad}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

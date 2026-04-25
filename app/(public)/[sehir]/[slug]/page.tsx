@@ -13,6 +13,7 @@ import { YildizPuan } from '@/components/shared/YildizPuan'
 import { QRKodWidget } from '@/components/shared/QRKodWidget'
 import { FavoriButon } from '@/components/public/FavoriButon'
 import { VitrinGaleri } from '@/components/public/VitrinGaleri'
+import { ViewTracker } from '@/components/public/ViewTracker'
 import { ortalamaPuan, isletmeAcikMi } from '@/lib/utils'
 import type { Metadata } from 'next'
 
@@ -88,6 +89,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
 
   return (
     <>
+      {authenticated && <ViewTracker esnafId={esnaf.id} />}
       {/* Cover Image */}
       <div className="relative" style={{ height: '380px', background: 'var(--color-bg-muted)' }}>
         {esnaf.kapakFoto ? (
