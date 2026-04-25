@@ -1,128 +1,10 @@
 import Link from 'next/link'
-import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
-
-async function getCategories() {
-  try {
-    return await prisma.kategori.findMany({
-      where: { ustKategoriId: null },
-      orderBy: { sira: 'asc' },
-    })
-  } catch {
-    return []
-  }
-}
-
-async function getCampaigns() {
-  try {
-    return await prisma.hizmet.findMany({
-      where: {
-        aktif: true,
-        indirimYuzde: { gt: 0 },
-        indirimBitis: { gte: new Date() }
-      },
-      take: 8,
-      include: {
-        esnaf: {
-          select: { id: true, isletmeAdi: true, slug: true, sehir: true, ilce: true }
-        }
-      },
-      orderBy: { indirimYuzde: 'desc' }
-    })
-  } catch {
-    return []
-  }
-}
-
-async function getRecommendations(userId?: string) {
-  try {
-    let categoryIds: number[] = []
-    if (userId) {
-      const uId = parseInt(userId, 10)
-      const recentlyViewed = await prisma.gezilenEsnaf.findMany({
-        where: { kullaniciId: uId },
-        include: { esnaf: { select: { kategoriId: true } } },
-        orderBy: { sonGorulmeT: 'desc' },
-        take: 5
-      })
-      categoryIds = [...new Set(recentlyViewed.map(rv => rv.esnaf.kategoriId))]
-    }
-
-    const whereClause: any = { aktif: true, onaylı: true }
-    if (categoryIds.length > 0) {
-      whereClause.kategoriId = { in: categoryIds }
-    }
-
-    let recommendations = await prisma.esnaf.findMany({
-      where: whereClause,
-      include: {
-        kategori: true,
-        yorumlar: { select: { puan: true } },
-        hizmetler: { where: { aktif: true }, take: 2 }
-      },
-      take: 8,
-      orderBy: { olusturmaT: 'desc' }
-    })
-
-    if (recommendations.length === 0 && categoryIds.length > 0) {
-      recommendations = await prisma.esnaf.findMany({
-        where: { aktif: true, onaylı: true },
-        include: {
-          kategori: true,
-          yorumlar: { select: { puan: true } },
-          hizmetler: { where: { aktif: true }, take: 2 }
-        },
-        take: 8,
-        orderBy: { olusturmaT: 'desc' }
-      })
-    }
-    return recommendations
-  } catch {
-    return []
-  }
-}
-
-async function getRecentlyViewed(userId?: string) {
-  if (!userId) return []
-  try {
-    const uId = parseInt(userId, 10)
-    const recentlyViewed = await prisma.gezilenEsnaf.findMany({
-      where: { kullaniciId: uId },
-      orderBy: { sonGorulmeT: 'desc' },
-      take: 10,
-      include: {
-        esnaf: {
-          include: {
-            kategori: true,
-            yorumlar: { select: { puan: true } },
-            hizmetler: { where: { aktif: true }, take: 2 }
-          }
-        }
-      }
-    })
-    return recentlyViewed.map(rv => rv.esnaf)
-  } catch {
-    return []
-  }
-}
-
-async function getTopEsnaf() {
-  try {
-    return await prisma.esnaf.findMany({
-      where: { aktif: true, onaylı: true },
-      include: {
-        kategori: true,
-        yorumlar: { select: { puan: true } },
-        hizmetler: { where: { aktif: true }, take: 2 },
-      },
-      orderBy: { olusturmaT: 'desc' },
-      take: 8,
-    })
-  } catch {
-    return []
-  }
-}
+import { getCategoriesService } from '@/lib/services/category.service'
+import { getCampaignsService } from '@/lib/services/campaign.service'
+import { getRecommendationsService, getTopEsnafService } from '@/lib/services/recommendation.service'
+import { getRecentlyViewedService } from '@/lib/services/recently-viewed.service'
 
 export default async function AnaSayfa() {
   const session = await auth()
@@ -136,11 +18,11 @@ export default async function AnaSayfa() {
     recentlyViewed, 
     topEsnaf
   ] = await Promise.all([
-    getCategories(),
-    getCampaigns(),
-    getRecommendations(userId),
-    getRecentlyViewed(userId),
-    getTopEsnaf()
+    getCategoriesService(),
+    getCampaignsService({ limit: 8 }),
+    getRecommendationsService(userId, { limit: 8 }),
+    getRecentlyViewedService(userId || '', { limit: 10 }),
+    getTopEsnafService({ limit: 8 })
   ])
 
   return (

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
+import { getRecentlyViewedService, trackRecentlyViewedService } from '@/lib/services/recently-viewed.service'
 
 export async function GET(request: Request) {
   const session = await auth()
@@ -12,22 +12,8 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get('limit') || '10', 10)
 
   try {
-    const userId = parseInt(session.user.id, 10)
-    const recentlyViewed = await prisma.gezilenEsnaf.findMany({
-      where: { kullaniciId: userId },
-      orderBy: { sonGorulmeT: 'desc' },
-      take: limit,
-      include: {
-        esnaf: {
-          include: {
-            kategori: true,
-            yorumlar: { select: { puan: true } },
-          }
-        }
-      }
-    })
-
-    return NextResponse.json({ success: true, data: recentlyViewed.map(rv => rv.esnaf) })
+    const data = await getRecentlyViewedService(session.user.id, { limit })
+    return NextResponse.json({ success: true, data })
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
@@ -43,24 +29,10 @@ export async function POST(request: Request) {
     const { esnafId } = await request.json()
     if (!esnafId) return NextResponse.json({ success: false, error: 'esnafId required' }, { status: 400 })
 
-    const userId = parseInt(session.user.id, 10)
-    
-    // Upsert tracking record
-    await prisma.gezilenEsnaf.upsert({
-      where: {
-        kullaniciId_esnafId: {
-          kullaniciId: userId,
-          esnafId: parseInt(esnafId, 10)
-        }
-      },
-      update: {
-        sonGorulmeT: new Date()
-      },
-      create: {
-        kullaniciId: userId,
-        esnafId: parseInt(esnafId, 10)
-      }
-    })
+    const result = await trackRecentlyViewedService(session.user.id, esnafId)
+    if (!result.success) {
+      return NextResponse.json(result, { status: 400 })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {

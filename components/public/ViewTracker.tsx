@@ -1,10 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export function ViewTracker({ esnafId }: { esnafId: number }) {
+  const trackedRef = useRef(false)
+
   useEffect(() => {
-    // Only track once per page load
+    // Prevent duplicate tracking in React 18 strict mode or rapid re-renders
+    if (trackedRef.current) return
+
     const trackView = async () => {
       try {
         await fetch('/api/v1/recently-viewed', {
@@ -12,13 +16,14 @@ export function ViewTracker({ esnafId }: { esnafId: number }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ esnafId })
         })
+        trackedRef.current = true
       } catch (err) {
         console.error('Failed to track view', err)
       }
     }
     
-    // We delay slightly to ensure it's a real view and not a bounce
-    const timer = setTimeout(trackView, 2000)
+    // We delay slightly to ensure it's a meaningful view and not a bounce
+    const timer = setTimeout(trackView, 1500)
     return () => clearTimeout(timer)
   }, [esnafId])
 

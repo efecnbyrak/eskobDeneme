@@ -140,6 +140,8 @@ model Hizmet {
   indirimYuzde     Int?
   indirimBaslangic DateTime?
   indirimBitis     DateTime?
+  oncelik          Int      @default(0)
+  oneCikan         Boolean  @default(false)
 
   @@index([esnafId, aktif])
   @@map("hizmetler")
