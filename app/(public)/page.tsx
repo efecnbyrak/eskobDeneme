@@ -166,14 +166,7 @@ export default async function AnaSayfa() {
                   position: 'relative',
                   overflow: 'hidden',
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'
-                  ;(e.currentTarget as HTMLElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.18)'
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-                  ;(e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)'
-                }}
+                className="hover:-translate-y-1 hover:shadow-2xl"
               >
                 <span style={{ fontSize: 42 }}>{banner.emoji}</span>
                 <div style={{ textAlign: 'center', padding: '0 14px' }}>
@@ -231,14 +224,7 @@ export default async function AnaSayfa() {
                   border: '1px solid #F0F0F0',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'
-                  ;(e.currentTarget as HTMLElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)'
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-                  ;(e.currentTarget as HTMLElement).style.boxShadow = '0 2px 16px rgba(0,0,0,0.06)'
-                }}
+                className="hover:-translate-y-1 hover:shadow-xl"
               >
                 <div style={{ fontSize: 38, marginBottom: 14 }}>{s.icon}</div>
                 <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--color-primary)', marginBottom: 6 }}>{s.title}</div>
