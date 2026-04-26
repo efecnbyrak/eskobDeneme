@@ -1,12 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/Button'
-import { ThemeSwitch } from '@/components/ui/ThemeSwitch'
 
 type Me = {
   authenticated: boolean
@@ -79,9 +78,7 @@ function UserDropdown({ me }: { me: Me }) {
   const [mounted, setMounted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     function kapat(e: MouseEvent) {
@@ -110,7 +107,7 @@ function UserDropdown({ me }: { me: Me }) {
     <>
       {mounted && cikisModal && createPortal(
         <CikisModal
-          onOnayla={() => signOut({ callbackUrl: '/' })}
+          onOnayla={() => signOut({ callbackUrl: '/giris' })}
           onIptal={() => setCikisModal(false)}
         />,
         document.body
@@ -119,30 +116,30 @@ function UserDropdown({ me }: { me: Me }) {
         <button
           onClick={() => setAcik((p) => !p)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 10,
+            display: 'flex', alignItems: 'center', gap: 8,
             background: acik ? 'var(--color-bg-muted)' : 'transparent',
             border: '1.5px solid var(--color-border)',
-            borderRadius: 12, padding: '6px 14px 6px 6px',
+            borderRadius: 12, padding: '6px 12px 6px 6px',
             cursor: 'pointer', transition: 'all 0.2s',
           }}
         >
           <div
             style={{
-              width: 32, height: 32, borderRadius: '50%',
+              width: 30, height: 30, borderRadius: '50%',
               background: 'var(--color-primary)', color: 'white',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 700, fontSize: 13, flexShrink: 0,
+              fontWeight: 700, fontSize: 12, flexShrink: 0,
             }}
           >
             {me.avatarUrl
-              ? <img src={me.avatarUrl} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+              ? <img src={me.avatarUrl} alt="" style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover' }} />
               : basTurlari(me.ad, me.soyad)}
           </div>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {me.ad}
           </span>
           <svg
-            style={{ width: 14, height: 14, color: 'var(--color-text-secondary)', transition: 'transform 0.2s', transform: acik ? 'rotate(180deg)' : 'none', flexShrink: 0 }}
+            style={{ width: 13, height: 13, color: 'var(--color-text-secondary)', transition: 'transform 0.2s', transform: acik ? 'rotate(180deg)' : 'none', flexShrink: 0 }}
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -207,9 +204,69 @@ function UserDropdown({ me }: { me: Me }) {
   )
 }
 
+function NavArama() {
+  const router = useRouter()
+  const [deger, setDeger] = useState('')
+  const [odakli, setOdakli] = useState(false)
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const q = deger.trim()
+    router.push(q ? `/ara?arama=${encodeURIComponent(q)}` : '/ara')
+    setOdakli(false)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ flex: 1, maxWidth: 580, margin: '0 24px' }}>
+      <div
+        style={{
+          display: 'flex', alignItems: 'center',
+          background: 'white',
+          border: `2px solid ${odakli ? 'var(--color-primary)' : 'var(--color-border)'}`,
+          borderRadius: 14,
+          transition: 'border-color 0.2s, box-shadow 0.2s',
+          boxShadow: odakli ? '0 0 0 3px rgba(242,122,26,0.12)' : '0 1px 4px rgba(0,0,0,0.06)',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ paddingLeft: 16, color: odakli ? 'var(--color-primary)' : 'var(--color-text-secondary)', transition: 'color 0.2s', flexShrink: 0 }}>
+          <svg style={{ width: 18, height: 18, display: 'block' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          value={deger}
+          onChange={(e) => setDeger(e.target.value)}
+          onFocus={() => setOdakli(true)}
+          onBlur={() => setOdakli(false)}
+          placeholder="İşletme, esnaf veya şehir ara..."
+          style={{
+            flex: 1, padding: '11px 12px', fontSize: 14, fontWeight: 500,
+            background: 'transparent', outline: 'none', border: 'none',
+            color: 'var(--color-text)',
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            background: 'var(--color-primary)', color: 'white',
+            fontWeight: 700, fontSize: 13, padding: '0 20px',
+            height: 40, border: 'none', cursor: 'pointer',
+            margin: 4, borderRadius: 10, flexShrink: 0,
+            transition: 'opacity 0.2s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+        >
+          Ara
+        </button>
+      </div>
+    </form>
+  )
+}
+
 export function Navbar() {
   const [menuAcik, setMenuAcik] = useState(false)
-  const [kategoriAcik, setKategoriAcik] = useState(false)
   const [me, setMe] = useState<Me | null>(null)
   const [dbKategoriler, setDbKategoriler] = useState<any[]>([])
   const [visible, setVisible] = useState(true)
@@ -217,7 +274,6 @@ export function Navbar() {
   const pathname = usePathname()
 
   const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
-  const isMusteri = !isIsletme
 
   useEffect(() => {
     let iptal = false
@@ -258,48 +314,44 @@ export function Navbar() {
 
   const accentBg = isIsletme ? '#1A2744' : 'var(--color-primary)'
 
+  const showKategoriler = !isIsletme
+
   const isletmeNavLinks = [
-    { href: '/isletme', label: 'Anasayfa' },
     { href: '/isletme/ozellikler', label: 'Özellikler' },
     { href: '/isletme/nasil-calisir', label: 'Nasıl Çalışır?' },
     { href: '/isletme/iletisim', label: 'İletişim' },
   ]
 
-  const musteriNavLinks = [
-    { href: '/', label: 'Anasayfa' },
-    { href: '/ara', label: 'İşletmeleri Keşfet' },
-  ]
-
-  const navLinks = isIsletme ? isletmeNavLinks : musteriNavLinks
-  const showKategoriler = !isIsletme
+  const navbarHeight = showKategoriler && !scrolled ? 116 : 72
 
   return (
     <>
-      <div style={{ height: (showKategoriler && !scrolled) ? 116 : 72, flexShrink: 0, transition: 'height 0.3s' }} />
+      <div style={{ height: navbarHeight, flexShrink: 0, transition: 'height 0.3s' }} />
       <nav
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-          background: scrolled ? 'rgba(255,255,255,0.98)' : (isIsletme ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.92)'),
+          background: scrolled ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.96)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: scrolled ? '1px solid var(--color-border)' : (isIsletme ? '1px solid rgba(255,255,255,0.25)' : '1px solid var(--color-border)'),
+          borderBottom: scrolled ? '1px solid var(--color-border)' : (isIsletme ? '1px solid rgba(255,255,255,0.25)' : (showKategoriler ? 'none' : '1px solid var(--color-border)')),
           boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none',
           transform: visible ? 'translateY(0)' : 'translateY(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s ease, box-shadow 0.3s ease',
         }}
       >
         <div className="container-main">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
-            {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', height: 72 }}>
+
+            {/* LOGO */}
             <Link
               href={isIsletme ? '/isletme' : '/'}
               style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 18, color: 'var(--color-primary)', textDecoration: 'none', flexShrink: 0 }}
               className="font-display"
             >
-              <span style={{ width: 40, height: 40, borderRadius: 12, background: accentBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>
+              <span style={{ width: 38, height: 38, borderRadius: 10, background: accentBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>
                 EV
               </span>
-              <span className="hidden sm:inline">Esnaf Vitrin</span>
+              <span className="hidden sm:inline" style={{ fontSize: 16 }}>Esnaf Vitrin</span>
               {isIsletme && (
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#1A2744', background: 'rgba(26,39,68,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
                   İşletme
@@ -307,43 +359,63 @@ export function Navbar() {
               )}
             </Link>
 
-            {/* Desktop Nav Links */}
-            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 32 }}>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, textDecoration: 'none' }}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            {/* İşletme sayfaları için nav linkleri */}
+            {isIsletme && (
+              <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 32 }}>
+                {isletmeNavLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', padding: '10px 14px', borderRadius: 10, textDecoration: 'none' }}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
 
-              {/* Kategoriler now in horizontal bar below */}
-            </div>
+            {/* SEARCH BAR — müşteri tarafında merkez */}
+            {!isIsletme && (
+              <div className="hidden lg:flex" style={{ flex: 1 }}>
+                <NavArama />
+              </div>
+            )}
 
-            <div style={{ flex: 1 }} />
+            {isIsletme && <div style={{ flex: 1 }} />}
 
-            {/* Desktop Auth */}
-            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 16 }}>
-              <ThemeSwitch />
+            {/* SAĞ ALAN */}
+            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12, flexShrink: 0 }}>
               {me === null ? (
                 <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
               ) : girisliMi ? (
                 <>
-                  {me.rol === 'USER' && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginRight: 8 }}>
-                      <Link href="/favorilerim" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text)', textDecoration: 'none', fontWeight: 600, fontSize: 14, transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')} onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text)')}>
-                        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                        Favorilerim
-                      </Link>
-                      <Link href="/randevularim" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text)', textDecoration: 'none', fontWeight: 600, fontSize: 14, transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')} onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text)')}>
-                        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        Randevularım
-                      </Link>
-                    </div>
-                  )}
                   <UserDropdown me={me} />
+                  {me.rol === 'USER' && (
+                    <>
+                      <Link
+                        href="/favorilerim"
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, color: 'var(--color-text-secondary)', textDecoration: 'none', transition: 'color 0.2s', padding: '4px 8px', borderRadius: 10 }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+                      >
+                        <svg style={{ width: 20, height: 20 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span style={{ fontSize: 11, fontWeight: 600 }}>Favorilerim</span>
+                      </Link>
+                      <Link
+                        href="/randevularim"
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, color: 'var(--color-text-secondary)', textDecoration: 'none', transition: 'color 0.2s', padding: '4px 8px', borderRadius: 10 }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+                      >
+                        <svg style={{ width: 20, height: 20 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span style={{ fontSize: 11, fontWeight: 600 }}>Randevularım</span>
+                      </Link>
+                    </>
+                  )}
                 </>
               ) : (
                 <>
@@ -360,7 +432,7 @@ export function Navbar() {
                     Giriş Yap
                   </Link>
                   <Link href={kayitHref}>
-                    <button style={{ height: 40, padding: '0 20px', fontSize: 14, fontWeight: 700, background: 'transparent', color: accentBg, borderRadius: 10, border: `1.5px solid ${accentBg}`, cursor: 'pointer' }}>
+                    <button style={{ height: 40, padding: '0 18px', fontSize: 14, fontWeight: 700, background: 'transparent', color: accentBg, borderRadius: 10, border: `1.5px solid ${accentBg}`, cursor: 'pointer' }}>
                       Ücretsiz Başla
                     </button>
                   </Link>
@@ -371,7 +443,7 @@ export function Navbar() {
             {/* Mobile burger */}
             <button
               className="lg:hidden"
-              style={{ padding: 10, marginRight: -8, borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ padding: 10, marginLeft: 'auto', borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}
               onClick={() => setMenuAcik((p) => !p)}
               aria-label="Menü"
             >
@@ -391,9 +463,15 @@ export function Navbar() {
         {/* Mobile Menu */}
         {menuAcik && (
           <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
-            <div className="container-main" style={{ padding: '20px 20px 28px' }}>
+            <div className="container-main" style={{ padding: '16px 20px 24px' }}>
+              {/* Mobile search */}
+              {!isIsletme && (
+                <div style={{ marginBottom: 16 }}>
+                  <NavArama />
+                </div>
+              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {navLinks.map((link) => (
+                {isIsletme && isletmeNavLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -406,7 +484,7 @@ export function Navbar() {
 
                 {showKategoriler && (
                   <>
-                    <div style={{ padding: '14px 14px 6px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
+                    <div style={{ padding: '10px 14px 6px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
                       Kategoriler
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
@@ -417,7 +495,11 @@ export function Navbar() {
                           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', fontSize: 14, borderRadius: 12, textDecoration: 'none', color: 'var(--color-text)' }}
                           onClick={() => setMenuAcik(false)}
                         >
-                          <span>{k.ikon}</span> {k.ad}
+                          {k.ikonUrl
+                            ? <img src={k.ikonUrl} alt={k.ad} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+                            : <span>{k.ikon}</span>
+                          }
+                          {k.ad}
                         </Link>
                       ))}
                     </div>
@@ -446,7 +528,7 @@ export function Navbar() {
                         </>
                       )}
                       <button
-                        onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/' }) }}
+                        onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/giris' }) }}
                         style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}
                       >
                         🚪  Hesaptan Çıkış Yap
@@ -472,25 +554,35 @@ export function Navbar() {
           </div>
         )}
 
-        {/* Desktop Category Bar (Trendyol Style) */}
+        {/* Kategori Bar — divider YOK, header'a bağlı */}
         {showKategoriler && !scrolled && (
-          <div className="hidden lg:flex" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
+          <div className="hidden lg:flex" style={{ background: 'white' }}>
             <div className="container-main">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 32, height: 44, overflowX: 'auto', scrollbarWidth: 'none', padding: '0 8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 28, height: 44, overflowX: 'auto', scrollbarWidth: 'none', padding: '0 4px' }}>
                 {dbKategoriler.map((k) => (
                   <Link
                     key={k.slug}
                     href={`/kategori/${k.slug}`}
-                    style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'color 0.2s', padding: '10px 0', borderBottom: '2px solid transparent' }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      fontSize: 14, fontWeight: 800, color: '#444',
+                      textDecoration: 'none', whiteSpace: 'nowrap',
+                      transition: 'color 0.2s',
+                      padding: '10px 0', borderBottom: '2px solid transparent',
+                    }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = 'var(--color-primary)'
                       e.currentTarget.style.borderBottomColor = 'var(--color-primary)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'var(--color-text-secondary)'
+                      e.currentTarget.style.color = '#555'
                       e.currentTarget.style.borderBottomColor = 'transparent'
                     }}
                   >
+                    {k.ikonUrl
+                      ? <img src={k.ikonUrl} alt={k.ad} style={{ width: 16, height: 16, objectFit: 'contain' }} />
+                      : <span style={{ fontSize: 15 }}>{k.ikon}</span>
+                    }
                     {k.ad}
                   </Link>
                 ))}

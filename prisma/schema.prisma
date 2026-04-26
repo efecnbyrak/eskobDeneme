@@ -105,12 +105,13 @@ model Esnaf {
 }
 
 model Kategori {
-  id   Int    @id @default(autoincrement())
-  ad   String @unique
-  slug String @unique
-  ikon String
-  renk String
-  sira Int    @default(0)
+  id     Int     @id @default(autoincrement())
+  ad     String  @unique
+  slug   String  @unique
+  ikon   String
+  ikonUrl String?
+  renk   String
+  sira   Int     @default(0)
 
   ustKategoriId  Int?
   ustKategori    Kategori?  @relation("KategoriHiyerarsi", fields: [ustKategoriId], references: [id])

@@ -16,16 +16,12 @@ const AUTH_PATHS = [
   '/isletme/kayit',
 ]
 
-// /isletme/* altında **gerçek public içerik** barındıran yollar (rol redirect dışı)
 const PUBLIC_ISLETME_SAYFALARI = new Set([
   '/isletme/iletisim',
   '/isletme/gizlilik',
   '/isletme/kullanim',
   '/isletme/nasil-calisir',
 ])
-
-// /musteri/* altında public içerik (auth sayfaları zaten ayrıca whitelist'lendi)
-const PUBLIC_MUSTERI_SAYFALARI = new Set<string>([])
 
 function matchesAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
@@ -41,27 +37,21 @@ function homeForRole(rol?: Rol | string | null): string {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // ── CORS preflight: hızlıca cevapla ──
+  // CORS preflight
   if (request.method === 'OPTIONS' && pathname.startsWith('/api/')) {
     return new NextResponse(null, { status: 204 })
+  }
+
+  // API rotaları kendi auth kontrollerini yapar
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
   }
 
   const oturum = await auth()
   const rol = oturum?.user?.rol as Rol | undefined
   const isAuthenticated = !!oturum?.user
 
-  // ── Ana sayfa ──
-  if (pathname === '/') {
-    if (isAuthenticated && (rol === 'SUPER_ADMIN' || rol === 'ADMIN')) {
-      return NextResponse.redirect(new URL('/phyberk/admin', request.url))
-    }
-    if (isAuthenticated && rol === 'BUSINESS') {
-      return NextResponse.redirect(new URL('/isletme/panel', request.url))
-    }
-    return NextResponse.next()
-  }
-
-  // ── Auth sayfaları: giriş yapmışları yönlendir ──
+  // Auth sayfaları: giriş yapmışları yönlendir
   if (matchesAny(pathname, AUTH_PATHS)) {
     if (isAuthenticated) {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
@@ -69,33 +59,42 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // ── Admin rotaları ──
-  if (matchesAny(pathname, ADMIN_PATHS)) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/giris', request.url))
+  // Kimlik doğrulanmamış: tüm sayfalara erişim engellenir → /giris
+  if (!isAuthenticated) {
+    return NextResponse.redirect(new URL('/giris', request.url))
+  }
+
+  // ── Kimliği doğrulanmış kullanıcılar ──
+
+  // Ana sayfa
+  if (pathname === '/') {
+    if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') {
+      return NextResponse.redirect(new URL('/phyberk/admin', request.url))
     }
+    if (rol === 'BUSINESS') {
+      return NextResponse.redirect(new URL('/isletme/panel', request.url))
+    }
+    return NextResponse.next()
+  }
+
+  // Admin rotaları
+  if (matchesAny(pathname, ADMIN_PATHS)) {
     if (rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
     }
     return NextResponse.next()
   }
 
-  // ── İşletme paneli ──
+  // İşletme paneli
   if (matchesAny(pathname, BUSINESS_PATHS)) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/isletme/giris', request.url))
-    }
     if (rol !== 'BUSINESS' && rol !== 'SUPER_ADMIN' && rol !== 'ADMIN') {
       return NextResponse.redirect(new URL(homeForRole(rol), request.url))
     }
     return NextResponse.next()
   }
 
-  // ── Hesap sayfaları: sadece USER ──
+  // Hesap sayfaları (USER rolü için)
   if (matchesAny(pathname, ACCOUNT_PATHS)) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/musteri/giris', request.url))
-    }
     if (rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/isletme/panel', request.url))
     }
@@ -105,26 +104,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // ── Müşteri landing (/musteri/*): BUSINESS girişli kullanıcılar erişemez ──
-  if (
-    pathname === '/musteri' ||
-    (pathname.startsWith('/musteri/') &&
-      !PUBLIC_MUSTERI_SAYFALARI.has(pathname) &&
-      !pathname.startsWith('/musteri/giris') &&
-      !pathname.startsWith('/musteri/kayit') &&
-      !pathname.startsWith('/musteri/panel'))
-  ) {
-    if (
-      isAuthenticated &&
-      (rol === 'BUSINESS' || rol === 'SUPER_ADMIN' || rol === 'ADMIN')
-    ) {
-      return NextResponse.redirect(new URL(homeForRole(rol), request.url))
-    }
-    return NextResponse.next()
-  }
-
-  // ── İşletme landing (/isletme/*): USER girişli kullanıcılar erişemez ──
-  // Public sayfalar (iletişim, gizlilik, kullanım, nasıl-çalışır) hariç
+  // İşletme landing (/isletme/*): USER giremez
   if (
     pathname === '/isletme' ||
     (pathname.startsWith('/isletme/') &&
@@ -133,7 +113,7 @@ export async function proxy(request: NextRequest) {
       !pathname.startsWith('/isletme/kayit') &&
       !pathname.startsWith('/isletme/panel'))
   ) {
-    if (isAuthenticated && rol === 'USER') {
+    if (rol === 'USER') {
       return NextResponse.redirect(new URL('/', request.url))
     }
     return NextResponse.next()
@@ -144,22 +124,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/',
-    '/giris',
-    '/kayit',
-    '/genel',
-    '/favorilerim',
-    '/randevularim',
-    '/ayarlar',
-    '/yorumlarim',
-    '/profil',
-    '/panel/:path*',
-    '/isletme/panel/:path*',
-    '/musteri',
-    '/musteri/:path*',
-    '/isletme',
-    '/isletme/:path*',
-    '/phyberk/:path*',
-    '/api/:path*',
+    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|woff|woff2|ttf)).*)',
   ],
 }
