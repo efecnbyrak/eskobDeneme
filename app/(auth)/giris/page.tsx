@@ -135,7 +135,7 @@ function GirisForm() {
 
         {/* Alt bilgi */}
         <p style={{ marginTop: 56, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
-          © 2025 Esnaf Vitrin · Tüm hakları saklıdır
+          © {new Date().getFullYear()} Esnaf Vitrin · Tüm hakları saklıdır
         </p>
       </div>
 

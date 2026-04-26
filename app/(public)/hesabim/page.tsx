@@ -8,5 +8,5 @@ export default async function HesabimRedirect() {
     redirect('/musteri/giris')
   }
 
-  redirect('/hesabim/genel')
+  redirect('/genel')
 }

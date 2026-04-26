@@ -17,7 +17,7 @@ const DEMO_YORUMLAR = [
     yorum: 'Harika bir deneyimdi, kesinlikle tavsiye ederim! Hizmet kalitesi beklentilerimin çok üzerindeydi.',
     yanitlar: null,
     onaylı: true,
-    olusturmaT: '2025-03-15T10:30:00.000Z',
+    olusturmaT: '2026-03-15T10:30:00.000Z',
     esnafId: 0,
   },
   {
@@ -27,7 +27,7 @@ const DEMO_YORUMLAR = [
     yorum: 'Hizmet kalitesi çok yüksek, personel güler yüzlüydü. Bir dahaki seferinde de geleceğim.',
     yanitlar: 'Teşekkür ederiz Zeynep Hanım, sizi tekrar görmekten mutluluk duyarız! 🙏',
     onaylı: true,
-    olusturmaT: '2025-03-10T14:15:00.000Z',
+    olusturmaT: '2026-03-10T14:15:00.000Z',
     esnafId: 0,
   },
   {
@@ -37,7 +37,7 @@ const DEMO_YORUMLAR = [
     yorum: 'Randevu alma süreci çok kolay, zamanında hizmet aldım. Fiyat/performans açısından da çok iyi.',
     yanitlar: null,
     onaylı: true,
-    olusturmaT: '2025-03-05T09:00:00.000Z',
+    olusturmaT: '2026-03-05T09:00:00.000Z',
     esnafId: 0,
   },
 ]

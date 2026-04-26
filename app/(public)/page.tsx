@@ -9,14 +9,14 @@ import { CampaignCard } from '@/components/public/CampaignCard'
 
 // Yöneticiden yüklenecek promosyon görsellerinin placeholder versiyonları
 const PROMO_BANNERLAR = [
-  { emoji: '✂️', title: 'Berber & Kuaför', subtitle: '%30\'a varan indirim', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { emoji: '🍕', title: 'Yeme & İçme', subtitle: 'Özel menüler', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { emoji: '💆', title: 'Spa & Masaj', subtitle: 'Haftasonu fırsatı', bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-  { emoji: '🔧', title: 'Teknik Servis', subtitle: 'Ücretsiz keşif', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-  { emoji: '🎓', title: 'Eğitim & Kurs', subtitle: 'İlk ders bedava', bg: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-  { emoji: '🏋️', title: 'Spor & Fitness', subtitle: 'Aylık üyelik', bg: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
-  { emoji: '🐾', title: 'Evcil Hayvan', subtitle: 'Tımar hizmetleri', bg: 'linear-gradient(135deg, #fda085 0%, #f6d365 100%)' },
-  { emoji: '🎨', title: 'Güzellik & Estetik', subtitle: 'Trend tasarımlar', bg: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' },
+  { emoji: '✂️', title: 'Berber & Kuaför', subtitle: '%30\'a varan indirim' },
+  { emoji: '🍕', title: 'Yeme & İçme', subtitle: 'Özel menüler' },
+  { emoji: '💆', title: 'Spa & Masaj', subtitle: 'Haftasonu fırsatı' },
+  { emoji: '🔧', title: 'Teknik Servis', subtitle: 'Ücretsiz keşif' },
+  { emoji: '🎓', title: 'Eğitim & Kurs', subtitle: 'İlk ders bedava' },
+  { emoji: '🏋️', title: 'Spor & Fitness', subtitle: 'Aylık üyelik' },
+  { emoji: '🐾', title: 'Evcil Hayvan', subtitle: 'Tımar hizmetleri' },
+  { emoji: '🎨', title: 'Güzellik & Estetik', subtitle: 'Trend tasarımlar' },
 ]
 
 const NEDEN_BIZ = [
@@ -157,21 +157,21 @@ export default async function AnaSayfa() {
                 key={i}
                 href="/ara?kampanyali=true"
                 style={{
-                  minWidth: 180, width: 180, height: 180, borderRadius: 18,
-                  background: banner.bg, flexShrink: 0, cursor: 'pointer',
+                  minWidth: 150, width: 150, height: 150, borderRadius: 16,
+                  background: 'white',
+                  border: '1px solid #EBEBEB',
+                  flexShrink: 0, cursor: 'pointer',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: 10, textDecoration: 'none',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+                  gap: 8, textDecoration: 'none',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  position: 'relative',
-                  overflow: 'hidden',
                 }}
-                className="hover:-translate-y-1 hover:shadow-2xl"
+                className="hover:-translate-y-1 hover:shadow-md"
               >
-                <span style={{ fontSize: 42 }}>{banner.emoji}</span>
-                <div style={{ textAlign: 'center', padding: '0 14px' }}>
-                  <p style={{ fontSize: 13, fontWeight: 800, color: 'white', marginBottom: 2, textShadow: '0 1px 4px rgba(0,0,0,0.2)' }}>{banner.title}</p>
-                  <p style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.9)' }}>{banner.subtitle}</p>
+                <span style={{ fontSize: 36 }}>{banner.emoji}</span>
+                <div style={{ textAlign: 'center', padding: '0 10px' }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#222', marginBottom: 2 }}>{banner.title}</p>
+                  <p style={{ fontSize: 11, fontWeight: 500, color: '#999' }}>{banner.subtitle}</p>
                 </div>
               </Link>
             ))}
