@@ -23,8 +23,34 @@ const PUBLIC_ISLETME_SAYFALARI = new Set([
   '/isletme/nasil-calisir',
 ])
 
+// Kimlik doğrulaması gerektirmeyen rotalar
+const HERKESE_ACIK_ROTALAR = new Set(['/', '/ara'])
+const HERKESE_ACIK_PREFIXLER = ['/kategori/']
+
 function matchesAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
+}
+
+function isPublicRoute(pathname: string): boolean {
+  if (HERKESE_ACIK_ROTALAR.has(pathname)) return true
+  if (HERKESE_ACIK_PREFIXLER.some((p) => pathname.startsWith(p))) return true
+  // Tek segment path + korumalı listelerde yoksa = işletme slug sayfası
+  const tumKorunanlar = [
+    ...ADMIN_PATHS, ...BUSINESS_PATHS, ...ACCOUNT_PATHS, ...AUTH_PATHS,
+    '/isletme', '/phyberk',
+  ]
+  const segments = pathname.split('/').filter(Boolean)
+  if (
+    segments.length === 1 &&
+    !tumKorunanlar.some((p) => pathname === p || pathname.startsWith(p + '/'))
+  ) {
+    return true
+  }
+  // Şehir/slug ikili pattern: /sehir/slug
+  if (segments.length === 2 && !tumKorunanlar.some((p) => pathname.startsWith(p))) {
+    return true
+  }
+  return false
 }
 
 function homeForRole(rol?: Rol | string | null): string {
@@ -59,8 +85,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Kimlik doğrulanmamış: tüm sayfalara erişim engellenir → /giris
+  // Kimlik doğrulanmamış: herkese açık rotalar serbest, geri kalanlar /giris'e
   if (!isAuthenticated) {
+    if (isPublicRoute(pathname)) return NextResponse.next()
     return NextResponse.redirect(new URL('/giris', request.url))
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { createPortal } from 'react-dom'
@@ -204,64 +204,254 @@ function UserDropdown({ me }: { me: Me }) {
   )
 }
 
-function NavArama() {
+function NavArama({ dbKategoriler }: { dbKategoriler: any[] }) {
   const router = useRouter()
   const [deger, setDeger] = useState('')
   const [odakli, setOdakli] = useState(false)
+  const [katSonuclar, setKatSonuclar] = useState<any[]>([])
+  const [isletmeSonuclar, setIsletmeSonuclar] = useState<any[]>([])
+  const [yukleniyor, setYukleniyor] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Dışarı tıklanınca kapat
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOdakli(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  // ESC ile kapat
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === 'Escape') { setOdakli(false); inputRef.current?.blur() }
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [])
+
+  // Akıllı arama — önce kategoriler, sonra işletmeler
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    if (!deger.trim() || deger.length < 2) {
+      setKatSonuclar([])
+      setIsletmeSonuclar([])
+      return
+    }
+    timerRef.current = setTimeout(async () => {
+      setYukleniyor(true)
+      try {
+        const q = deger.toLowerCase()
+        const matchedKats = dbKategoriler
+          .filter((k) => k.ad.toLowerCase().includes(q) || k.slug.toLowerCase().includes(q))
+          .slice(0, 3)
+        setKatSonuclar(matchedKats)
+
+        const res = await fetch(`/api/esnaf?arama=${encodeURIComponent(deger)}&limit=5`, { cache: 'no-store' })
+        if (res.ok) {
+          const data = await res.json()
+          setIsletmeSonuclar((data.esnaflar ?? []).slice(0, 5))
+        }
+      } catch { /* noop */ }
+      setYukleniyor(false)
+    }, 280)
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [deger, dbKategoriler])
+
+  const gosterDropdown = odakli && deger.length >= 2
+  const hasResults = katSonuclar.length > 0 || isletmeSonuclar.length > 0
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setOdakli(false)
     const q = deger.trim()
     router.push(q ? `/ara?arama=${encodeURIComponent(q)}` : '/ara')
+  }
+
+  function goToSearch() {
     setOdakli(false)
+    const q = deger.trim()
+    router.push(q ? `/ara?arama=${encodeURIComponent(q)}` : '/ara')
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ flex: 1, maxWidth: 580, margin: '0 24px' }}>
-      <div
-        style={{
-          display: 'flex', alignItems: 'center',
-          background: 'white',
-          border: `2px solid ${odakli ? 'var(--color-primary)' : 'var(--color-border)'}`,
-          borderRadius: 14,
-          transition: 'border-color 0.2s, box-shadow 0.2s',
-          boxShadow: odakli ? '0 0 0 3px rgba(242,122,26,0.12)' : '0 1px 4px rgba(0,0,0,0.06)',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ paddingLeft: 16, color: odakli ? 'var(--color-primary)' : 'var(--color-text-secondary)', transition: 'color 0.2s', flexShrink: 0 }}>
-          <svg style={{ width: 18, height: 18, display: 'block' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        <input
-          value={deger}
-          onChange={(e) => setDeger(e.target.value)}
-          onFocus={() => setOdakli(true)}
-          onBlur={() => setOdakli(false)}
-          placeholder="İşletme, esnaf veya şehir ara..."
+    <div ref={wrapperRef} style={{ position: 'relative', width: '100%' }}>
+      <form onSubmit={handleSubmit}>
+        <div
           style={{
-            flex: 1, padding: '11px 12px', fontSize: 14, fontWeight: 500,
-            background: 'transparent', outline: 'none', border: 'none',
-            color: 'var(--color-text)',
+            display: 'flex', alignItems: 'center',
+            background: 'white',
+            border: `2px solid ${odakli ? 'var(--color-primary)' : 'var(--color-border)'}`,
+            borderRadius: gosterDropdown ? '14px 14px 0 0' : 14,
+            transition: 'border-color 0.2s, border-radius 0.15s, box-shadow 0.2s',
+            boxShadow: odakli ? '0 0 0 3px rgba(242,122,26,0.12)' : '0 1px 4px rgba(0,0,0,0.06)',
+            overflow: 'hidden',
           }}
-        />
-        <button
-          type="submit"
-          style={{
-            background: 'var(--color-primary)', color: 'white',
-            fontWeight: 700, fontSize: 13, padding: '0 20px',
-            height: 40, border: 'none', cursor: 'pointer',
-            margin: 4, borderRadius: 10, flexShrink: 0,
-            transition: 'opacity 0.2s',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
         >
-          Ara
-        </button>
-      </div>
-    </form>
+          <div style={{ paddingLeft: 14, color: odakli ? 'var(--color-primary)' : 'var(--color-text-secondary)', transition: 'color 0.2s', flexShrink: 0 }}>
+            <svg style={{ width: 17, height: 17, display: 'block' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            ref={inputRef}
+            value={deger}
+            onChange={(e) => setDeger(e.target.value)}
+            onFocus={() => setOdakli(true)}
+            placeholder="Kategori veya işletme ara..."
+            style={{
+              flex: 1, padding: '10px 10px', fontSize: 14, fontWeight: 500,
+              background: 'transparent', outline: 'none', border: 'none',
+              color: 'var(--color-text)',
+            }}
+          />
+          {deger && (
+            <button
+              type="button"
+              onClick={() => { setDeger(''); setKatSonuclar([]); setIsletmeSonuclar([]); inputRef.current?.focus() }}
+              style={{ padding: '0 8px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-secondary)', fontSize: 18, lineHeight: 1, flexShrink: 0 }}
+            >
+              ×
+            </button>
+          )}
+          <button
+            type="submit"
+            style={{
+              background: 'var(--color-primary)', color: 'white',
+              fontWeight: 700, fontSize: 13, padding: '0 18px',
+              height: 38, border: 'none', cursor: 'pointer',
+              margin: 4, borderRadius: 10, flexShrink: 0,
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.opacity = '0.88')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.opacity = '1')}
+          >
+            Ara
+          </button>
+        </div>
+      </form>
+
+      {/* Akıllı dropdown */}
+      {gosterDropdown && (
+        <div
+          style={{
+            position: 'absolute', top: '100%', left: 0, right: 0,
+            background: 'white',
+            border: '2px solid var(--color-primary)',
+            borderTop: '1px solid var(--color-border)',
+            borderRadius: '0 0 14px 14px',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.14)',
+            zIndex: 9999,
+            maxHeight: 400,
+            overflowY: 'auto',
+          }}
+        >
+          {yukleniyor && (
+            <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--color-primary)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+              Aranıyor...
+            </div>
+          )}
+
+          {/* Kategori sonuçları */}
+          {!yukleniyor && katSonuclar.length > 0 && (
+            <>
+              <div style={{ padding: '8px 14px 4px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.07em' }}>
+                Kategoriler
+              </div>
+              {katSonuclar.map((k) => (
+                <Link
+                  key={k.slug}
+                  href={`/kategori/${k.slug}`}
+                  onClick={() => { setOdakli(false); setDeger('') }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '10px 14px', textDecoration: 'none',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--color-bg-muted)')}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                >
+                  <span style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--color-bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>
+                    {k.ikonUrl ? <img src={k.ikonUrl} alt={k.ad} style={{ width: 16, height: 16, objectFit: 'contain' }} /> : k.ikon}
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', flex: 1 }}>{k.ad}</span>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', background: 'var(--color-bg-muted)', padding: '2px 8px', borderRadius: 6, flexShrink: 0 }}>Kategori</span>
+                </Link>
+              ))}
+            </>
+          )}
+
+          {/* İşletme sonuçları */}
+          {!yukleniyor && isletmeSonuclar.length > 0 && (
+            <>
+              <div style={{ padding: '8px 14px 4px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.07em', borderTop: katSonuclar.length > 0 ? '1px solid var(--color-border)' : 'none' }}>
+                İşletmeler
+              </div>
+              {isletmeSonuclar.map((s: any) => (
+                <Link
+                  key={s.id}
+                  href={`/${s.sehir?.toLowerCase()}/${s.slug}`}
+                  onClick={() => { setOdakli(false); setDeger('') }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '10px 14px', textDecoration: 'none',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--color-bg-muted)')}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--color-bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+                    {s.kategori?.ikon || '🏪'}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.isletmeAdi}</p>
+                    <p style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{s.kategori?.ad} · {s.ilce}, {s.sehir}</p>
+                  </div>
+                  <svg style={{ width: 14, height: 14, color: 'var(--color-text-secondary)', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              ))}
+            </>
+          )}
+
+          {/* Sonuç yok */}
+          {!yukleniyor && !hasResults && (
+            <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+              &ldquo;{deger}&rdquo; için sonuç bulunamadı
+            </div>
+          )}
+
+          {/* Tümünü gör */}
+          <button
+            type="button"
+            onClick={goToSearch}
+            style={{
+              display: 'block', width: '100%', padding: '12px 14px',
+              textAlign: 'center', fontSize: 13, fontWeight: 600,
+              color: 'var(--color-primary)', background: 'none', border: 'none',
+              cursor: 'pointer', borderTop: '1px solid var(--color-border)',
+              transition: 'background 0.15s',
+              borderRadius: '0 0 14px 14px',
+            }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--color-bg-muted)')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'none')}
+          >
+            &ldquo;{deger}&rdquo; için tüm sonuçları gör →
+          </button>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+    </div>
   )
 }
 
@@ -340,7 +530,24 @@ export function Navbar() {
         }}
       >
         <div className="container-main">
-          <div style={{ display: 'flex', alignItems: 'center', height: 72 }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: 72, position: 'relative' }}>
+
+            {/* SEARCH BAR — tam sayfa ortasında, absolute */}
+            {!isIsletme && (
+              <div
+                className="hidden lg:block"
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '42%',
+                  maxWidth: 560,
+                  zIndex: 10,
+                }}
+              >
+                <NavArama dbKategoriler={dbKategoriler} />
+              </div>
+            )}
 
             {/* LOGO */}
             <Link
@@ -374,14 +581,10 @@ export function Navbar() {
               </div>
             )}
 
-            {/* SEARCH BAR — müşteri tarafında merkez */}
-            {!isIsletme && (
-              <div className="hidden lg:flex" style={{ flex: 1 }}>
-                <NavArama />
-              </div>
-            )}
-
             {isIsletme && <div style={{ flex: 1 }} />}
+
+            {/* Flex spacer — search bar tam ortada konumlanmak için */}
+            {!isIsletme && <div style={{ flex: 1 }} />}
 
             {/* SAĞ ALAN */}
             <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12, flexShrink: 0 }}>
@@ -467,7 +670,7 @@ export function Navbar() {
               {/* Mobile search */}
               {!isIsletme && (
                 <div style={{ marginBottom: 16 }}>
-                  <NavArama />
+                  <NavArama dbKategoriler={dbKategoriler} />
                 </div>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
