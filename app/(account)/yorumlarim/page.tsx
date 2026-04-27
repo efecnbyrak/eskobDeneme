@@ -1,11 +1,11 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'YorumlarÄ±m | Müşteri Vitrin',
+  title: 'Yorumlarım | Müşteri Vitrin',
 }
 
 export default async function YorumlarimPage() {
@@ -21,7 +21,7 @@ export default async function YorumlarimPage() {
       puan: true,
       yorum: true,
       olusturmaT: true,
-      onaylÄ±: true,
+      onaylı: true,
       esnaf: { select: { isletmeAdi: true, sehir: true, slug: true } },
     },
     orderBy: { olusturmaT: 'desc' },
@@ -31,9 +31,9 @@ export default async function YorumlarimPage() {
     <div>
       <div style={{ marginBottom: 24 }}>
         <h1 className="font-display" style={{ fontSize: 26, fontWeight: 800, color: '#111', marginBottom: 4 }}>
-          YorumlarÄ±m
+          Yorumlarım
         </h1>
-        <p style={{ fontSize: 14, color: '#888' }}>{yorumlar.length} yorum yaptÄ±n</p>
+        <p style={{ fontSize: 14, color: '#888' }}>{yorumlar.length} yorum yaptın</p>
       </div>
 
       {yorumlar.length === 0 ? (
@@ -43,9 +43,9 @@ export default async function YorumlarimPage() {
             padding: '60px 24px', textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: 48, marginBottom: 16 }}>â­</div>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⭐</div>
           <p style={{ fontSize: 16, color: '#888', fontWeight: 500, marginBottom: 16 }}>
-            HenÃ¼z bir yorum yapmadÄ±n.
+            Henüz bir yorum yapmadın.
           </p>
           <Link
             href="/ara"
@@ -57,7 +57,7 @@ export default async function YorumlarimPage() {
               textDecoration: 'none',
             }}
           >
-            Ä°ÅŸletmeleri KeÅŸfet
+            İşletmeleri Keşfet
           </Link>
         </div>
       ) : (
@@ -84,9 +84,9 @@ export default async function YorumlarimPage() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 13, fontWeight: 800, color: '#F59E0B' }}>
-                    {'â­'.repeat(y.puan)}
+                    {'⭐'.repeat(y.puan)}
                   </span>
-                  {!y.onaylÄ± && (
+                  {!y.onaylı && (
                     <span style={{ fontSize: 11, fontWeight: 600, color: '#D97706', background: '#FEF3C7', padding: '2px 8px', borderRadius: 999 }}>
                       Onay bekliyor
                     </span>

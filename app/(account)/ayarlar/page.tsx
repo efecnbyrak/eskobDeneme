@@ -1,4 +1,4 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -16,7 +16,7 @@ export default async function AyarlarPage() {
         <h1 className="font-display" style={{ fontSize: 26, fontWeight: 800, color: '#111', marginBottom: 4 }}>
           Ayarlar
         </h1>
-        <p style={{ fontSize: 14, color: '#888' }}>Hesap ayarlarÄ±nÄ± buradan yÃ¶netebilirsin.</p>
+        <p style={{ fontSize: 14, color: '#888' }}>Hesap ayarlarını buradan yönetebilirsin.</p>
       </div>
 
       <div
@@ -25,9 +25,9 @@ export default async function AyarlarPage() {
           padding: '32px', textAlign: 'center',
         }}
       >
-        <div style={{ fontSize: 40, marginBottom: 12 }}>âš™ï¸</div>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>⚙️</div>
         <p style={{ fontSize: 15, color: '#888', fontWeight: 500 }}>
-          Ayarlar sayfasÄ± yakÄ±nda aktif olacak.
+          Ayarlar sayfası yakında aktif olacak.
         </p>
       </div>
     </div>

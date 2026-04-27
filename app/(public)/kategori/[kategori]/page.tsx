@@ -1,4 +1,4 @@
-﻿import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { KATEGORILER } from '@/lib/constants'

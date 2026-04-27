@@ -1,4 +1,4 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { getCategoriesService } from '@/lib/services/category.service'
@@ -7,23 +7,23 @@ import { getRecommendationsService, getTopEsnafService } from '@/lib/services/re
 import { getRecentlyViewedService } from '@/lib/services/recently-viewed.service'
 import { CampaignCard } from '@/components/public/CampaignCard'
 
-// YÃ¶neticiden yÃ¼klenecek promosyon gÃ¶rsellerinin placeholder versiyonlarÄ±
+// Yöneticiden yüklenecek promosyon görsellerinin placeholder versiyonları
 const PROMO_BANNERLAR = [
-  { emoji: 'âœ‚ï¸', title: 'Berber & KuafÃ¶r', subtitle: '%30\'a varan indirim' },
-  { emoji: 'ğŸ•', title: 'Yeme & Ä°Ã§me', subtitle: 'Ã–zel menÃ¼ler' },
-  { emoji: 'ğŸ’†', title: 'Spa & Masaj', subtitle: 'Haftasonu fÄ±rsatÄ±' },
-  { emoji: 'ğŸ”§', title: 'Teknik Servis', subtitle: 'Ãœcretsiz keÅŸif' },
-  { emoji: 'ğŸ“', title: 'EÄŸitim & Kurs', subtitle: 'Ä°lk ders bedava' },
-  { emoji: 'ğŸ‹ï¸', title: 'Spor & Fitness', subtitle: 'AylÄ±k Ã¼yelik' },
-  { emoji: 'ğŸ¾', title: 'Evcil Hayvan', subtitle: 'TÄ±mar hizmetleri' },
-  { emoji: 'ğŸ¨', title: 'GÃ¼zellik & Estetik', subtitle: 'Trend tasarÄ±mlar' },
+  { emoji: '✂️', title: 'Berber & Kuaför', subtitle: '%30\'a varan indirim' },
+  { emoji: '🍕', title: 'Yeme & İçme', subtitle: 'Özel menüler' },
+  { emoji: '💆', title: 'Spa & Masaj', subtitle: 'Haftasonu fırsatı' },
+  { emoji: '🔧', title: 'Teknik Servis', subtitle: 'Ücretsiz keşif' },
+  { emoji: '🎓', title: 'Eğitim & Kurs', subtitle: 'İlk ders bedava' },
+  { emoji: '🏋️', title: 'Spor & Fitness', subtitle: 'Aylık üyelik' },
+  { emoji: '🐾', title: 'Evcil Hayvan', subtitle: 'Tımar hizmetleri' },
+  { emoji: '🎨', title: 'Güzellik & Estetik', subtitle: 'Trend tasarımlar' },
 ]
 
 const NEDEN_BIZ = [
-  { icon: 'ğŸª', title: '5.000+', sub: 'KayÄ±tlÄ± Ä°ÅŸletme' },
-  { icon: 'ğŸ“…', title: '100.000+', sub: 'AlÄ±nan Randevu' },
-  { icon: 'â­', title: '4.8/5', sub: 'Ortalama Puan' },
-  { icon: 'ğŸŒ†', title: '81', sub: 'Ä°lde Hizmet' },
+  { icon: '🏪', title: '5.000+', sub: 'Kayıtlı İşletme' },
+  { icon: '📅', title: '100.000+', sub: 'Alınan Randevu' },
+  { icon: '⭐', title: '4.8/5', sub: 'Ortalama Puan' },
+  { icon: '🌆', title: '81', sub: 'İlde Hizmet' },
 ]
 
 export default async function AnaSayfa() {
@@ -67,7 +67,7 @@ export default async function AnaSayfa() {
             lineHeight: 1.2,
             letterSpacing: '-0.02em',
           }}>
-            {authenticated ? 'YakÄ±nÄ±ndaki Ä°ÅŸletmeleri KeÅŸfet' : 'TÃ¼rkiye\'nin En BÃ¼yÃ¼k Esnaf Platformu'}
+            {authenticated ? 'Yakınındaki İşletmeleri Keşfet' : 'Türkiye\'nin En Büyük Esnaf Platformu'}
           </h1>
           <p style={{
             fontSize: 'clamp(14px, 2vw, 18px)',
@@ -78,11 +78,11 @@ export default async function AnaSayfa() {
             margin: '0 auto',
           }}>
             {authenticated
-              ? 'Berber, kafe, kuafÃ¶r ve daha fazlasÄ± â€” randevu al, keÅŸfet.'
-              : 'Binlerce iÅŸletme, tek platformda. Randevu al, hizmet keÅŸfet, en iyi esnafÄ± bul.'}
+              ? 'Berber, kafe, kuaför ve daha fazlası — randevu al, keşfet.'
+              : 'Binlerce işletme, tek platformda. Randevu al, hizmet keşfet, en iyi esnafı bul.'}
           </p>
 
-          {/* Misafir kullanÄ±cÄ± CTA */}
+          {/* Misafir kullanıcı CTA */}
           {!authenticated && (
             <div style={{ marginTop: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
               <Link
@@ -97,7 +97,7 @@ export default async function AnaSayfa() {
                   transition: 'transform 0.2s, box-shadow 0.2s',
                 }}
               >
-                ğŸ” Hemen KeÅŸfet
+                🔍 Hemen Keşfet
               </Link>
               <Link
                 href="/isletme/kayit"
@@ -113,16 +113,16 @@ export default async function AnaSayfa() {
                   transition: 'background 0.2s',
                 }}
               >
-                ğŸª Ä°ÅŸletmeni KayÄ±t Et
+                🏪 İşletmeni Kayıt Et
               </Link>
             </div>
           )}
 
-          {/* GiriÅŸ yapmÄ±ÅŸ kullanÄ±cÄ± iÃ§in popÃ¼ler aramalar */}
+          {/* Giriş yapmış kullanıcı için popüler aramalar */}
           {authenticated && (
             <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 8 }}>
-              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>PopÃ¼ler:</span>
-              {['Berber', 'Kafe', 'KuafÃ¶r', 'Restoran', 'Oto Servis'].map((tag) => (
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>Popüler:</span>
+              {['Berber', 'Kafe', 'Kuaför', 'Restoran', 'Oto Servis'].map((tag) => (
                 <Link
                   key={tag}
                   href={`/ara?arama=${encodeURIComponent(tag)}`}
@@ -142,13 +142,13 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* PROMO BANNERLAR â€” yÃ¶netici panelinden yÃ¼klenecek (ÅŸimdilik placeholder) */}
+      {/* PROMO BANNERLAR — yönetici panelinden yüklenecek (şimdilik placeholder) */}
       <section style={{ background: 'white', padding: '28px 0 24px', position: 'relative', zIndex: 1 }}>
         <div className="container-main">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: '#222' }}>Kampanyalar</h2>
             <Link href="/ara?kampanyali=true" style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
-              TÃ¼mÃ¼nÃ¼ GÃ¶r â†’
+              Tümünü Gör →
             </Link>
           </div>
           <div style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 4 }}>
@@ -179,13 +179,13 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* SANA Ã–ZEL */}
+      {/* SANA ÖZEL */}
       {authenticated && recommendations.length > 0 && (
         <section style={{ padding: '36px 0 0', position: 'relative', zIndex: 1 }}>
           <div className="container-main">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <h2 style={{ fontSize: 22, fontWeight: 700, color: '#222', display: 'flex', alignItems: 'center', gap: 8 }}>
-                Sana Ã–zel Hizmetler <span style={{ fontSize: 22 }}>âœ¨</span>
+                Sana Özel Hizmetler <span style={{ fontSize: 22 }}>✨</span>
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
@@ -197,7 +197,7 @@ export default async function AnaSayfa() {
         </section>
       )}
 
-      {/* NEDEN ESNAF VÄ°TRÄ°N â€” gÃ¼ven & istatistik */}
+      {/* NEDEN ESNAF VİTRİN — güven & istatistik */}
       <section style={{
         padding: '52px 0',
         background: 'linear-gradient(135deg, #FFF8F5 0%, #F0F4FF 100%)',
@@ -210,7 +210,7 @@ export default async function AnaSayfa() {
               Neden Müşteri Vitrin?
             </h2>
             <p style={{ fontSize: 15, color: '#666', maxWidth: 460, margin: '0 auto', lineHeight: 1.6 }}>
-              TÃ¼rkiye genelinde binlerce iÅŸletme ve mÃ¼ÅŸteri bir arada buluÅŸuyor
+              Türkiye genelinde binlerce işletme ve müşteri bir arada buluşuyor
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
@@ -233,12 +233,12 @@ export default async function AnaSayfa() {
             ))}
           </div>
 
-          {/* Ã–zellikler */}
+          {/* Özellikler */}
           <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
             {[
-              { icon: 'ğŸ“', title: 'Konuma GÃ¶re KeÅŸfet', desc: 'YakÄ±nÄ±ndaki iÅŸletmeleri saniyeler iÃ§inde bul, mesafeye gÃ¶re filtrele.' },
-              { icon: 'ğŸ“…', title: 'AnÄ±nda Randevu Al', desc: 'MÃ¼sait saatleri gÃ¶r, tek tÄ±kla rezervasyon yap, hatÄ±rlatÄ±cÄ± al.' },
-              { icon: 'ğŸ’¬', title: 'GerÃ§ek Yorumlar', desc: 'OnaylÄ± mÃ¼ÅŸteri yorumlarÄ± ile gÃ¼venilir iÅŸletmeleri seÃ§.' },
+              { icon: '📍', title: 'Konuma Göre Keşfet', desc: 'Yakınındaki işletmeleri saniyeler içinde bul, mesafeye göre filtrele.' },
+              { icon: '📅', title: 'Anında Randevu Al', desc: 'Müsait saatleri gör, tek tıkla rezervasyon yap, hatırlatıcı al.' },
+              { icon: '💬', title: 'Gerçek Yorumlar', desc: 'Onaylı müşteri yorumları ile güvenilir işletmeleri seç.' },
             ].map((f, i) => (
               <div
                 key={i}
@@ -265,10 +265,10 @@ export default async function AnaSayfa() {
           <div className="container-main">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <h2 style={{ fontSize: 22, fontWeight: 700, color: '#222' }}>
-                FÄ±rsatlarÄ± KaÃ§Ä±rma <span style={{ color: '#EF4444', marginLeft: 4 }}>% Ä°ndirim</span>
+                Fırsatları Kaçırma <span style={{ color: '#EF4444', marginLeft: 4 }}>% İndirim</span>
               </h2>
               <Link href="/ara?kampanyali=true" style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
-                TÃ¼m FÄ±rsatlar â†’
+                Tüm Fırsatlar →
               </Link>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20, overflow: 'visible' }}>
@@ -280,13 +280,13 @@ export default async function AnaSayfa() {
         </section>
       )}
 
-      {/* EN Ã‡OK TERCÄ°H EDÄ°LENLER */}
+      {/* EN ÇOK TERCİH EDİLENLER */}
       <section style={{ padding: '40px 0 64px', position: 'relative', zIndex: 2 }}>
         <div className="container-main">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#222' }}>En Ã‡ok Tercih Edilenler</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#222' }}>En Çok Tercih Edilenler</h2>
             <Link href="/ara" style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
-              TÃ¼mÃ¼nÃ¼ GÃ¶r â†’
+              Tümünü Gör →
             </Link>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
@@ -297,7 +297,7 @@ export default async function AnaSayfa() {
         </div>
       </section>
 
-      {/* SON GEZÄ°LENLER */}
+      {/* SON GEZİLENLER */}
       {authenticated && recentlyViewed.length > 0 && (
         <section style={{ padding: '0 0 64px', position: 'relative', zIndex: 2 }}>
           <div className="container-main">
@@ -313,7 +313,7 @@ export default async function AnaSayfa() {
         </section>
       )}
 
-      {/* GÄ°RÄ°Å YAPMAMIÅ KULLANICI â€” alt CTA */}
+      {/* GİRİŞ YAPMAMIŞ KULLANICI — alt CTA */}
       {!authenticated && (
         <section style={{
           padding: '64px 0',
@@ -328,10 +328,10 @@ export default async function AnaSayfa() {
           }} />
           <div className="container-main" style={{ textAlign: 'center', position: 'relative' }}>
             <h2 style={{ fontSize: 28, fontWeight: 800, color: 'white', marginBottom: 14 }}>
-              Hemen Ãœcretsiz BaÅŸla
+              Hemen Ücretsiz Başla
             </h2>
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', marginBottom: 36, maxWidth: 440, margin: '0 auto 36px' }}>
-              Hesap oluÅŸtur, favori iÅŸletmelerini kaydet ve randevunu kolayca yÃ¶net.
+              Hesap oluştur, favori işletmelerini kaydet ve randevunu kolayca yönet.
             </p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
               <Link
@@ -344,7 +344,7 @@ export default async function AnaSayfa() {
                   boxShadow: '0 4px 20px rgba(247,98,10,0.4)',
                 }}
               >
-                Ãœcretsiz Hesap OluÅŸtur
+                Ücretsiz Hesap Oluştur
               </Link>
               <Link
                 href="/giris"
@@ -357,7 +357,7 @@ export default async function AnaSayfa() {
                   textDecoration: 'none',
                 }}
               >
-                GiriÅŸ Yap
+                Giriş Yap
               </Link>
             </div>
           </div>
