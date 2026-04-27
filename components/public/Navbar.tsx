@@ -558,7 +558,7 @@ export function Navbar() {
               <span style={{ width: 38, height: 38, borderRadius: 10, background: accentBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}>
                 EV
               </span>
-              <span className="hidden sm:inline" style={{ fontSize: 16 }}>Esnaf Vitrin</span>
+              <span className="hidden sm:inline" style={{ fontSize: 16 }}>Müşteri Vitrin</span>
               {isIsletme && (
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#1A2744', background: 'rgba(26,39,68,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 4 }}>
                   İşletme

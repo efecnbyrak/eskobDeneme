@@ -1,11 +1,11 @@
-import { auth } from '@/lib/auth'
+﻿import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Randevularım | Esnaf Vitrin',
+  title: 'RandevularÄ±m | Müşteri Vitrin',
 }
 
 export default async function RandevularimPage() {
@@ -49,9 +49,9 @@ export default async function RandevularimPage() {
 
   const DURUM_STILI: Record<string, { bg: string; color: string; label: string }> = {
     BEKLIYOR:    { bg: '#FEF3C720', color: '#D97706', label: 'Bekliyor' },
-    ONAYLANDI:   { bg: '#D1FAE520', color: '#059669', label: 'Onaylandı' },
-    IPTAL:       { bg: '#FEE2E220', color: '#DC2626', label: 'İptal' },
-    TAMAMLANDI:  { bg: '#F3F4F620', color: '#6B7280', label: 'Tamamlandı' },
+    ONAYLANDI:   { bg: '#D1FAE520', color: '#059669', label: 'OnaylandÄ±' },
+    IPTAL:       { bg: '#FEE2E220', color: '#DC2626', label: 'Ä°ptal' },
+    TAMAMLANDI:  { bg: '#F3F4F620', color: '#6B7280', label: 'TamamlandÄ±' },
   }
 
   function RandevuKart({ r }: { r: typeof yaklasanlar[0] }) {
@@ -83,8 +83,8 @@ export default async function RandevularimPage() {
             {r.esnaf.isletmeAdi}
           </p>
           <p style={{ fontSize: 12, color: '#888' }}>
-            {tarih.toLocaleString('tr-TR', { hour: '2-digit', minute: '2-digit' })} · {r.sure} dk
-            {r.hizmet && ` · ${r.hizmet.ad}`}
+            {tarih.toLocaleString('tr-TR', { hour: '2-digit', minute: '2-digit' })} Â· {r.sure} dk
+            {r.hizmet && ` Â· ${r.hizmet.ad}`}
           </p>
         </div>
         <span
@@ -105,15 +105,15 @@ export default async function RandevularimPage() {
     <div>
       <div style={{ marginBottom: 28 }}>
         <h1 className="font-display" style={{ fontSize: 26, fontWeight: 800, color: '#111', marginBottom: 4 }}>
-          Randevularım
+          RandevularÄ±m
         </h1>
-        <p style={{ fontSize: 14, color: '#888' }}>Geçmiş ve yaklaşan randevuların</p>
+        <p style={{ fontSize: 14, color: '#888' }}>GeÃ§miÅŸ ve yaklaÅŸan randevularÄ±n</p>
       </div>
 
-      {/* Yaklaşan */}
+      {/* YaklaÅŸan */}
       <section style={{ marginBottom: 36 }}>
         <h2 style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Yaklaşan Randevular ({yaklasanlar.length})
+          YaklaÅŸan Randevular ({yaklasanlar.length})
         </h2>
         {yaklasanlar.length === 0 ? (
           <div
@@ -122,10 +122,10 @@ export default async function RandevularimPage() {
               padding: '36px', textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: 36, marginBottom: 10 }}>📅</div>
-            <p style={{ fontSize: 14, color: '#888' }}>Yaklaşan randevun yok.</p>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>ğŸ“…</div>
+            <p style={{ fontSize: 14, color: '#888' }}>YaklaÅŸan randevun yok.</p>
             <Link href="/ara" style={{ display: 'inline-block', marginTop: 12, fontSize: 13, fontWeight: 700, color: 'var(--color-primary)', textDecoration: 'none' }}>
-              Randevu Al →
+              Randevu Al â†’
             </Link>
           </div>
         ) : (
@@ -135,11 +135,11 @@ export default async function RandevularimPage() {
         )}
       </section>
 
-      {/* Geçmiş */}
+      {/* GeÃ§miÅŸ */}
       {gecmisler.length > 0 && (
         <section>
           <h2 style={{ fontSize: 12, fontWeight: 700, color: '#555', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Geçmiş Randevular ({gecmisler.length})
+            GeÃ§miÅŸ Randevular ({gecmisler.length})
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {gecmisler.map((r) => <RandevuKart key={r.id} r={r} />)}

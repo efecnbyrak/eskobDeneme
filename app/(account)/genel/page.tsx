@@ -1,11 +1,11 @@
-import { auth } from '@/lib/auth'
+﻿import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Genel Bakış | Esnaf Vitrin',
+  title: 'Genel BakÄ±ÅŸ | Müşteri Vitrin',
 }
 
 export default async function GenelPage() {
@@ -62,24 +62,24 @@ export default async function GenelPage() {
     ])
 
   const STATS = [
-    { icon: '❤️', label: 'Favorilerim', value: favoriSayisi, href: '/favorilerim', renk: '#EF4444' },
-    { icon: '📅', label: 'Yaklaşan Randevu', value: randevuSayisi, href: '/randevularim', renk: '#F7620A' },
-    { icon: '⭐', label: 'Yorumlarım', value: yorumSayisi, href: '/yorumlarim', renk: '#F59E0B' },
+    { icon: 'â¤ï¸', label: 'Favorilerim', value: favoriSayisi, href: '/favorilerim', renk: '#EF4444' },
+    { icon: 'ğŸ“…', label: 'YaklaÅŸan Randevu', value: randevuSayisi, href: '/randevularim', renk: '#F7620A' },
+    { icon: 'â­', label: 'YorumlarÄ±m', value: yorumSayisi, href: '/yorumlarim', renk: '#F59E0B' },
   ]
 
   return (
     <div>
-      {/* Başlık */}
+      {/* BaÅŸlÄ±k */}
       <div style={{ marginBottom: 28 }}>
         <h1 className="font-display" style={{ fontSize: 26, fontWeight: 800, color: '#111', marginBottom: 4 }}>
-          Hoş geldin, {session.user.ad}! 👋
+          HoÅŸ geldin, {session.user.ad}! ğŸ‘‹
         </h1>
         <p style={{ fontSize: 14, color: '#888' }}>
-          Hesap özetine buradan ulaşabilirsin.
+          Hesap Ã¶zetine buradan ulaÅŸabilirsin.
         </p>
       </div>
 
-      {/* İstatistik Kartları */}
+      {/* Ä°statistik KartlarÄ± */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 40 }}>
         {STATS.map((s) => (
           <Link
@@ -112,7 +112,7 @@ export default async function GenelPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <h2 style={{ fontSize: 17, fontWeight: 700, color: '#222' }}>Son Favorilerin</h2>
           <Link href="/favorilerim" style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
-            Tümünü Gör →
+            TÃ¼mÃ¼nÃ¼ GÃ¶r â†’
           </Link>
         </div>
         {sonFavoriler.length === 0 ? (
@@ -122,10 +122,10 @@ export default async function GenelPage() {
               padding: '32px', textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: 36, marginBottom: 10 }}>❤️</div>
-            <p style={{ fontSize: 14, color: '#888' }}>Henüz favori eklemedin.</p>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>â¤ï¸</div>
+            <p style={{ fontSize: 14, color: '#888' }}>HenÃ¼z favori eklemedin.</p>
             <Link href="/ara" style={{ display: 'inline-block', marginTop: 12, fontSize: 13, fontWeight: 700, color: 'var(--color-primary)', textDecoration: 'none' }}>
-              İşletmeleri Keşfet →
+              Ä°ÅŸletmeleri KeÅŸfet â†’
             </Link>
           </div>
         ) : (
@@ -150,7 +150,7 @@ export default async function GenelPage() {
                     }}
                   >
                     {!f.esnaf.kapakFoto && (
-                      <span style={{ fontSize: 28 }}>{f.esnaf.kategori?.ikon ?? '🏪'}</span>
+                      <span style={{ fontSize: 28 }}>{f.esnaf.kategori?.ikon ?? 'ğŸª'}</span>
                     )}
                   </div>
                   <div style={{ padding: '10px 12px' }}>
@@ -166,12 +166,12 @@ export default async function GenelPage() {
         )}
       </section>
 
-      {/* Yaklaşan Randevular */}
+      {/* YaklaÅŸan Randevular */}
       <section>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <h2 style={{ fontSize: 17, fontWeight: 700, color: '#222' }}>Yaklaşan Randevuların</h2>
+          <h2 style={{ fontSize: 17, fontWeight: 700, color: '#222' }}>YaklaÅŸan RandevularÄ±n</h2>
           <Link href="/randevularim" style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
-            Tümünü Gör →
+            TÃ¼mÃ¼nÃ¼ GÃ¶r â†’
           </Link>
         </div>
         {yaklasanRandevular.length === 0 ? (
@@ -181,10 +181,10 @@ export default async function GenelPage() {
               padding: '32px', textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: 36, marginBottom: 10 }}>📅</div>
-            <p style={{ fontSize: 14, color: '#888' }}>Yaklaşan randevun bulunmuyor.</p>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>ğŸ“…</div>
+            <p style={{ fontSize: 14, color: '#888' }}>YaklaÅŸan randevun bulunmuyor.</p>
             <Link href="/ara" style={{ display: 'inline-block', marginTop: 12, fontSize: 13, fontWeight: 700, color: 'var(--color-primary)', textDecoration: 'none' }}>
-              Randevu Al →
+              Randevu Al â†’
             </Link>
           </div>
         ) : (
@@ -222,7 +222,7 @@ export default async function GenelPage() {
                       {r.esnaf.isletmeAdi}
                     </p>
                     <p style={{ fontSize: 12, color: '#888' }}>
-                      {tarih.toLocaleString('tr-TR', { hour: '2-digit', minute: '2-digit' })} · {r.sure} dk
+                      {tarih.toLocaleString('tr-TR', { hour: '2-digit', minute: '2-digit' })} Â· {r.sure} dk
                     </p>
                   </div>
                   <span
@@ -232,7 +232,7 @@ export default async function GenelPage() {
                       color: DURUM_RENK[r.durum] ?? '#999',
                     }}
                   >
-                    {r.durum === 'BEKLIYOR' ? 'Bekliyor' : 'Onaylandı'}
+                    {r.durum === 'BEKLIYOR' ? 'Bekliyor' : 'OnaylandÄ±'}
                   </span>
                 </div>
               )

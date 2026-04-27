@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db'
+﻿import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { KATEGORILER } from '@/lib/constants'
@@ -13,9 +13,9 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { kategori: slug } = await params
   const kat = KATEGORILER.find((k) => k.slug === slug)
-  if (!kat) return { title: 'Kategori Bulunamadı | Esnaf Vitrin' }
+  if (!kat) return { title: 'Kategori Bulunamadı | Müşteri Vitrin' }
   return {
-    title: `${kat.ad} Esnafları | Esnaf Vitrin`,
+    title: `${kat.ad} Esnafları | Müşteri Vitrin`,
     description: `Türkiye genelindeki ${kat.ad.toLowerCase()} esnaflarını keşfet.`,
   }
 }

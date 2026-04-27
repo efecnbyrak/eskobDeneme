@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { signIn } from 'next-auth/react'
 import { useState, Suspense } from 'react'
@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/Input'
 import { LockCheckbox } from '@/components/ui/LockCheckbox'
 
 const OZELLIKLER = [
-  { ikon: '🔍', baslik: 'Yakınındaki İşletmeler', aciklama: 'Berber, kafe, kuaför ve daha fazlasını tek platformdan keşfet.' },
-  { ikon: '📅', baslik: 'Anında Randevu Al', aciklama: 'Beğendiğin işletmeden saniyeler içinde randevu oluştur.' },
-  { ikon: '⭐', baslik: 'Güvenilir Yorumlar', aciklama: 'Gerçek kullanıcıların deneyimlerine göre karar ver.' },
-  { ikon: '❤️', baslik: 'Favorilerini Kaydet', aciklama: 'Sevdiğin yerleri listene ekle, kolayca geri dön.' },
+  { ikon: 'ğŸ”', baslik: 'YakÄ±nÄ±ndaki Ä°ÅŸletmeler', aciklama: 'Berber, kafe, kuafÃ¶r ve daha fazlasÄ±nÄ± tek platformdan keÅŸfet.' },
+  { ikon: 'ğŸ“…', baslik: 'AnÄ±nda Randevu Al', aciklama: 'BeÄŸendiÄŸin iÅŸletmeden saniyeler iÃ§inde randevu oluÅŸtur.' },
+  { ikon: 'â­', baslik: 'GÃ¼venilir Yorumlar', aciklama: 'GerÃ§ek kullanÄ±cÄ±larÄ±n deneyimlerine gÃ¶re karar ver.' },
+  { ikon: 'â¤ï¸', baslik: 'Favorilerini Kaydet', aciklama: 'SevdiÄŸin yerleri listene ekle, kolayca geri dÃ¶n.' },
 ]
 
 function GirisForm() {
@@ -40,7 +40,7 @@ function GirisForm() {
       })
 
       if (!res || res.error) {
-        setHata('E-posta veya şifre hatalı.')
+        setHata('E-posta veya ÅŸifre hatalÄ±.')
         return
       }
 
@@ -56,7 +56,7 @@ function GirisForm() {
       }
       window.location.href = hedef
     } catch {
-      setHata('Bir hata oluştu. Lütfen tekrar deneyin.')
+      setHata('Bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.')
     } finally {
       setYukleniyor(false)
     }
@@ -65,7 +65,7 @@ function GirisForm() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', overflowY: 'auto', fontFamily: 'var(--font-body, sans-serif)', background: 'white' }}>
 
-      {/* SOL — Tanıtım Paneli */}
+      {/* SOL â€” TanÄ±tÄ±m Paneli */}
       <div
         style={{
           flex: '0 0 52%',
@@ -94,11 +94,11 @@ function GirisForm() {
             EV
           </div>
           <span style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>
-            Esnaf Vitrin
+            Müşteri Vitrin
           </span>
         </div>
 
-        {/* Başlık */}
+        {/* BaÅŸlÄ±k */}
         <h1 style={{
           fontSize: 'clamp(28px, 3.2vw, 44px)',
           fontWeight: 800,
@@ -107,13 +107,13 @@ function GirisForm() {
           letterSpacing: '-0.02em',
           marginBottom: 20,
         }}>
-          Yakınındaki İşletmeleri<br />Keşfet ve Randevu Al
+          YakÄ±nÄ±ndaki Ä°ÅŸletmeleri<br />KeÅŸfet ve Randevu Al
         </h1>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, marginBottom: 48, maxWidth: 420 }}>
-          Türkiye'nin en büyük dijital esnaf platformuna hoş geldiniz. Binlerce işletme, gerçek yorumlar ve anlık randevu.
+          TÃ¼rkiye'nin en bÃ¼yÃ¼k dijital esnaf platformuna hoÅŸ geldiniz. Binlerce iÅŸletme, gerÃ§ek yorumlar ve anlÄ±k randevu.
         </p>
 
-        {/* Özellikler */}
+        {/* Ã–zellikler */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {OZELLIKLER.map((o) => (
             <div key={o.baslik} style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
@@ -135,11 +135,11 @@ function GirisForm() {
 
         {/* Alt bilgi */}
         <p style={{ marginTop: 56, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
-          © {new Date().getFullYear()} Esnaf Vitrin · Tüm hakları saklıdır
+          Â© {new Date().getFullYear()} Müşteri Vitrin Â· TÃ¼m haklarÄ± saklÄ±dÄ±r
         </p>
       </div>
 
-      {/* SAĞ — Giriş Formu */}
+      {/* SAÄ â€” GiriÅŸ Formu */}
       <div style={{
         flex: 1,
         display: 'flex',
@@ -161,15 +161,15 @@ function GirisForm() {
             }}>
               EV
             </div>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#F7620A' }}>Esnaf Vitrin</span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#F7620A' }}>Müşteri Vitrin</span>
           </div>
 
           <div style={{ marginBottom: 36 }}>
             <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 8, letterSpacing: '-0.02em' }}>
-              Tekrar Hoş Geldiniz 👋
+              Tekrar HoÅŸ Geldiniz ğŸ‘‹
             </h2>
             <p style={{ fontSize: 15, color: '#666', lineHeight: 1.6 }}>
-              Hesabınıza e-posta ile giriş yapın.
+              HesabÄ±nÄ±za e-posta ile giriÅŸ yapÄ±n.
             </p>
           </div>
 
@@ -187,7 +187,7 @@ function GirisForm() {
                 fontSize: 14, fontWeight: 500,
                 border: '1px solid #86EFAC', marginBottom: 24,
               }}>
-                ✅ Kayıt başarılı. Şimdi giriş yapabilirsiniz.
+                âœ… KayÄ±t baÅŸarÄ±lÄ±. Åimdi giriÅŸ yapabilirsiniz.
               </div>
             )}
 
@@ -202,14 +202,14 @@ function GirisForm() {
               />
               <div>
                 <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#333' }}>
-                  Şifre
+                  Åifre
                 </label>
                 <input
                   name="sifre"
                   type="password"
                   required
                   minLength={6}
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   autoComplete="current-password"
                   style={{
                     width: '100%', height: 48, padding: '0 16px',
@@ -251,15 +251,15 @@ function GirisForm() {
                 onMouseEnter={(e) => { if (!yukleniyor) e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(247,98,10,0.45)' }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(247,98,10,0.35)' }}
               >
-                {yukleniyor ? 'Giriş yapılıyor…' : 'Giriş Yap →'}
+                {yukleniyor ? 'GiriÅŸ yapÄ±lÄ±yorâ€¦' : 'GiriÅŸ Yap â†’'}
               </button>
             </form>
           </div>
 
           <div style={{ marginTop: 28, textAlign: 'center', fontSize: 15, color: '#666' }}>
-            Henüz hesabınız yok mu?{' '}
+            HenÃ¼z hesabÄ±nÄ±z yok mu?{' '}
             <Link href="/musteri/kayit" style={{ color: '#F7620A', fontWeight: 700, textDecoration: 'none' }}>
-              Ücretsiz Kaydol
+              Ãœcretsiz Kaydol
             </Link>
           </div>
 
@@ -268,7 +268,7 @@ function GirisForm() {
               href="/isletme/giris"
               style={{ fontSize: 13, color: '#888', textDecoration: 'none', fontWeight: 500 }}
             >
-              İşletme hesabıyla mı giriş yapmak istiyorsunuz? →
+              Ä°ÅŸletme hesabÄ±yla mÄ± giriÅŸ yapmak istiyorsunuz? â†’
             </Link>
           </div>
         </div>

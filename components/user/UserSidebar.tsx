@@ -90,7 +90,7 @@ export function UserSidebar() {
             <span className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-bold font-display shrink-0">
               EV
             </span>
-            <span className="font-bold text-[var(--color-primary)] font-display">Esnaf Vitrin</span>
+            <span className="font-bold text-[var(--color-primary)] font-display">Müşteri Vitrin</span>
           </Link>
         </div>
 

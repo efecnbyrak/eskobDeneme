@@ -1,11 +1,11 @@
-import { auth } from '@/lib/auth'
+﻿import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Favorilerim | Esnaf Vitrin',
+  title: 'Favorilerim | Müşteri Vitrin',
 }
 
 export default async function FavorilerimPage() {
@@ -40,7 +40,7 @@ export default async function FavorilerimPage() {
           Favorilerim
         </h1>
         <p style={{ fontSize: 14, color: '#888' }}>
-          {favoriler.length} favori işletme
+          {favoriler.length} favori iÅŸletme
         </p>
       </div>
 
@@ -51,9 +51,9 @@ export default async function FavorilerimPage() {
             padding: '60px 24px', textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: 48, marginBottom: 16 }}>❤️</div>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>â¤ï¸</div>
           <p style={{ fontSize: 16, color: '#888', fontWeight: 500, marginBottom: 16 }}>
-            Henüz favori eklemedin.
+            HenÃ¼z favori eklemedin.
           </p>
           <Link
             href="/ara"
@@ -65,7 +65,7 @@ export default async function FavorilerimPage() {
               textDecoration: 'none',
             }}
           >
-            İşletmeleri Keşfet
+            Ä°ÅŸletmeleri KeÅŸfet
           </Link>
         </div>
       ) : (
@@ -97,7 +97,7 @@ export default async function FavorilerimPage() {
                     }}
                   >
                     {!f.esnaf.kapakFoto && (
-                      <span style={{ fontSize: 36 }}>{f.esnaf.kategori?.ikon ?? '🏪'}</span>
+                      <span style={{ fontSize: 36 }}>{f.esnaf.kategori?.ikon ?? 'ğŸª'}</span>
                     )}
                   </div>
                   <div style={{ padding: '12px 14px' }}>
@@ -107,7 +107,7 @@ export default async function FavorilerimPage() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <p style={{ fontSize: 12, color: '#999' }}>{f.esnaf.sehir}</p>
                       {ortalamaPuan && (
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>⭐ {ortalamaPuan}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>â­ {ortalamaPuan}</span>
                       )}
                     </div>
                   </div>

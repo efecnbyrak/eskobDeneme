@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google'
 import './globals.css'
 
@@ -15,8 +15,8 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Esnaf Vitrin — Dijital Vitrin Platformu',
-  description: 'Türkiye\'nin esnaf ve KOBİ\'leri için dijital vitrin platformu. İşletmeni 5 dakikada dijitale taşı.',
+  title: 'Müşteri Vitrin â€” Dijital Vitrin Platformu',
+  description: 'TÃ¼rkiye\'nin esnaf ve KOBÄ°\'leri iÃ§in dijital vitrin platformu. Ä°ÅŸletmeni 5 dakikada dijitale taÅŸÄ±.',
 }
 
 export default function RootLayout({

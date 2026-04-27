@@ -1,185 +1,115 @@
-import { prisma } from '@/lib/db'
+'use client'
 
-export const dynamic = 'force-dynamic'
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
-export default async function AdminAnaSayfa() {
-  const [kullaniciSay, esnafSay, randevuSay, bekleyenOnay] = await Promise.all([
-    prisma.kullanici.count(),
-    prisma.esnaf.count(),
-    prisma.randevu.count(),
-    prisma.esnaf.count({ where: { onaylı: false } }),
-  ])
+export default function AdminGirisPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [sifre, setSifre] = useState('')
+  const [yukleniyor, setYukleniyor] = useState(false)
+  const [hata, setHata] = useState('')
 
-  const rolDagilim = await prisma.kullanici.groupBy({
-    by: ['rol'],
-    _count: { rol: true },
-  })
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setHata('')
+    setYukleniyor(true)
 
-  const sonKullanicilar = await prisma.kullanici.findMany({
-    orderBy: { olusturmaT: 'desc' },
-    take: 8,
-    select: {
-      id: true,
-      ad: true,
-      soyad: true,
-      email: true,
-      rol: true,
-      olusturmaT: true,
-    },
-  })
+    const sonuc = await signIn('credentials', {
+      email: email.trim().toLowerCase(),
+      password: sifre,
+      redirect: false,
+    })
+
+    setYukleniyor(false)
+
+    if (!sonuc?.ok) {
+      setHata('E-posta veya şifre hatalı.')
+      return
+    }
+
+    router.replace('/phyberk/admin/dashboard')
+  }
 
   return (
-    <div>
-      <h1 className="font-display" style={{ fontSize: 28, fontWeight: 800, marginBottom: 24 }}>
-        Genel Bakış
-      </h1>
-
+    <div className="min-h-screen bg-[#0F1623] flex items-center justify-center p-4">
+      {/* Arka plan deseni */}
       <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0"
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 16,
-          marginBottom: 32,
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,0.18) 0%, transparent 70%)',
         }}
-      >
-        <MetricCard label="Toplam Kullanıcı" deger={kullaniciSay} ikon="👥" />
-        <MetricCard label="Toplam İşletme" deger={esnafSay} ikon="🏪" />
-        <MetricCard label="Toplam Randevu" deger={randevuSay} ikon="📅" />
-        <MetricCard
-          label="Bekleyen Onay"
-          deger={bekleyenOnay}
-          ikon="⏳"
-          vurgu={bekleyenOnay > 0}
-        />
-      </div>
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 16,
-        }}
-      >
-        <section
-          style={{
-            background: 'white',
-            borderRadius: 16,
-            border: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-card)',
-            padding: 24,
-          }}
+      <div className="w-full max-w-md relative">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 mb-4 shadow-lg shadow-indigo-500/30">
+            <span className="text-white font-bold text-2xl font-display">A</span>
+          </div>
+          <h1 className="text-2xl font-bold text-white font-display tracking-tight">
+            Admin Paneli
+          </h1>
+          <p className="text-sm text-white/40 mt-1">Sadece yetkili erişim</p>
+        </div>
+
+        {/* Kart */}
+        <div
+          className="rounded-2xl border border-white/10 p-8"
+          style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)' }}
         >
-          <h2 className="font-display" style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-            Rol Dağılımı
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {rolDagilim.map((r) => (
-              <div
-                key={r.rol}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '10px 0',
-                  borderBottom: '1px solid var(--color-border)',
-                }}
-              >
-                <span style={{ fontSize: 14, fontWeight: 600 }}>{r.rol}</span>
-                <span
-                  style={{
-                    padding: '4px 12px',
-                    borderRadius: 9999,
-                    background: 'var(--color-primary-light)',
-                    color: 'var(--color-primary)',
-                    fontWeight: 700,
-                    fontSize: 13,
-                  }}
-                >
-                  {r._count.rol}
-                </span>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-2">
+                E-posta Adresi
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="admin@ornek.com"
+                className="w-full rounded-xl border border-white/10 bg-white/5 text-white placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-2">Şifre</label>
+              <input
+                type="password"
+                value={sifre}
+                onChange={(e) => setSifre(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-white/10 bg-white/5 text-white placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+              />
+            </div>
+
+            {hata && (
+              <div className="flex items-center gap-2.5 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3">
+                <span className="text-red-400 text-xs font-medium">{hata}</span>
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section
-          style={{
-            background: 'white',
-            borderRadius: 16,
-            border: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-card)',
-            padding: 24,
-          }}
-        >
-          <h2 className="font-display" style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-            Son Kayıtlar
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {sonKullanicilar.length === 0 ? (
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: 14 }}>
-                Henüz kullanıcı yok.
-              </p>
-            ) : (
-              sonKullanicilar.map((k) => (
-                <div
-                  key={k.id}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '8px 0',
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
-                >
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600 }}>
-                      {k.ad} {k.soyad}
-                    </p>
-                    <p style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{k.email}</p>
-                  </div>
-                  <span style={{ fontSize: 11, color: 'var(--color-text-secondary)' }}>
-                    {k.rol}
-                  </span>
-                </div>
-              ))
             )}
-          </div>
-        </section>
-      </div>
-    </div>
-  )
-}
 
-function MetricCard({
-  label,
-  deger,
-  ikon,
-  vurgu,
-}: {
-  label: string
-  deger: number
-  ikon: string
-  vurgu?: boolean
-}) {
-  return (
-    <div
-      style={{
-        background: 'white',
-        border: `1px solid ${vurgu ? '#F59E0B' : 'var(--color-border)'}`,
-        borderRadius: 16,
-        padding: 20,
-        boxShadow: 'var(--shadow-card)',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-        <span style={{ fontSize: 22 }}>{ikon}</span>
-        <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-          {label}
-        </span>
+            <button
+              type="submit"
+              disabled={yukleniyor}
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40"
+            >
+              {yukleniyor ? 'Giriş yapılıyor…' : 'Giriş Yap'}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-xs text-white/20 mt-8">
+          © {new Date().getFullYear()} Admin Kontrol Paneli
+        </p>
       </div>
-      <p className="font-display" style={{ fontSize: 28, fontWeight: 800 }}>
-        {deger}
-      </p>
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
-  { href: '/phyberk/admin', label: 'Genel Bakış', ikon: '📊' },
+  { href: '/phyberk/admin/dashboard', label: 'Genel Bakış', ikon: '📊' },
   { href: '/phyberk/admin/kullanicilar', label: 'Kullanıcılar', ikon: '👥' },
   { href: '/phyberk/admin/esnaflar', label: 'İşletmeler', ikon: '🏪' },
   { href: '/phyberk/admin/randevular', label: 'Randevular', ikon: '📅' },
@@ -49,7 +49,7 @@ export function AdminSidebar({ rol }: { rol?: string }) {
           {ITEMS.map((item) => {
             const aktif =
               pathname === item.href ||
-              (item.href !== '/phyberk/admin' && pathname.startsWith(item.href))
+              (item.href !== '/phyberk/admin/dashboard' && pathname.startsWith(item.href))
             return (
               <li key={item.href}>
                 <Link
@@ -72,7 +72,7 @@ export function AdminSidebar({ rol }: { rol?: string }) {
 
       <div className="p-3 border-t border-white/10">
         <button
-          onClick={() => signOut({ callbackUrl: '/giris' })}
+          onClick={() => signOut({ callbackUrl: '/phyberk/admin' })}
           className="flex w-full items-center gap-3 text-sm text-white/70 hover:text-red-300 hover:bg-red-500/10 transition-all px-3 py-2.5 rounded-[var(--radius-md)]"
         >
           <span className="w-5 text-center">🚪</span> Hesaptan Çıkış Yap

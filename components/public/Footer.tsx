@@ -154,10 +154,10 @@ export function Footer() {
               <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-base sm:text-lg shadow-sm flex-shrink-0">
                 EV
               </span>
-              <span className="font-bold text-xl sm:text-2xl text-white font-display tracking-tight">Esnaf Vitrin</span>
+              <span className="font-bold text-xl sm:text-2xl text-white font-display tracking-tight">Müşteri Vitrin</span>
             </div>
             <p className="text-sm sm:text-base text-[#90A8B2] leading-[1.8] mb-8 max-w-sm">
-              Türkiye&apos;nin esnaf ve KOBİ&apos;leri için yeni nesil dijital vitrin platformu. İşletmeni bugün dijitale taşı, hizmetlerini tanıt ve randevularını kolayca yönet.
+              Yakınındaki en iyi işletmeleri keşfet, hizmetleri karşılaştır ve kolayca randevu al. İhtiyacın olan her şey bir tık uzağında.
             </p>
             <SocialButtons />
           </div>
@@ -297,7 +297,7 @@ export function Footer() {
               </>
             ) : (
               <>
-                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">İşletmeni Büyüt</h3>
+                <h3 className="font-bold text-sm sm:text-base mb-5 sm:mb-8 text-white tracking-wide font-display uppercase">Hızlı Erişim</h3>
                 <ul className="space-y-4 sm:space-y-5">
                   <li>
                     <Link href="/kayit" className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-white transition-colors text-sm sm:text-[15px] font-semibold leading-relaxed">
@@ -323,7 +323,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 sm:mt-16 lg:mt-20 pt-8 sm:pt-10 border-t border-[#1F333D] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-xs sm:text-sm text-[#7A9AA6]">
-          <p className="text-center sm:text-left">© {new Date().getFullYear()} Esnaf Vitrin. Tüm hakları saklıdır.</p>
+          <p className="text-center sm:text-left">© {new Date().getFullYear()} Müşteri Vitrin. Tüm hakları saklıdır.</p>
           <div className="flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
             <Link href={gizlilikHref} className="hover:text-white transition-colors">Gizlilik Politikası</Link>
             <Link href={kullanimHref} className="hover:text-white transition-colors">Kullanım Şartları</Link>

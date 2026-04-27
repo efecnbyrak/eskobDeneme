@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 
 type Rol = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
 
-const ADMIN_PATHS = ['/phyberk/admin']
+const ADMIN_PATHS = ['/phyberk/admin/dashboard', '/phyberk/admin/esnaflar', '/phyberk/admin/kategoriler', '/phyberk/admin/kullanicilar', '/phyberk/admin/randevular', '/phyberk/admin/yorumlar']
 const BUSINESS_PATHS = ['/panel', '/isletme/panel']
 const ACCOUNT_PATHS = ['/genel', '/favorilerim', '/randevularim', '/ayarlar', '/yorumlarim', '/profil']
 const AUTH_PATHS = [
@@ -35,6 +35,9 @@ function isPublicRoute(pathname: string): boolean {
   if (HERKESE_ACIK_ROTALAR.has(pathname)) return true
   if (HERKESE_ACIK_PREFIXLER.some((p) => pathname.startsWith(p))) return true
   // Tek segment path + korumalı listelerde yoksa = işletme slug sayfası
+  // Admin login sayfası herkese açık
+  if (pathname === '/phyberk/admin') return true
+
   const tumKorunanlar = [
     ...ADMIN_PATHS, ...BUSINESS_PATHS, ...ACCOUNT_PATHS, ...AUTH_PATHS,
     '/isletme', '/phyberk',
@@ -54,7 +57,7 @@ function isPublicRoute(pathname: string): boolean {
 }
 
 function homeForRole(rol?: Rol | string | null): string {
-  if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin'
+  if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') return '/phyberk/admin/dashboard'
   if (rol === 'BUSINESS') return '/isletme/panel'
   if (rol === 'USER') return '/'
   return '/'
@@ -93,10 +96,18 @@ export async function proxy(request: NextRequest) {
 
   // ── Kimliği doğrulanmış kullanıcılar ──
 
+  // Admin giriş sayfası — giriş yapmış adminleri doğrudan dashboard'a yönlendir
+  if (pathname === '/phyberk/admin') {
+    if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') {
+      return NextResponse.redirect(new URL('/phyberk/admin/dashboard', request.url))
+    }
+    return NextResponse.next()
+  }
+
   // Ana sayfa
   if (pathname === '/') {
     if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') {
-      return NextResponse.redirect(new URL('/phyberk/admin', request.url))
+      return NextResponse.redirect(new URL('/phyberk/admin/dashboard', request.url))
     }
     if (rol === 'BUSINESS') {
       return NextResponse.redirect(new URL('/isletme/panel', request.url))
