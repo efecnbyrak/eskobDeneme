@@ -7,3 +7,4 @@ export type ApiHata = {
 export type ApiYanit<T> = ApiBasari<T> | ApiHata
 
 export type RolYetki = 'SUPER_ADMIN' | 'ADMIN' | 'BUSINESS' | 'USER'
+export type RandevuDurum = 'BEKLIYOR' | 'ONAYLANDI' | 'IPTAL' | 'TAMAMLANDI'

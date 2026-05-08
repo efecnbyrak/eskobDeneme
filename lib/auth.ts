@@ -1,6 +1,8 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { decode, encode } from '@auth/core/jwt'
 import bcrypt from 'bcryptjs'
+import type { NextRequest } from 'next/server'
 import { prisma } from './db'
 import { logger } from './logger'
 
@@ -132,6 +134,98 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   secret: process.env.AUTH_SECRET,
 })
+
+export type MobilOturum = {
+  user: {
+    id: string
+    email: string
+    name?: string | null
+    image?: string | null
+    rol: Rol
+    ad: string
+    soyad: string
+    kullaniciAdi?: string | null
+  }
+  expires: string
+}
+
+const SALT = 'authjs.session-token'
+
+/**
+ * Cookie-first, Bearer-token-second session resolver.
+ * Web istemciler cookie ile, mobil istemciler Authorization: Bearer <token> ile auth olur.
+ */
+export async function mobilAuth(req: NextRequest): Promise<MobilOturum | null> {
+  // 1. Cookie session (web) — hızlı yol
+  const oturum = await auth()
+  if (oturum?.user?.id) return oturum as unknown as MobilOturum
+
+  // 2. Bearer token (mobil)
+  const authHeader = req.headers.get('authorization')
+  if (!authHeader?.startsWith('Bearer ')) return null
+  const token = authHeader.slice(7).trim()
+  if (!token) return null
+
+  try {
+    const decoded = await decode({
+      token,
+      secret: process.env.AUTH_SECRET!,
+      salt: SALT,
+    })
+    if (!decoded?.id || !decoded?.email) return null
+    if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) return null
+
+    return {
+      user: {
+        id: String(decoded.id),
+        email: decoded.email as string,
+        name: (decoded.name as string | null) ?? null,
+        image: (decoded.picture as string | null) ?? null,
+        rol: decoded.rol as Rol,
+        ad: decoded.ad as string,
+        soyad: decoded.soyad as string,
+        kullaniciAdi: (decoded.kullaniciAdi as string | null) ?? null,
+      },
+      expires: decoded.exp
+        ? new Date(decoded.exp * 1000).toISOString()
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Mobil login için JWE token üretir.
+ * Sadece app/api/auth/mobile-login/route.ts tarafından kullanılır.
+ */
+export async function mobilTokenOlustur(kullanici: {
+  id: number
+  email: string
+  ad: string
+  soyad: string
+  rol: string
+  avatarUrl?: string | null
+  kullaniciAdi?: string | null
+}): Promise<{ token: string; expiresAt: string }> {
+  const exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60
+  const token = await encode({
+    token: {
+      id: String(kullanici.id),
+      email: kullanici.email,
+      name: `${kullanici.ad} ${kullanici.soyad}`,
+      picture: kullanici.avatarUrl ?? null,
+      rol: kullanici.rol,
+      ad: kullanici.ad,
+      soyad: kullanici.soyad,
+      kullaniciAdi: kullanici.kullaniciAdi ?? null,
+      exp,
+    },
+    secret: process.env.AUTH_SECRET!,
+    salt: SALT,
+  })
+  return { token, expiresAt: new Date(exp * 1000).toISOString() }
+}
 
 export function girisYoluByRol(rol?: Rol | string | null): string {
   switch (rol) {

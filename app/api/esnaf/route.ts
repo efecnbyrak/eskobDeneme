@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { mobilAuth } from '@/lib/auth'
 import { benzersizSlug } from '@/lib/slug'
 import { temizMetinOpsiyonel } from '@/lib/sanitize'
+import { basari, hata } from '@/lib/api'
 import { logger } from '@/lib/logger'
 
 export async function GET(req: NextRequest) {
@@ -102,31 +103,22 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) {
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-    }
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
     if (oturum.user.rol !== 'BUSINESS' && oturum.user.rol !== 'ADMIN' && oturum.user.rol !== 'SUPER_ADMIN') {
-      return NextResponse.json(
-        { error: 'Sadece işletme hesapları esnaf oluşturabilir' },
-        { status: 403 }
-      )
+      return hata('Sadece işletme hesapları esnaf oluşturabilir', 403)
     }
 
     const kullanici = await prisma.kullanici.findUnique({ where: { email: oturum.user.email } })
-    if (!kullanici) {
-      return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 })
-    }
+    if (!kullanici) return hata('Kullanıcı bulunamadı', 404)
 
     const body = await req.json().catch(() => null)
     if (!body || typeof body.isletmeAdi !== 'string' || typeof body.kategoriSlug !== 'string') {
-      return NextResponse.json({ error: 'Geçersiz veri' }, { status: 400 })
+      return hata('Geçersiz veri', 400)
     }
 
     const dbKat = await prisma.kategori.findUnique({ where: { slug: body.kategoriSlug } })
-    if (!dbKat) {
-      return NextResponse.json({ error: 'Kategori bulunamadı' }, { status: 400 })
-    }
+    if (!dbKat) return hata('Kategori bulunamadı', 400)
 
     const mevcutSluglar = (
       await prisma.esnaf.findMany({ select: { slug: true } })
@@ -153,9 +145,9 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json(esnaf, { status: 201 })
+    return basari(esnaf, 201)
   } catch (err) {
     logger.error('esnaf.POST', { err: String(err) })
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }

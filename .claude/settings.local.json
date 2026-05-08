@@ -3,7 +3,13 @@
     "allow": [
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(npx prisma *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Read(//c/ESKOB/eskob-mobile/**)",
+      "Bash(npm install *)",
+      "PowerShell(head *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|css|json\\)$\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskobDeneme\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

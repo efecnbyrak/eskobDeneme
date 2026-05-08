@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { mobilAuth } from '@/lib/auth'
 import { temizMetinOpsiyonel } from '@/lib/sanitize'
+import { basari, hata } from '@/lib/api'
 import { logger } from '@/lib/logger'
 
 interface Props {
@@ -14,13 +15,11 @@ function parseId(raw: string): number | null {
   return Number.isInteger(n) && n > 0 ? n : null
 }
 
-export async function GET(_req: NextRequest, { params }: Props) {
+export async function GET(req: NextRequest, { params }: Props) {
   try {
     const { id } = await params
     const numId = parseId(id)
-    if (numId === null) {
-      return NextResponse.json({ error: 'Geçersiz ID' }, { status: 400 })
-    }
+    if (numId === null) return hata('Geçersiz ID', 400)
 
     const esnaf = await prisma.esnaf.findUnique({
       where: { id: numId },
@@ -30,26 +29,23 @@ export async function GET(_req: NextRequest, { params }: Props) {
         yorumlar: { where: { onaylı: true } },
       },
     })
-    if (!esnaf) return NextResponse.json({ error: 'Bulunamadı' }, { status: 404 })
-    return NextResponse.json(esnaf)
+    if (!esnaf) return hata('Bulunamadı', 404)
+
+    return basari(esnaf)
   } catch (err) {
     logger.error('esnaf[id].GET', { err: String(err) })
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }
 
 export async function PUT(req: NextRequest, { params }: Props) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) {
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-    }
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
 
     const { id } = await params
     const numId = parseId(id)
-    if (numId === null) {
-      return NextResponse.json({ error: 'Geçersiz ID' }, { status: 400 })
-    }
+    if (numId === null) return hata('Geçersiz ID', 400)
 
     const body = await req.json().catch(() => ({}))
 
@@ -58,23 +54,16 @@ export async function PUT(req: NextRequest, { params }: Props) {
       include: { esnaf: true },
     })
 
-    const isAdmin =
-      oturum.user.rol === 'ADMIN' || oturum.user.rol === 'SUPER_ADMIN'
+    const isAdmin = oturum.user.rol === 'ADMIN' || oturum.user.rol === 'SUPER_ADMIN'
 
     if (!isAdmin && kullanici?.esnaf?.id !== numId) {
-      return NextResponse.json(
-        { error: 'Bu kaydı düzenleme yetkiniz yok' },
-        { status: 403 }
-      )
+      return hata('Bu kaydı düzenleme yetkiniz yok', 403)
     }
 
     const esnaf = await prisma.esnaf.update({
       where: { id: numId },
       data: {
-        isletmeAdi:
-          typeof body.isletmeAdi === 'string'
-            ? body.isletmeAdi.trim().slice(0, 120)
-            : undefined,
+        isletmeAdi: typeof body.isletmeAdi === 'string' ? body.isletmeAdi.trim().slice(0, 120) : undefined,
         aciklama: temizMetinOpsiyonel(body.aciklama, 500),
         telefon: temizMetinOpsiyonel(body.telefon, 30),
         whatsapp: temizMetinOpsiyonel(body.whatsapp, 30),
@@ -84,43 +73,39 @@ export async function PUT(req: NextRequest, { params }: Props) {
         logoUrl: temizMetinOpsiyonel(body.logoUrl, 500),
         calismaS: body.calismaS ?? undefined,
       },
-      select: { id: true, slug: true, sehir: true, isletmeAdi: true, aciklama: true, telefon: true, whatsapp: true, website: true, instagram: true, kapakFoto: true, logoUrl: true, calismaS: true },
+      select: {
+        id: true, slug: true, sehir: true, isletmeAdi: true, aciklama: true,
+        telefon: true, whatsapp: true, website: true, instagram: true,
+        kapakFoto: true, logoUrl: true, calismaS: true,
+      },
     })
 
     revalidatePath(`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`)
-    return NextResponse.json(esnaf)
+    return basari(esnaf)
   } catch (err) {
     logger.error('esnaf[id].PUT', { err: String(err) })
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Props) {
+export async function DELETE(req: NextRequest, { params }: Props) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) {
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-    }
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
 
     const { id } = await params
     const numId = parseId(id)
-    if (numId === null) {
-      return NextResponse.json({ error: 'Geçersiz ID' }, { status: 400 })
-    }
+    if (numId === null) return hata('Geçersiz ID', 400)
 
     const kullanici = await prisma.kullanici.findUnique({
       where: { email: oturum.user.email },
       include: { esnaf: true },
     })
 
-    const isAdmin =
-      oturum.user.rol === 'ADMIN' || oturum.user.rol === 'SUPER_ADMIN'
+    const isAdmin = oturum.user.rol === 'ADMIN' || oturum.user.rol === 'SUPER_ADMIN'
 
     if (!isAdmin && kullanici?.esnaf?.id !== numId) {
-      return NextResponse.json(
-        { error: 'Bu kaydı silme yetkiniz yok' },
-        { status: 403 }
-      )
+      return hata('Bu kaydı silme yetkiniz yok', 403)
     }
 
     const esnaf = await prisma.esnaf.update({
@@ -130,9 +115,9 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
     })
 
     revalidatePath(`/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`)
-    return NextResponse.json({ ok: true })
+    return basari({ ok: true })
   } catch (err) {
     logger.error('esnaf[id].DELETE', { err: String(err) })
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }

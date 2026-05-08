@@ -1,51 +1,49 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { mobilAuth } from '@/lib/auth'
 import { HizmetSchema } from '@/lib/validations'
 import { temizMetin, temizMetinOpsiyonel } from '@/lib/sanitize'
+import { basari, hata } from '@/lib/api'
 import { logger } from '@/lib/logger'
 
 export async function GET(req: NextRequest) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
 
     const kullanici = await prisma.kullanici.findUnique({
       where: { email: oturum.user.email },
       include: { esnaf: true },
     })
 
-    if (!kullanici?.esnaf) return NextResponse.json({ hizmetler: [], esnafId: 0 })
+    if (!kullanici?.esnaf) return basari({ hizmetler: [], esnafId: 0 })
 
     const hizmetler = await prisma.hizmet.findMany({
       where: { esnafId: kullanici.esnaf.id },
       orderBy: { sira: 'asc' },
     })
 
-    return NextResponse.json({ hizmetler, esnafId: kullanici.esnaf.id })
+    return basari({ hizmetler, esnafId: kullanici.esnaf.id })
   } catch {
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
 
     const kullanici = await prisma.kullanici.findUnique({
       where: { email: oturum.user.email },
       include: { esnaf: true },
     })
-    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+    if (!kullanici?.esnaf) return hata('İşletme bulunamadı', 403)
 
     const body = await req.json().catch(() => null)
     const parsed = HizmetSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? 'Geçersiz veri' },
-        { status: 400 }
-      )
+      return hata(parsed.error.issues[0]?.message ?? 'Geçersiz veri', 400)
     }
     const veri = parsed.data
 
@@ -60,39 +58,34 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json(hizmet, { status: 201 })
+    return basari(hizmet, 201)
   } catch {
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
 
     const kullanici = await prisma.kullanici.findUnique({
       where: { email: oturum.user.email },
       include: { esnaf: true },
     })
-    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+    if (!kullanici?.esnaf) return hata('İşletme bulunamadı', 403)
 
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
+    if (!id) return hata('ID gerekli', 400)
 
     const mevcut = await prisma.hizmet.findUnique({ where: { id: parseInt(id) } })
-    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) {
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
-    }
+    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) return hata('Yetkisiz', 403)
 
     const body = await req.json().catch(() => null)
     const parsed = HizmetSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? 'Geçersiz veri' },
-        { status: 400 }
-      )
+      return hata(parsed.error.issues[0]?.message ?? 'Geçersiz veri', 400)
     }
     const veri = parsed.data
 
@@ -106,35 +99,35 @@ export async function PUT(req: NextRequest) {
       },
     })
 
-    return NextResponse.json(hizmet)
+    return basari(hizmet)
   } catch {
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
-    const oturum = await auth()
-    if (!oturum?.user?.email) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
+    const oturum = await mobilAuth(req)
+    if (!oturum?.user?.email) return hata('Yetkisiz', 401)
 
     const kullanici = await prisma.kullanici.findUnique({
       where: { email: oturum.user.email },
       include: { esnaf: true },
     })
-    if (!kullanici?.esnaf) return NextResponse.json({ error: 'İşletme bulunamadı' }, { status: 403 })
+    if (!kullanici?.esnaf) return hata('İşletme bulunamadı', 403)
 
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 })
+    if (!id) return hata('ID gerekli', 400)
 
     const mevcut = await prisma.hizmet.findUnique({ where: { id: parseInt(id) } })
-    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) {
-      return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 })
-    }
+    if (!mevcut || mevcut.esnafId !== kullanici.esnaf.id) return hata('Yetkisiz', 403)
 
     await prisma.hizmet.update({ where: { id: parseInt(id) }, data: { aktif: false } })
-    return NextResponse.json({ ok: true })
-  } catch {
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+
+    return basari({ ok: true })
+  } catch (err) {
+    logger.error('hizmet.DELETE', { err: String(err) })
+    return hata('Sunucu hatası', 500)
   }
 }

@@ -1,25 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { NextRequest } from 'next/server'
+import { mobilAuth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { basari, hata } from '@/lib/api'
 
 export async function PATCH(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const oturum = await auth()
-  const rol = (oturum?.user as any)?.rol
+  const oturum = await mobilAuth(req)
+  const rol = oturum?.user?.rol
 
   if (!oturum?.user || (rol !== 'SUPER_ADMIN' && rol !== 'ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Yetkisiz erişim' }, { status: 403 })
+    return hata('Yetkisiz erişim', 403)
   }
 
   const { id } = await params
   const kategoriId = parseInt(id)
-  if (isNaN(kategoriId)) {
-    return NextResponse.json({ success: false, error: 'Geçersiz ID' }, { status: 400 })
-  }
+  if (isNaN(kategoriId)) return hata('Geçersiz ID', 400)
 
-  const body = await request.json()
+  const body = await req.json()
   const { ikonUrl } = body as { ikonUrl?: string | null }
 
   const guncellendi = await prisma.kategori.update({
@@ -27,5 +26,5 @@ export async function PATCH(
     data: { ikonUrl: ikonUrl ?? null },
   })
 
-  return NextResponse.json({ success: true, data: guncellendi })
+  return basari(guncellendi)
 }

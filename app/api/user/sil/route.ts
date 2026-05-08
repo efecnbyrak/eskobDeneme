@@ -1,36 +1,26 @@
-import { NextResponse } from 'next/server'
-import { auth, signOut } from '@/lib/auth'
+import { NextRequest } from 'next/server'
+import { mobilAuth, signOut } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { basari, hata } from '@/lib/api'
 import { logger } from '@/lib/logger'
 
 // KVKK Madde 7 — kişisel veri silme / anonimleştirme talebi
-export async function POST() {
-  const oturum = await auth()
-  if (!oturum?.user?.id) {
-    return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 })
-  }
+export async function POST(req: NextRequest) {
+  const oturum = await mobilAuth(req)
+  if (!oturum?.user?.id) return hata('Yetkisiz', 401)
 
   const id = parseInt(oturum.user.id)
-  if (!Number.isInteger(id)) {
-    return NextResponse.json({ error: 'Oturum hatası' }, { status: 401 })
-  }
+  if (!Number.isInteger(id)) return hata('Oturum hatası', 401)
 
   const kullanici = await prisma.kullanici.findUnique({ where: { id } })
-  if (!kullanici) {
-    return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 })
-  }
+  if (!kullanici) return hata('Kullanıcı bulunamadı', 404)
 
-  // SUPER_ADMIN hesabı kendini silemesin (operasyonel koruma)
   if (kullanici.rol === 'SUPER_ADMIN') {
-    return NextResponse.json(
-      { error: 'Süper admin hesabı self-servis silinemez' },
-      { status: 400 }
-    )
+    return hata('Süper admin hesabı self-servis silinemez', 400)
   }
 
   try {
     await prisma.$transaction(async (tx) => {
-      // PII'yi anonimleştir + soft delete
       await tx.kullanici.update({
         where: { id },
         data: {
@@ -46,7 +36,6 @@ export async function POST() {
         },
       })
 
-      // BUSINESS ise esnafı pasifleştir (tüm ilişkili veri korunur ama görünmez)
       if (kullanici.rol === 'BUSINESS') {
         await tx.esnaf.updateMany({
           where: { kullaniciId: id },
@@ -54,7 +43,6 @@ export async function POST() {
         })
       }
 
-      // KVKK audit log
       await tx.kvkkLog.create({
         data: {
           kullaniciId: id,
@@ -65,13 +53,11 @@ export async function POST() {
     })
 
     logger.info('kvkk.sil_tamamlandi', { kullaniciId: id, rol: kullanici.rol })
-
-    // Oturumu sonlandır (redirect yapmadan cookie temizle)
     await signOut({ redirect: false }).catch(() => null)
 
-    return NextResponse.json({ ok: true })
+    return basari({ ok: true })
   } catch (err) {
     logger.error('kvkk.sil_hata', { kullaniciId: id, err: String(err) })
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    return hata('Sunucu hatası', 500)
   }
 }

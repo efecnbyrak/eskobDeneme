@@ -1,38 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { auth } from '@/lib/auth'
+import { mobilAuth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { basari, hata } from '@/lib/api'
 import { logger } from '@/lib/logger'
 
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const oturum = await auth()
+  const oturum = await mobilAuth(req)
   if (!oturum?.user || (oturum.user.rol !== 'ADMIN' && oturum.user.rol !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ error: 'Yetkisiz.' }, { status: 403 })
+    return hata('Yetkisiz.', 403)
   }
 
   const { id } = await params
   const numId = parseInt(id)
-  if (!Number.isInteger(numId)) {
-    return NextResponse.json({ error: 'Geçersiz ID' }, { status: 400 })
-  }
+  if (!Number.isInteger(numId)) return hata('Geçersiz ID', 400)
 
   const yorum = await prisma.yorum.update({
     where: { id: numId },
     data: { onaylı: true },
-    select: {
-      id: true,
-      esnaf: { select: { slug: true, sehir: true } },
-    },
+    select: { id: true, esnaf: { select: { slug: true, sehir: true } } },
   })
 
-  // Profil sayfasındaki yorum listesini yenile
   if (yorum.esnaf) {
     revalidatePath(`/${yorum.esnaf.sehir.toLowerCase()}/${yorum.esnaf.slug}`)
   }
 
   logger.info('yorum.onaylandi', { yorumId: yorum.id, adminId: oturum.user.id })
-  return NextResponse.json({ success: true })
+  return basari({ success: true })
 }

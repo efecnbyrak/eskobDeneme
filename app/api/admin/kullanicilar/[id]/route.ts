@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { auth } from '@/lib/auth'
+import { mobilAuth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { basari, hata } from '@/lib/api'
 
 const Schema = z.object({
   rol: z.enum(['SUPER_ADMIN', 'ADMIN', 'BUSINESS', 'USER']).optional(),
 })
 
-async function yetkili(requireSuper = false) {
-  const oturum = await auth()
+async function yetkili(req: NextRequest, requireSuper = false) {
+  const oturum = await mobilAuth(req)
   if (!oturum?.user?.id) return null
   const rol = oturum.user.rol
   if (requireSuper && rol !== 'SUPER_ADMIN') return null
@@ -20,21 +21,14 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const oturum = await yetkili(true)
-  if (!oturum) return NextResponse.json({ error: 'Yetkisiz.' }, { status: 403 })
+  const oturum = await yetkili(req, true)
+  if (!oturum) return hata('Yetkisiz.', 403)
 
   const { id } = await params
-  if (id === oturum.user!.id) {
-    return NextResponse.json(
-      { error: 'Kendi rolünüzü değiştiremezsiniz.' },
-      { status: 400 }
-    )
-  }
+  if (id === oturum.user!.id) return hata('Kendi rolünüzü değiştiremezsiniz.', 400)
 
   const parsed = Schema.safeParse(await req.json())
-  if (!parsed.success || !parsed.data.rol) {
-    return NextResponse.json({ error: 'Geçersiz veri.' }, { status: 400 })
-  }
+  if (!parsed.success || !parsed.data.rol) return hata('Geçersiz veri.', 400)
 
   const guncel = await prisma.kullanici.update({
     where: { id: parseInt(id) },
@@ -42,33 +36,23 @@ export async function PATCH(
     select: { id: true, rol: true },
   })
 
-  return NextResponse.json(guncel)
+  return basari(guncel)
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const oturum = await yetkili(true)
-  if (!oturum) return NextResponse.json({ error: 'Yetkisiz.' }, { status: 403 })
+  const oturum = await yetkili(req, true)
+  if (!oturum) return hata('Yetkisiz.', 403)
 
   const { id } = await params
-  if (id === oturum.user!.id) {
-    return NextResponse.json(
-      { error: 'Kendi hesabınızı silemezsiniz.' },
-      { status: 400 }
-    )
-  }
+  if (id === oturum.user!.id) return hata('Kendi hesabınızı silemezsiniz.', 400)
 
   const hedef = await prisma.kullanici.findUnique({ where: { id: parseInt(id) } })
-  if (!hedef) return NextResponse.json({ error: 'Bulunamadı.' }, { status: 404 })
-  if (hedef.rol === 'SUPER_ADMIN') {
-    return NextResponse.json(
-      { error: 'Süper admin silinemez.' },
-      { status: 400 }
-    )
-  }
+  if (!hedef) return hata('Bulunamadı.', 404)
+  if (hedef.rol === 'SUPER_ADMIN') return hata('Süper admin silinemez.', 400)
 
   await prisma.kullanici.delete({ where: { id: parseInt(id) } })
-  return NextResponse.json({ ok: true })
+  return basari({ ok: true })
 }

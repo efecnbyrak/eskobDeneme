@@ -31,6 +31,21 @@ async function main() {
     },
   })
 
+  console.log('Test kullanıcısı oluşturuluyor...')
+  const testSifreHash = await bcrypt.hash('Test123!', 12)
+  await prisma.kullanici.upsert({
+    where: { email: 'test@eskob.com' },
+    update: { sifreHash: testSifreHash },
+    create: {
+      email: 'test@eskob.com',
+      sifreHash: testSifreHash,
+      ad: 'Test',
+      soyad: 'Kullanici',
+      rol: 'USER',
+      kullaniciAdi: 'testkullanici',
+    },
+  })
+
   console.log('✅ Seed tamamlandı!')
 }
 
