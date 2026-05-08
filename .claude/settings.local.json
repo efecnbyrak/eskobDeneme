@@ -9,7 +9,12 @@
       "PowerShell(head *)",
       "Bash(grep -E \"\\\\.\\(tsx|ts|css|json\\)$\")",
       "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskobDeneme\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskob-mobile\" -Recurse -Depth 2)",
+      "Bash(Select-Object FullName)",
+      "Bash(xargs basename -a)",
+      "Bash(grep -rn \"export.*middleware\\\\|export const { GET, POST }\" \"C:\\\\ESKOB\\\\eskobDeneme/app\" --include=\"*.ts\" --include=\"*.tsx\")",
+      "Bash(grep -E \"^-.*\\\\.\\(ts|tsx|js\\)$\")"
     ]
   }
 }
