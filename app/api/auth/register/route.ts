@@ -6,6 +6,7 @@ import { kategorileriGarantile } from '@/lib/bootstrap'
 import { KayitSchema } from '@/lib/validations'
 import { rateLimit, istemciKimligi } from '@/lib/rateLimit'
 import { logger } from '@/lib/logger'
+import { basari } from '@/lib/api'
 
 export async function POST(req: NextRequest) {
   try {
@@ -67,12 +68,12 @@ export async function POST(req: NextRequest) {
           telefon,
           sifreHash,
           rol: 'USER',
-          sehir: veri.sehir,
-          ilce: veri.ilce.trim(),
-          ilgiAlanlari: veri.ilgiAlanlari,
+          sehir: veri.sehir ?? '',
+          ilce: (veri.ilce ?? '').trim(),
+          ilgiAlanlari: veri.ilgiAlanlari ?? [],
         },
       })
-      return NextResponse.json({ id: kullanici.id, rol: kullanici.rol }, { status: 201 })
+      return basari({ id: kullanici.id, rol: kullanici.rol }, 201)
     }
 
     await kategorileriGarantile()
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json({ id: kullanici.id, rol: kullanici.rol }, { status: 201 })
+    return basari({ id: kullanici.id, rol: kullanici.rol }, 201)
   } catch (err) {
     logger.error('register', { err: String(err) })
     return NextResponse.json({ error: 'Sunucu hatası.' }, { status: 500 })

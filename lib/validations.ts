@@ -53,9 +53,9 @@ export const KullaniciKayitSchema = z.object({
     .optional()
     .or(z.literal('')),
   telefon: telefonSchema.optional().or(z.literal('')),
-  sehir: z.string().min(1, 'Şehir seçin'),
-  ilce: z.string().min(1, 'İlçe girin'),
-  ilgiAlanlari: z.array(z.string()).min(1, 'En az 1 tür seçin'),
+  sehir: z.string().optional().default(''),
+  ilce: z.string().optional().default(''),
+  ilgiAlanlari: z.array(z.string()).optional().default([]),
 })
 
 export const IsletmeKayitSchema = z.object({
