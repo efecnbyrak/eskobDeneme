@@ -2,7 +2,7 @@
 
 import { signIn } from 'next-auth/react'
 import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 import { LockCheckbox } from '@/components/ui/LockCheckbox'
@@ -62,6 +62,7 @@ function MusteriGirisForm() {
   const searchParams = useSearchParams()
   const kayitBasarili = searchParams.get('kayit') === 'basarili'
 
+  const router = useRouter()
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
   const [beniHatirla, setBeniHatirla] = useState(false)
@@ -113,7 +114,7 @@ function MusteriGirisForm() {
         if (me.ad) sessionStorage.setItem('hosgeldin', me.ad)
         else sessionStorage.setItem('hosgeldin', '1')
       }
-      window.location.href = hedef
+      router.push(hedef)
     } catch {
       setHata('Bir hata oluştu. Lütfen tekrar deneyin.')
     } finally {

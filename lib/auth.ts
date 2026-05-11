@@ -17,7 +17,7 @@ if (isProd && !process.env.AUTH_SECRET) {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Vercel preview / yerel dev için trustHost; prod'da AUTH_URL set'liyse devre dışı kalır
-  trustHost: !isProd || !process.env.AUTH_URL,
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             rememberMe,
           }
         } catch (err) {
-          logger.error('auth.authorize', { err: String(err) })
+          logger.error('auth.authorize', { err: String(err), email: email ?? 'unknown' })
           return null
         }
       },
