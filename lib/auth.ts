@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             rememberMe,
           }
         } catch (err) {
-          logger.error('auth.authorize', { err: String(err), email: email ?? 'unknown' })
+          logger.error('auth.authorize', { err: String(err) })
           return null
         }
       },
