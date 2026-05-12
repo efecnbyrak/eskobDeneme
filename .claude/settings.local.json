@@ -16,7 +16,8 @@
       "Bash(grep -rn \"export.*middleware\\\\|export const { GET, POST }\" \"C:\\\\ESKOB\\\\eskobDeneme/app\" --include=\"*.ts\" --include=\"*.tsx\")",
       "Bash(grep -E \"^-.*\\\\.\\(ts|tsx|js\\)$\")",
       "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Directory)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Remove-Item \"c:\\\\ESKOB\\\\eskobDeneme\\\\middleware.ts\")"
     ]
   }
 }
