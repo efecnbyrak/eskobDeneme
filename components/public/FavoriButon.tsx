@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
 
 interface FavoriButonProps {
   esnafId: number | string
@@ -16,13 +17,15 @@ export function FavoriButon({ esnafId, baslangicFavori = false, authenticated = 
   const [celebrate, setCelebrate] = useState(false)
   const [yukleniyor, setYukleniyor] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
   async function toggle(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
 
     if (!authenticated) {
-      router.push('/musteri/giris')
+      toast('Favorilere eklemek için giriş yapın', 'info')
+      setTimeout(() => router.push('/musteri/giris'), 1000)
       return
     }
 

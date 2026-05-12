@@ -120,6 +120,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.ad = token.ad as string
         session.user.soyad = token.soyad as string
         session.user.kullaniciAdi = (token.kullaniciAdi as string | null) ?? null
+        session.user.image = (token.picture as string | null) ?? null
       }
       return session
     },

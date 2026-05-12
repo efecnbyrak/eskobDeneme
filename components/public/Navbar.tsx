@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/Button'
 
@@ -457,21 +457,28 @@ function NavArama({ dbKategoriler }: { dbKategoriler: any[] }) {
 
 export function Navbar() {
   const [menuAcik, setMenuAcik] = useState(false)
-  const [me, setMe] = useState<Me | null>(null)
   const [dbKategoriler, setDbKategoriler] = useState<any[]>([])
   const [visible, setVisible] = useState(true)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+  const { data: session, status } = useSession()
 
   const isIsletme = pathname === '/isletme' || pathname?.startsWith('/isletme/')
 
+  // Session'dan me türet — loading sırasında unauthenticated gibi davran (butonlar hemen görünsün)
+  const me: Me = status === 'authenticated' && session?.user
+    ? {
+        authenticated: true,
+        ad: session.user.ad,
+        soyad: session.user.soyad,
+        rol: session.user.rol,
+        kullaniciAdi: session.user.kullaniciAdi,
+        avatarUrl: session.user.image ?? undefined,
+      }
+    : { authenticated: false }
+
   useEffect(() => {
     let iptal = false
-    fetch('/api/auth/me', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : { authenticated: false }))
-      .then((d) => { if (!iptal) setMe(d) })
-      .catch(() => { if (!iptal) setMe({ authenticated: false }) })
-
     fetch('/api/v1/categories')
       .then((r) => r.json())
       .then((d) => { if (!iptal && d.success) setDbKategoriler(d.data) })
@@ -588,9 +595,7 @@ export function Navbar() {
 
             {/* SAĞ ALAN */}
             <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12, flexShrink: 0 }}>
-              {me === null ? (
-                <div style={{ width: 120, height: 36, borderRadius: 12, background: 'var(--color-bg-muted)', animation: 'pulse 1.5s infinite' }} />
-              ) : girisliMi ? (
+              {girisliMi ? (
                 <>
                   <UserDropdown me={me} />
                   {me.rol === 'USER' && (

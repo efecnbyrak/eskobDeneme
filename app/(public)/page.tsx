@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { getCategoriesService } from '@/lib/services/category.service'
 import { getCampaignsService } from '@/lib/services/campaign.service'
@@ -35,12 +36,18 @@ export default async function AnaSayfa() {
     kampanyalar,
     recommendations,
     recentlyViewed,
-    topEsnaf
+    topEsnaf,
+    favoriIdleri,
   ] = await Promise.all([
     getCampaignsService({ limit: 8 }),
     getRecommendationsService(userId, { limit: 8 }),
     getRecentlyViewedService(userId || '', { limit: 10 }),
-    getTopEsnafService({ limit: 8 })
+    getTopEsnafService({ limit: 8 }),
+    userId
+      ? prisma.favori
+          .findMany({ where: { kullaniciId: Number(userId) }, select: { esnafId: true } })
+          .then((rows) => new Set(rows.map((r) => r.esnafId)))
+      : Promise.resolve(new Set<number>()),
   ])
 
   return (
@@ -190,7 +197,7 @@ export default async function AnaSayfa() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
               {recommendations.map((e: any) => (
-                <EsnafKart key={`rec-${e.id}`} esnaf={e} authenticated={authenticated} />
+                <EsnafKart key={`rec-${e.id}`} esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />
               ))}
             </div>
           </div>
@@ -291,7 +298,7 @@ export default async function AnaSayfa() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
             {topEsnaf.map((e: any) => (
-              <EsnafKart key={`top-${e.id}`} esnaf={e} authenticated={authenticated} />
+              <EsnafKart key={`top-${e.id}`} esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />
             ))}
           </div>
         </div>
@@ -305,7 +312,7 @@ export default async function AnaSayfa() {
             <div style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 16 }}>
               {recentlyViewed.map((e: any) => (
                 <div key={`history-${e.id}`} style={{ minWidth: 260, flexShrink: 0 }}>
-                  <EsnafKart esnaf={e} authenticated={authenticated} />
+                  <EsnafKart esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />
                 </div>
               ))}
             </div>

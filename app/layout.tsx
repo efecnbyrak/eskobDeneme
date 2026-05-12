@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google'
+import { Providers } from '@/components/Providers'
 import './globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -26,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className={`${plusJakarta.variable} ${dmSans.variable}`}>
-      <body className="min-h-screen flex flex-col antialiased">{children}</body>
+      <body className="min-h-screen flex flex-col antialiased"><Providers>{children}</Providers></body>
     </html>
   )
 }
