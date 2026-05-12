@@ -28,11 +28,20 @@ export default function AraSayfasi() {
   const [arama, setArama] = useState('')
   const [sayfa, setSayfa] = useState(1)
   const [authenticated, setAuthenticated] = useState(false)
+  const [favoriIdleri, setFavoriIdleri] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     fetch('/api/auth/me', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : { authenticated: false }))
-      .then((d) => setAuthenticated(!!d.authenticated))
+      .then((d) => {
+        setAuthenticated(!!d.authenticated)
+        if (d.authenticated) {
+          fetch('/api/user/favori')
+            .then((r) => (r.ok ? r.json() : { data: [] }))
+            .then((fd) => setFavoriIdleri(new Set((fd.data || []).map((f: { esnaf: { id: number } }) => f.esnaf.id))))
+            .catch(() => {})
+        }
+      })
       .catch(() => setAuthenticated(false))
   }, [])
 
@@ -171,7 +180,7 @@ export default function AraSayfasi() {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
-          {esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} authenticated={authenticated} />)}
+          {esnaflar.map((e) => <EsnafKart key={e.id} esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />)}
         </div>
       )}
 

@@ -20,7 +20,8 @@
       "Bash(Remove-Item \"c:\\\\ESKOB\\\\eskobDeneme\\\\middleware.ts\")",
       "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Filter \"*.tsx\" -o Name)",
       "Bash(Select-String -Pattern \"\\(layout|loading|middleware|page\\)\")",
-      "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskobDeneme\" -Force)"
+      "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskobDeneme\" -Force)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(public\\)\" -Name | Where-Object {$_ -match \"nasil\"}; Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(public\\)\\\\isletme\\\\nasil-calisir\" -Name)"
     ]
   }
 }

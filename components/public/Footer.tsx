@@ -310,7 +310,7 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="#" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
+                    <Link href="/isletme/nasil-calisir" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Nasıl Çalışır?
                     </Link>
                   </li>

@@ -68,6 +68,7 @@ export default async function KategoriSayfasi({ params }: Props) {
     prisma.kategori.findUnique({ where: { slug } }),
   ])
   const authenticated = !!oturum?.user?.id
+  const userId = oturum?.user?.id ? Number(oturum.user.id) : null
 
   const esnaflar = dbKat
     ? await prisma.esnaf.findMany({
@@ -81,6 +82,15 @@ export default async function KategoriSayfasi({ params }: Props) {
         take: 24,
       })
     : []
+
+  let favoriIdleri = new Set<number>()
+  if (userId && esnaflar.length > 0) {
+    const favoriler = await prisma.favori.findMany({
+      where: { kullaniciId: userId },
+      select: { esnafId: true },
+    })
+    favoriIdleri = new Set(favoriler.map((f) => f.esnafId))
+  }
 
   return (
     <div className="container-main" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
@@ -98,7 +108,7 @@ export default async function KategoriSayfasi({ params }: Props) {
 
       {esnaflar.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
-          {esnaflar.map((e: typeof esnaflar[0]) => <EsnafKart key={e.id} esnaf={e as unknown as Esnaf} authenticated={authenticated} />)}
+          {esnaflar.map((e: typeof esnaflar[0]) => <EsnafKart key={e.id} esnaf={e as unknown as Esnaf} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />)}
         </div>
       ) : (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>

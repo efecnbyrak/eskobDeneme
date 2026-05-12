@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 import Image from 'next/image'
 import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
@@ -84,7 +85,10 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
 
   const puan = ortalamaPuan(esnaf.yorumlar as { puan: number }[])
   const acik = isletmeAcikMi(esnaf.calismaS as Record<string, { acik: string; kapali: string; kapali_gun?: boolean }> | null)
-  const sayfaUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const protocol = host.startsWith('localhost') ? 'http' : 'https'
+  const sayfaUrl = `${protocol}://${host}/${esnaf.sehir.toLowerCase()}/${esnaf.slug}`
   const fotograflar = esnaf.fotograflar ?? []
 
   return (
