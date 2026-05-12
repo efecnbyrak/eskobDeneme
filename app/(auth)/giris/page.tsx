@@ -65,7 +65,7 @@ function GirisForm() {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', overflowY: 'auto', fontFamily: 'var(--font-body, sans-serif)', background: 'white' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', overflowY: 'auto', fontFamily: 'var(--font-body, sans-serif)', background: 'white' }}>
 
       {/* SOL — Tanıtım Paneli */}
       <div
@@ -148,7 +148,7 @@ function GirisForm() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '48px 32px',
+        padding: 'clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px)',
         background: '#F5F6F8',
         minHeight: '100vh',
       }}>

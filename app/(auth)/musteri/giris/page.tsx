@@ -141,7 +141,7 @@ function MusteriGirisForm() {
         </p>
       </div>
 
-      <div style={{ background: 'white', borderRadius: 24, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', padding: 40 }}>
+      <div style={{ background: 'white', borderRadius: 24, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', padding: 'clamp(20px, 5vw, 40px)' }}>
         {kayitBasarili && (
           <div style={{ padding: '12px 16px', borderRadius: 12, background: '#DCFCE7', color: '#166534', fontSize: 14, fontWeight: 500, border: '1px solid #86EFAC', marginBottom: 24 }}>
             Kayıt başarılı. Şimdi giriş yapabilirsiniz.
@@ -159,7 +159,7 @@ function MusteriGirisForm() {
               minLength={6}
               placeholder="••••••••"
               autoComplete="current-password"
-              style={{ width: '100%', height: 48, padding: '0 16px', background: 'var(--color-bg-muted)', border: '2px solid transparent', borderRadius: 12, fontSize: 15, outline: 'none', transition: 'all 0.2s' }}
+              style={{ width: '100%', height: 48, padding: '0 16px', background: 'var(--color-bg-muted)', border: '2px solid transparent', borderRadius: 12, fontSize: 15, outline: 'none', transition: 'all 0.2s', boxSizing: 'border-box' }}
             />
           </div>
 

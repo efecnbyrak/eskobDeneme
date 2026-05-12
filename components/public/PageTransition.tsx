@@ -4,10 +4,22 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import { Loader } from '@/components/ui/Loader'
 
+const AUTH_PREFIXES = [
+  '/giris', '/musteri/giris', '/musteri/kayit',
+  '/isletme/giris', '/kayit', '/isletme/kayit',
+]
+
 export function PageTransition() {
   const pathname = usePathname()
   const [loading, setLoading] = useState(false)
   const currentPath = useRef(pathname)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function startLoading() {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setLoading(true)
+    timeoutRef.current = setTimeout(() => setLoading(false), 8000)
+  }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -16,13 +28,15 @@ export function PageTransition() {
       const href = link.getAttribute('href')
       if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto')) return
       if (href === currentPath.current) return
-      setLoading(true)
+      if (AUTH_PREFIXES.some((p) => href === p || href.startsWith(p + '?'))) return
+      startLoading()
     }
     document.addEventListener('click', handleClick)
     return () => document.removeEventListener('click', handleClick)
   }, [])
 
   useEffect(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
     setLoading(false)
     currentPath.current = pathname
   }, [pathname])

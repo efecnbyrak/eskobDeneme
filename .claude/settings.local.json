@@ -17,7 +17,10 @@
       "Bash(grep -E \"^-.*\\\\.\\(ts|tsx|js\\)$\")",
       "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(Remove-Item \"c:\\\\ESKOB\\\\eskobDeneme\\\\middleware.ts\")"
+      "Bash(Remove-Item \"c:\\\\ESKOB\\\\eskobDeneme\\\\middleware.ts\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Filter \"*.tsx\" -o Name)",
+      "Bash(Select-String -Pattern \"\\(layout|loading|middleware|page\\)\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskobDeneme\" -Force)"
     ]
   }
 }

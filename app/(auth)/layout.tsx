@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '24px',
+          padding: 'clamp(12px, 4vw, 24px)',
           background: 'var(--color-bg)',
           position: 'relative',
           overflow: 'hidden',
