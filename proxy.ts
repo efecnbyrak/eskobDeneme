@@ -24,7 +24,7 @@ const PUBLIC_ISLETME_SAYFALARI = new Set([
 ])
 
 // Kimlik doğrulaması gerektirmeyen rotalar
-const HERKESE_ACIK_ROTALAR = new Set(['/', '/ara'])
+const HERKESE_ACIK_ROTALAR = new Set(['/', '/ara', '/isletme'])
 const HERKESE_ACIK_PREFIXLER = ['/kategori/']
 
 function matchesAny(pathname: string, prefixes: string[]) {
@@ -40,7 +40,7 @@ function isPublicRoute(pathname: string): boolean {
 
   const tumKorunanlar = [
     ...ADMIN_PATHS, ...BUSINESS_PATHS, ...ACCOUNT_PATHS, ...AUTH_PATHS,
-    '/isletme', '/phyberk',
+    '/phyberk',
   ]
   const segments = pathname.split('/').filter(Boolean)
   if (
