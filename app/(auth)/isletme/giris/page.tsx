@@ -1,6 +1,6 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -110,7 +110,11 @@ function IsletmeGirisForm() {
         const me = await meRes.json()
         if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (me.rol === 'BUSINESS') hedef = '/isletme/panel'
-        else hedef = '/hesabim'
+        else {
+          await signOut({ redirect: false })
+          setHata('Bu giriş sayfası yalnızca işletme hesapları içindir. Müşteri girişi için ana sayfayı kullanın.')
+          return
+        }
         if (me.ad) sessionStorage.setItem('hosgeldin', me.ad)
         else sessionStorage.setItem('hosgeldin', '1')
       }

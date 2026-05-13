@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { ScrollRevealInit } from '@/components/public/ScrollReveal'
 import { IsletmeStats } from '@/components/public/IsletmeStats'
+import { ParticleCanvas } from '@/components/public/ParticleCanvas'
 
 export const metadata = {
   title: 'İşletmeler İçin | Eskob',
@@ -172,56 +173,6 @@ export default async function IsletmeSayfasi() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#f8fafc' }}>
       <ScrollRevealInit />
 
-      {/* ═══ NAVBAR ═══ */}
-      <header
-        style={{
-          position: 'sticky', top: 0, zIndex: 100,
-          background: 'rgba(26,39,68,0.97)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <div
-          className="container-main"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}
-        >
-          <Link href="/isletme" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <span style={{ width: 36, height: 36, borderRadius: 9, background: 'white', color: '#1A2744', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, letterSpacing: '-0.03em' }}>
-              EV
-            </span>
-            <span style={{ fontSize: 16, fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>
-              İşletme <span style={{ color: 'rgba(255,255,255,0.45)', fontWeight: 400 }}>Vitrini</span>
-            </span>
-          </Link>
-
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Link href="/" style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', fontWeight: 500, textDecoration: 'none', padding: '0 12px', display: 'none' }} className="sm:block">
-              Ana Sayfa
-            </Link>
-            {isletmeGirisli ? (
-              <Link href="/isletme/panel" style={{ height: 38, padding: '0 20px', fontSize: 14, fontWeight: 700, background: 'white', color: '#1A2744', borderRadius: 10, display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                Panele Git →
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/isletme/giris"
-                  style={{ height: 38, padding: '0 18px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.8)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', textDecoration: 'none', transition: 'all 0.2s' }}
-                >
-                  Giriş Yap
-                </Link>
-                <Link
-                  href="/isletme/kayit"
-                  style={{ height: 38, padding: '0 18px', fontSize: 14, fontWeight: 700, background: 'white', color: '#1A2744', borderRadius: 10, display: 'flex', alignItems: 'center', textDecoration: 'none' }}
-                >
-                  Ücretsiz Başla
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-
       {/* ═══ HERO ═══ */}
       <section
         style={{
@@ -234,6 +185,7 @@ export default async function IsletmeSayfasi() {
       >
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '52px 52px' }} />
         <div className="absolute pointer-events-none" style={{ top: '10%', left: '50%', transform: 'translateX(-50%)', width: 800, height: 400, background: '#3a5fa0', filter: 'blur(130px)', borderRadius: '50%', opacity: 0.35 }} />
+        <ParticleCanvas />
 
         <div className="container-main" style={{ position: 'relative', zIndex: 10, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div

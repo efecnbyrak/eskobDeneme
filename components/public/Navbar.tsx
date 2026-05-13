@@ -521,8 +521,6 @@ export function Navbar() {
 
   const navbarHeight = showKategoriler && !scrolled ? 116 : 72
 
-  if (pathname === '/isletme') return null
-
   return (
     <>
       <div style={{ height: navbarHeight, flexShrink: 0, transition: 'height 0.3s' }} />
