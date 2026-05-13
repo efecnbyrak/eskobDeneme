@@ -112,15 +112,56 @@ const ADIMLAR = [
   },
 ]
 
-const PLAN_OZELLIKLER = [
-  'Sınırsız hizmet & fiyat listesi',
-  'Online randevu sistemi',
-  'Müşteri yorumları & puanlama',
-  'WhatsApp entegrasyonu',
-  'İşletme istatistikleri',
-  'QR kod vitrin paylaşımı',
-  'Kategori & arama görünürlüğü',
-  'Mobil uyumlu panel',
+const PLANLAR = [
+  {
+    ad: 'Silver',
+    fiyat: '₺0',
+    altBaslik: 'Ücretsiz başla',
+    aktif: true,
+    ozellikler: [
+      'Sınırsız hizmet & fiyat listesi',
+      'Online randevu sistemi',
+      'Müşteri yorumları & puanlama',
+      'WhatsApp entegrasyonu',
+      'İşletme istatistikleri',
+      'QR kod vitrin paylaşımı',
+      'Kategori & arama görünürlüğü',
+      'Mobil uyumlu panel',
+    ],
+  },
+  {
+    ad: 'Gold',
+    fiyat: '₺200',
+    altBaslik: 'En popüler',
+    aktif: false,
+    populer: true,
+    ozellikler: [
+      'Silver\'ın tüm özellikleri',
+      'Öne çıkan listeleme',
+      'Gelişmiş analitik raporlar',
+      'Özel işletme URL\'si',
+      'E-posta hatırlatmaları',
+      'SMS bildirim paketi (100/ay)',
+      'Öncelikli arama sıralaması',
+      'Çoklu çalışan takvimi',
+    ],
+  },
+  {
+    ad: 'Premium',
+    fiyat: '₺500',
+    altBaslik: 'Tam güç',
+    aktif: false,
+    ozellikler: [
+      'Gold\'un tüm özellikleri',
+      'Öncelikli destek',
+      'Sınırsız SMS bildirimleri',
+      'API erişimi',
+      'Reklam kampanya desteği',
+      'Özel onboarding',
+      'Çoklu şube yönetimi',
+      'Özel entegrasyon paketi',
+    ],
+  },
 ]
 
 export default async function IsletmeSayfasi() {
@@ -149,7 +190,7 @@ export default async function IsletmeSayfasi() {
               EV
             </span>
             <span style={{ fontSize: 16, fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>
-              Eskob <span style={{ color: 'rgba(255,255,255,0.45)', fontWeight: 400 }}>İşletme</span>
+              İşletme <span style={{ color: 'rgba(255,255,255,0.45)', fontWeight: 400 }}>Vitrini</span>
             </span>
           </Link>
 
@@ -346,61 +387,90 @@ export default async function IsletmeSayfasi() {
         </div>
       </section>
 
-      {/* ═══ ÜCRETSİZ PLAN ═══ */}
+      {/* ═══ FİYATLANDIRMA ═══ */}
       <section style={{ background: 'white', paddingTop: 'clamp(72px, 10vw, 112px)', paddingBottom: 'clamp(72px, 10vw, 112px)' }}>
         <div className="container-main">
-          <div data-reveal="up" style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center', marginBottom: 48 }}>
+          <div data-reveal="up" style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center', marginBottom: 64 }}>
             <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: 9999, background: '#dcfce7', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: '#166534', marginBottom: 20 }}>
               Fiyatlandırma
             </span>
             <h2 className="font-display" style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: 16 }}>
-              Şu An Tamamen Ücretsiz
+              İşletmenize Uygun Plan
             </h2>
             <p style={{ fontSize: 17, color: '#64748b', lineHeight: 1.75 }}>
-              Platforma katılın, vitrininizi kurun ve büyümeye başlayın. Gizli ücret yok.
+              Silver ile ücretsiz başlayın, büyüdükçe planınızı yükseltin.
             </p>
           </div>
 
-          <div
-            data-reveal="up"
-            style={{
-              maxWidth: 520, margin: '0 auto',
-              background: 'linear-gradient(145deg, #1A2744, #243260)',
-              borderRadius: 28, padding: 'clamp(32px, 5vw, 48px)',
-              boxShadow: '0 24px 64px rgba(26,39,68,0.22)',
-              position: 'relative', overflow: 'hidden',
-            }}
-          >
-            <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'rgba(255,255,255,0.04)', borderRadius: '50%' }} />
-            <div style={{ position: 'absolute', bottom: -40, left: -40, width: 160, height: 160, background: 'rgba(255,255,255,0.03)', borderRadius: '50%' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 48, fontWeight: 800, color: 'white', lineHeight: 1 }}>₺0</span>
-                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>/ay</span>
-              </div>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 32 }}>
-                Tüm özellikler dahil, sınır yok
-              </p>
-
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 36 }}>
-                {PLAN_OZELLIKLER.map((oz) => (
-                  <li key={oz} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, maxWidth: 1040, margin: '0 auto', alignItems: 'start' }}>
+            {PLANLAR.map((plan, i) => (
+              <div
+                key={plan.ad}
+                data-reveal="up"
+                data-reveal-delay={String(i + 1)}
+                style={{
+                  background: plan.populer ? 'linear-gradient(145deg, #1A2744, #243260)' : 'white',
+                  borderRadius: 28,
+                  padding: 'clamp(28px, 4vw, 44px)',
+                  boxShadow: plan.populer ? '0 24px 64px rgba(26,39,68,0.28)' : '0 4px 24px rgba(0,0,0,0.07)',
+                  border: plan.populer ? 'none' : '1.5px solid #e2e8f0',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transform: plan.populer ? 'scale(1.03)' : 'none',
+                }}
+              >
+                {plan.populer && (
+                  <>
+                    <div style={{ position: 'absolute', top: -60, right: -60, width: 180, height: 180, background: 'rgba(255,255,255,0.04)', borderRadius: '50%' }} />
+                    <div style={{ position: 'absolute', bottom: -40, left: -40, width: 140, height: 140, background: 'rgba(255,255,255,0.03)', borderRadius: '50%' }} />
+                  </>
+                )}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  {plan.populer && (
+                    <span style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 9999, background: '#3b82f6', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: 'white', marginBottom: 18 }}>
+                      En Popüler
                     </span>
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>{oz}</span>
-                  </li>
-                ))}
-              </ul>
+                  )}
+                  <div style={{ marginBottom: 4 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: plan.populer ? 'rgba(255,255,255,0.5)' : '#94a3b8' }}>
+                      {plan.ad}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
+                    <span style={{ fontSize: 44, fontWeight: 800, color: plan.populer ? 'white' : '#0f172a', lineHeight: 1 }}>{plan.fiyat}</span>
+                    <span style={{ fontSize: 15, color: plan.populer ? 'rgba(255,255,255,0.45)' : '#94a3b8', fontWeight: 500 }}>/ay</span>
+                  </div>
+                  <p style={{ fontSize: 13, color: plan.populer ? 'rgba(255,255,255,0.5)' : '#94a3b8', marginBottom: 28 }}>
+                    {plan.altBaslik}
+                  </p>
 
-              <Link href="/isletme/kayit">
-                <button style={{ width: '100%', height: 52, fontSize: 16, fontWeight: 700, background: 'white', color: '#1A2744', borderRadius: 14, border: 'none', cursor: 'pointer' }}>
-                  Hemen Ücretsiz Başla →
-                </button>
-              </Link>
-            </div>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {plan.ozellikler.map((oz) => (
+                      <li key={oz} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ width: 18, height: 18, borderRadius: '50%', background: plan.populer ? '#22c55e' : '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                            <path d="M2 6l3 3 5-5" stroke={plan.populer ? 'white' : '#166534'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </span>
+                        <span style={{ fontSize: 13, color: plan.populer ? 'rgba(255,255,255,0.8)' : '#475569', fontWeight: 500 }}>{oz}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {plan.aktif ? (
+                    <Link href="/isletme/kayit">
+                      <button style={{ width: '100%', height: 48, fontSize: 15, fontWeight: 700, background: plan.populer ? 'white' : '#1A2744', color: plan.populer ? '#1A2744' : 'white', borderRadius: 12, border: 'none', cursor: 'pointer' }}>
+                        Ücretsiz Başla →
+                      </button>
+                    </Link>
+                  ) : (
+                    <button disabled style={{ width: '100%', height: 48, fontSize: 15, fontWeight: 600, background: plan.populer ? 'rgba(255,255,255,0.12)' : '#f1f5f9', color: plan.populer ? 'rgba(255,255,255,0.5)' : '#94a3b8', borderRadius: 12, border: plan.populer ? '1px solid rgba(255,255,255,0.15)' : '1.5px solid #e2e8f0', cursor: 'not-allowed' }}>
+                      Yakında
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -441,22 +511,6 @@ export default async function IsletmeSayfasi() {
         </div>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer style={{ background: '#0f172a', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 0' }}>
-        <div className="container-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 30, height: 30, borderRadius: 8, background: '#1A2744', border: '1px solid rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 11 }}>EV</span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Eskob İşletme</span>
-          </div>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-            <Link href="/isletme/giris" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>Giriş Yap</Link>
-            <Link href="/isletme/kayit" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>Kayıt Ol</Link>
-            <Link href="/isletme/gizlilik" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>Gizlilik</Link>
-            <Link href="/isletme/kullanim" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>Kullanım</Link>
-            <Link href="/" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}>Ana Sayfa</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

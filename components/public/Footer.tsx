@@ -154,7 +154,7 @@ export function Footer() {
               <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold font-display text-base sm:text-lg shadow-sm flex-shrink-0">
                 EV
               </span>
-              <span className="font-bold text-xl sm:text-2xl text-white font-display tracking-tight">Müşteri Vitrin</span>
+              <span className="font-bold text-xl sm:text-2xl text-white font-display tracking-tight">{isIsletme ? 'İşletme Vitrini' : 'Müşteri Vitrin'}</span>
             </div>
             <p className="text-sm sm:text-base text-[#90A8B2] leading-[1.8] mb-8 max-w-sm">
               Yakınındaki en iyi işletmeleri keşfet, hizmetleri karşılaştır ve kolayca randevu al. İhtiyacın olan her şey bir tık uzağında.
@@ -323,7 +323,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 sm:mt-16 lg:mt-20 pt-8 sm:pt-10 border-t border-[#1F333D] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-xs sm:text-sm text-[#7A9AA6]">
-          <p className="text-center sm:text-left">© {new Date().getFullYear()} Müşteri Vitrin. Tüm hakları saklıdır.</p>
+          <p className="text-center sm:text-left">© {new Date().getFullYear()} {isIsletme ? 'İşletme Vitrini' : 'Müşteri Vitrin'}. Tüm hakları saklıdır.</p>
           <div className="flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
             <Link href={gizlilikHref} className="hover:text-white transition-colors">Gizlilik Politikası</Link>
             <Link href={kullanimHref} className="hover:text-white transition-colors">Kullanım Şartları</Link>
