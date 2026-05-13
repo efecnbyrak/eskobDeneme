@@ -32,7 +32,9 @@
       "Read(//c/ESKOB/**)",
       "Bash(npm run *)",
       "Bash(del \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(isletme\\)\\\\isletme\\\\page.tsx\")",
-      "Bash(Get-Date -Format \"dd.MM.yyyy-HH.mm\")"
+      "Bash(Get-Date -Format \"dd.MM.yyyy-HH.mm\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Depth 2 -Directory)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Depth 3 | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName | Sort-Object)"
     ]
   }
 }
