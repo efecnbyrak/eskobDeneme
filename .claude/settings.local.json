@@ -21,7 +21,18 @@
       "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Filter \"*.tsx\" -o Name)",
       "Bash(Select-String -Pattern \"\\(layout|loading|middleware|page\\)\")",
       "Bash(Get-ChildItem -Path \"C:\\\\ESKOB\\\\eskobDeneme\" -Force)",
-      "PowerShell(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(public\\)\" -Name | Where-Object {$_ -match \"nasil\"}; Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(public\\)\\\\isletme\\\\nasil-calisir\" -Name)"
+      "PowerShell(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(public\\)\" -Name | Where-Object {$_ -match \"nasil\"}; Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(public\\)\\\\isletme\\\\nasil-calisir\" -Name)",
+      "Bash(Get-ChildItem -Path . -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -Directory -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\" -Recurse -Include \"page.tsx\", \"layout.tsx\")",
+      "Bash(Sort-Object)",
+      "Bash(ls -la \"c:\\\\ESKOB\\\\eskobDeneme\\\\\" | grep -i middleware)",
+      "Read(//c/ESKOB/**)",
+      "Bash(npm run *)",
+      "Bash(del \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(isletme\\)\\\\isletme\\\\page.tsx\")",
+      "Bash(Get-Date -Format \"dd.MM.yyyy-HH.mm\")"
     ]
   }
 }

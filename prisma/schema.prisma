@@ -82,7 +82,8 @@ model Esnaf {
   website   String?
   instagram String?
 
-  calismaS Json?
+  calismaS         Json?
+  kategoriAyarlari Json?
 
   aktif      Boolean  @default(true)
   onaylı     Boolean  @default(false)

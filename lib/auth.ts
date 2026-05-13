@@ -234,7 +234,7 @@ export function girisYoluByRol(rol?: Rol | string | null): string {
     case 'ADMIN':
       return '/phyberk/admin'
     case 'BUSINESS':
-      return '/isletme/panel'
+      return '/isletme/genel'
     case 'USER':
     default:
       return '/hesabim'
