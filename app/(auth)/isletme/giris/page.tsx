@@ -72,8 +72,8 @@ function IsletmeGirisForm() {
     fetch('/api/auth/me', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (!d?.authenticated) return
-        const rol = d.rol
+        if (!d?.success) return
+        const rol = d.data?.rol
         let hedef = '/isletme/panel'
         if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') hedef = '/phyberk/admin'
         else if (rol === 'USER') hedef = '/musteri'
@@ -108,14 +108,15 @@ function IsletmeGirisForm() {
       let hedef = '/isletme/panel'
       if (meRes.ok) {
         const me = await meRes.json()
-        if (me.rol === 'SUPER_ADMIN' || me.rol === 'ADMIN') hedef = '/phyberk/admin'
-        else if (me.rol === 'BUSINESS') hedef = '/isletme/panel'
+        const meData = me.data ?? me
+        if (meData.rol === 'SUPER_ADMIN' || meData.rol === 'ADMIN') hedef = '/phyberk/admin'
+        else if (meData.rol === 'BUSINESS') hedef = '/isletme/panel'
         else {
           await signOut({ redirect: false })
           setHata('Bu giriş sayfası yalnızca işletme hesapları içindir. Müşteri girişi için ana sayfayı kullanın.')
           return
         }
-        if (me.ad) sessionStorage.setItem('hosgeldin', me.ad)
+        if (meData.ad) sessionStorage.setItem('hosgeldin', meData.ad)
         else sessionStorage.setItem('hosgeldin', '1')
       }
       router.push(hedef)
