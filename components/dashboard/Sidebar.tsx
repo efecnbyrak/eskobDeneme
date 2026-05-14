@@ -84,21 +84,18 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-[240px] min-h-screen bg-slate-900 flex flex-col shrink-0">
+    <aside className="w-[240px] min-h-screen bg-white border-r border-[var(--color-border)] flex flex-col shrink-0">
       {/* Logo */}
-      <div className="p-5 border-b border-slate-800">
+      <div className="p-5 border-b border-[var(--color-border)]">
         <Link href="/" className="flex items-center gap-2.5">
           <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm font-bold font-display shrink-0">EV</span>
-          <div>
-            <p className="font-bold text-white font-display text-sm leading-tight">Esnaf Vitrin</p>
-            <p className="text-[10px] text-slate-400 font-medium">İşletme Paneli</p>
-          </div>
+          <span className="font-bold text-indigo-600 font-display">Esnaf Vitrin</span>
         </Link>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 p-3 overflow-y-auto">
-        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-1">
+        <p className="text-[10px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-widest px-3 mb-2 mt-1">
           Yönetim
         </p>
         <ul className="space-y-0.5">
@@ -109,13 +106,13 @@ export function Sidebar() {
                 <Link
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
+                    'flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] text-sm transition-all',
                     aktif
-                      ? 'bg-indigo-600 text-white font-semibold'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                      ? 'bg-indigo-50 text-indigo-600 font-semibold'
+                      : 'text-[var(--color-text-secondary)] hover:bg-indigo-50 hover:text-indigo-600'
                   )}
                 >
-                  <span className="shrink-0">
+                  <span className={cn('shrink-0', aktif ? 'text-indigo-600' : '')}>
                     {item.ikon}
                   </span>
                   {item.label}
@@ -127,10 +124,10 @@ export function Sidebar() {
       </nav>
 
       {/* Çıkış */}
-      <div className="p-3 border-t border-slate-800">
+      <div className="p-3 border-t border-[var(--color-border)]">
         <a
           href="/api/auth/signout"
-          className="flex items-center gap-3 text-sm text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-all px-3 py-2.5 rounded-lg"
+          className="flex items-center gap-3 text-sm text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-50 transition-all px-3 py-2.5 rounded-[var(--radius-md)]"
         >
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
