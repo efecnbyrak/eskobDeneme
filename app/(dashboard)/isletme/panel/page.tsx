@@ -208,16 +208,16 @@ export default async function PanelSayfasi() {
             </div>
           ) : (
             <div className="space-y-2">
-              {aktifKampanyalar.map((h: { id: number; ad: string; fiyat: { toString: () => string }; indirimYuzde: number; indirimBitis: Date }) => (
+              {aktifKampanyalar.map((h: { id: number; ad: string; fiyat: { toString: () => string }; indirimYuzde: number | null; indirimBitis: Date | null }) => (
                 <div key={h.id} className="flex items-center justify-between gap-4 px-2 py-2 rounded-[var(--radius-md)] hover:bg-[var(--color-bg-muted)] transition-colors">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium">{h.ad}</span>
-                    <Badge variant="success">%{h.indirimYuzde} İndirim</Badge>
+                    <Badge variant="success">%{h.indirimYuzde ?? 0} İndirim</Badge>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <span className="line-through text-[var(--color-text-secondary)]">{formatFiyat(Number(h.fiyat))}</span>
-                    <span className="font-bold text-green-600">{formatFiyat(Number(h.fiyat) * (1 - h.indirimYuzde / 100))}</span>
-                    <span className="text-xs text-[var(--color-text-secondary)]">→ {new Date(h.indirimBitis).toLocaleDateString('tr-TR')}</span>
+                    <span className="font-bold text-green-600">{formatFiyat(Number(h.fiyat) * (1 - (h.indirimYuzde ?? 0) / 100))}</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">→ {h.indirimBitis ? new Date(h.indirimBitis).toLocaleDateString('tr-TR') : ''}</span>
                   </div>
                 </div>
               ))}
