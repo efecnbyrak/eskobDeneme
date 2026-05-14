@@ -29,6 +29,7 @@ export default async function AyarlarSayfasi() {
         esnaf={kullanici.esnaf ? {
           id: kullanici.esnaf.id,
           isletmeAdi: kullanici.esnaf.isletmeAdi,
+          bekleyenIsletmeAdi: kullanici.esnaf.bekleyenIsletmeAdi ?? null,
           telefon: kullanici.esnaf.telefon ?? '',
           aciklama: kullanici.esnaf.aciklama ?? '',
           kapakFoto: kullanici.esnaf.kapakFoto ?? '',

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { HizmetForm } from '@/components/dashboard/HizmetForm'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
@@ -8,6 +9,7 @@ import { formatFiyat, formatSure } from '@/lib/utils'
 import type { Hizmet } from '@/types'
 
 export default function HizmetlerSayfasi() {
+  const router = useRouter()
   const [hizmetler, setHizmetler] = useState<Hizmet[]>([])
   const [esnafId, setEsnafId] = useState(0)
   const [modalAcik, setModalAcik] = useState(false)
@@ -28,6 +30,7 @@ export default function HizmetlerSayfasi() {
     )
     setModalAcik(false)
     setDuzenle(null)
+    router.refresh()
   }
 
   async function sil(id: number) {

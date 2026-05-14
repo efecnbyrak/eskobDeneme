@@ -60,10 +60,17 @@ export async function PUT(req: NextRequest, { params }: Props) {
       return hata('Bu kaydı düzenleme yetkiniz yok', 403)
     }
 
+    // isletmeAdi değişikliği Süper Admin onayı gerektirir — bekleyenIsletmeAdi'na yaz
+    const yeniIsletmeAdi = typeof body.isletmeAdi === 'string' ? body.isletmeAdi.trim().slice(0, 120) : undefined
+    const mevcutEsnaf = await prisma.esnaf.findUnique({ where: { id: numId }, select: { isletmeAdi: true } })
+    const isletmeAdiDegisti = yeniIsletmeAdi !== undefined && yeniIsletmeAdi !== mevcutEsnaf?.isletmeAdi
+
     const esnaf = await prisma.esnaf.update({
       where: { id: numId },
       data: {
-        isletmeAdi: typeof body.isletmeAdi === 'string' ? body.isletmeAdi.trim().slice(0, 120) : undefined,
+        // Sadece admin isletmeAdi'nı doğrudan değiştirebilir, işletme sahibi bekleyenIsletmeAdi'na yazar
+        ...(isAdmin && yeniIsletmeAdi !== undefined ? { isletmeAdi: yeniIsletmeAdi } : {}),
+        ...((!isAdmin && isletmeAdiDegisti) ? { bekleyenIsletmeAdi: yeniIsletmeAdi } : {}),
         aciklama: temizMetinOpsiyonel(body.aciklama, 500),
         telefon: temizMetinOpsiyonel(body.telefon, 30),
         whatsapp: temizMetinOpsiyonel(body.whatsapp, 30),
@@ -74,7 +81,7 @@ export async function PUT(req: NextRequest, { params }: Props) {
         calismaS: body.calismaS ?? undefined,
       },
       select: {
-        id: true, slug: true, sehir: true, isletmeAdi: true, aciklama: true,
+        id: true, slug: true, sehir: true, isletmeAdi: true, bekleyenIsletmeAdi: true, aciklama: true,
         telefon: true, whatsapp: true, website: true, instagram: true,
         kapakFoto: true, logoUrl: true, calismaS: true,
       },

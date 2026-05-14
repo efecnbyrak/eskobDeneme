@@ -4,6 +4,7 @@ import { mobilAuth } from '@/lib/auth'
 import { YorumSchema } from '@/lib/validations'
 import { rateLimit, istemciKimligi } from '@/lib/rateLimit'
 import { temizMetinOpsiyonel } from '@/lib/sanitize'
+import { kufurVarMi } from '@/lib/kufurFiltre'
 import { basari, hata } from '@/lib/api'
 import { logger } from '@/lib/logger'
 
@@ -63,6 +64,13 @@ export async function POST(req: NextRequest) {
 
     const temizYorum = temizMetinOpsiyonel(parsed.data.yorum ?? null, 500)
 
+    if (temizYorum && kufurVarMi(temizYorum)) {
+      return hata('Yorumunuz uygunsuz içerik içeriyor.', 400)
+    }
+    if (kufurVarMi(parsed.data.musteriAd)) {
+      return hata('Yorumunuz uygunsuz içerik içeriyor.', 400)
+    }
+
     const yorum = await prisma.yorum.create({
       data: {
         puan: parsed.data.puan,
@@ -70,7 +78,7 @@ export async function POST(req: NextRequest) {
         musteriAd: parsed.data.musteriAd.trim(),
         esnafId: parsed.data.esnafId,
         kullaniciId,
-        onaylı: false,
+        onaylı: true,
       },
     })
 

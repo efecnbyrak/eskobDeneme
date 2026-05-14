@@ -7,6 +7,7 @@ type Props = {
   esnaf: {
     id: number
     isletmeAdi: string
+    bekleyenIsletmeAdi: string | null
     slug: string
     sehir: string
     ilce: string
@@ -21,6 +22,7 @@ export function EsnafSatir({ esnaf }: Props) {
   const router = useRouter()
   const [aktif, setAktif] = useState(esnaf.aktif)
   const [onayli, setOnayli] = useState(esnaf.onayli)
+  const [bekleyenAd, setBekleyenAd] = useState(esnaf.bekleyenIsletmeAdi)
   const [yukleniyor, setYukleniyor] = useState(false)
 
   async function degistir(alan: 'aktif' | 'onayli', deger: boolean) {
@@ -44,6 +46,26 @@ export function EsnafSatir({ esnaf }: Props) {
     }
   }
 
+  async function isletmeAdiKarar(onayla: boolean) {
+    setYukleniyor(true)
+    try {
+      const res = await fetch(`/api/admin/esnaflar/${esnaf.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isletmeAdiOnayla: onayla }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        alert(err?.error ?? 'İşlem başarısız.')
+        return
+      }
+      setBekleyenAd(null)
+      router.refresh()
+    } finally {
+      setYukleniyor(false)
+    }
+  }
+
   return (
     <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
       <td style={{ padding: '14px 20px' }}>
@@ -54,6 +76,37 @@ export function EsnafSatir({ esnaf }: Props) {
             <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
               /{esnaf.slug}
             </div>
+            {bekleyenAd && (
+              <div style={{ marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: '#B45309', fontWeight: 600 }}>
+                  📝 İsim değişikliği: <span style={{ fontStyle: 'italic' }}>{bekleyenAd}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                  <button
+                    onClick={() => isletmeAdiKarar(true)}
+                    disabled={yukleniyor}
+                    style={{
+                      padding: '3px 8px', fontSize: 10, fontWeight: 700, borderRadius: 6,
+                      border: '1px solid #86EFAC', color: '#166534', background: '#DCFCE7',
+                      cursor: yukleniyor ? 'wait' : 'pointer',
+                    }}
+                  >
+                    Onayla
+                  </button>
+                  <button
+                    onClick={() => isletmeAdiKarar(false)}
+                    disabled={yukleniyor}
+                    style={{
+                      padding: '3px 8px', fontSize: 10, fontWeight: 700, borderRadius: 6,
+                      border: '1px solid #FCA5A5', color: '#991B1B', background: '#FEE2E2',
+                      cursor: yukleniyor ? 'wait' : 'pointer',
+                    }}
+                  >
+                    Reddet
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </td>

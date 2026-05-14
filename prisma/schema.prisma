@@ -35,6 +35,11 @@ model Kullanici {
   // KVKK / soft delete
   deletedAt DateTime?
 
+  // E-posta değiştirme altyapısı (şimdilik disabled)
+  bekleyenEmail String?
+  emailKodHash  String?
+  emailKodSon   DateTime?
+
   esnaf      Esnaf?
   oturumlar  Oturum[]
   favoriler  Favori[]
@@ -85,9 +90,10 @@ model Esnaf {
   calismaS         Json?
   kategoriAyarlari Json?
 
-  aktif      Boolean  @default(true)
-  onaylı     Boolean  @default(false)
-  olusturmaT DateTime @default(now())
+  aktif              Boolean  @default(true)
+  onaylı             Boolean  @default(false)
+  bekleyenIsletmeAdi String?
+  olusturmaT         DateTime @default(now())
   guncelleT  DateTime @updatedAt
 
   sahip         Kullanici    @relation(fields: [kullaniciId], references: [id])
@@ -185,9 +191,11 @@ model Yorum {
   puan       Int
   yorum      String?  @db.Text
   musteriAd  String
-  yanitlar   String?  @db.Text
-  onaylı     Boolean  @default(false)
-  olusturmaT DateTime @default(now())
+  yanitlar     String?  @db.Text
+  onaylı       Boolean  @default(false)
+  bildirildi   Boolean  @default(false)
+  bildirimNot  String?
+  olusturmaT   DateTime @default(now())
 
   esnaf       Esnaf      @relation(fields: [esnafId], references: [id])
   esnafId     Int

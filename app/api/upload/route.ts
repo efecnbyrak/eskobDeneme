@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { put } from '@vercel/blob'
+import { storage } from '@/lib/storage'
 import { mobilAuth } from '@/lib/auth'
 import { rateLimit, istemciKimligi } from '@/lib/rateLimit'
 import { basari, hata } from '@/lib/api'
@@ -59,13 +59,11 @@ export async function POST(req: NextRequest) {
     const uzanti = uzantiFromMime(mime)
     const yol = `yuklemeler/${oturum.user.id}/${rnd}.${uzanti}`
 
-    const blob = await put(yol, new Blob([buf as BlobPart], { type: mime }), {
-      access: 'public',
+    const url = await storage.upload(yol, new Blob([buf as BlobPart], { type: mime }), {
       contentType: mime,
-      cacheControlMaxAge: 31536000,
     })
 
-    return basari({ url: blob.url })
+    return basari({ url })
   } catch (err) {
     logger.error('upload.POST', { err: String(err) })
     return hata('Yükleme başarısız', 500)

@@ -53,7 +53,8 @@
       "PowerShell(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\" -Recurse -Filter \"page.tsx\" | Where-Object { $_.FullName -match \"isletme\" } | Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\\\\app\\\\\\(auth\\)\" -Recurse -Filter \"page.tsx\")",
       "Bash(npx tsx *)",
-      "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -File)"
+      "Bash(Get-ChildItem -Path \"c:\\\\ESKOB\\\\eskobDeneme\" -Recurse -File)",
+      "Bash(Select-Object -ExpandProperty Name)"
     ]
   }
 }

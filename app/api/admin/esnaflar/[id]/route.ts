@@ -9,6 +9,7 @@ import { logger } from '@/lib/logger'
 const Schema = z.object({
   aktif: z.boolean().optional(),
   onayli: z.boolean().optional(),
+  isletmeAdiOnayla: z.boolean().optional(),
 })
 
 export async function PATCH(
@@ -26,14 +27,29 @@ export async function PATCH(
   const parsed = Schema.safeParse(await req.json().catch(() => ({})))
   if (!parsed.success) return hata('Geçersiz veri.', 400)
 
-  const data: { aktif?: boolean; onaylı?: boolean } = {}
+  const data: { aktif?: boolean; onaylı?: boolean; isletmeAdi?: string; bekleyenIsletmeAdi?: null } = {}
   if (parsed.data.aktif !== undefined) data.aktif = parsed.data.aktif
   if (parsed.data.onayli !== undefined) data.onaylı = parsed.data.onayli
+
+  // İşletme adı onayı: bekleyenIsletmeAdi → isletmeAdi
+  if (parsed.data.isletmeAdiOnayla === true) {
+    const mevcut = await prisma.esnaf.findUnique({
+      where: { id: numId },
+      select: { bekleyenIsletmeAdi: true },
+    })
+    if (mevcut?.bekleyenIsletmeAdi) {
+      data.isletmeAdi = mevcut.bekleyenIsletmeAdi
+      data.bekleyenIsletmeAdi = null
+    }
+  } else if (parsed.data.isletmeAdiOnayla === false) {
+    // Reddet: sadece bekleyenIsletmeAdi'nı temizle
+    data.bekleyenIsletmeAdi = null
+  }
 
   const guncel = await prisma.esnaf.update({
     where: { id: numId },
     data,
-    select: { id: true, slug: true, sehir: true, aktif: true, onaylı: true },
+    select: { id: true, slug: true, sehir: true, aktif: true, onaylı: true, isletmeAdi: true, bekleyenIsletmeAdi: true },
   })
 
   revalidatePath(`/${guncel.sehir.toLowerCase()}/${guncel.slug}`)
@@ -41,5 +57,5 @@ export async function PATCH(
   revalidatePath('/')
 
   logger.info('admin.esnaf_patch', { esnafId: guncel.id, adminId: oturum?.user?.id, data })
-  return basari({ id: guncel.id, aktif: guncel.aktif, onaylı: guncel.onaylı })
+  return basari({ id: guncel.id, aktif: guncel.aktif, onaylı: guncel.onaylı, isletmeAdi: guncel.isletmeAdi, bekleyenIsletmeAdi: guncel.bekleyenIsletmeAdi })
 }

@@ -26,8 +26,10 @@ export default async function IsletmeLayout({ children }: { children: React.Reac
           <IsletmeTopBar />
 
           <main className="flex-1 overflow-auto">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
-              {children}
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-8 min-h-full flex flex-col">
+              <div className="flex-1">
+                {children}
+              </div>
               <Footer />
             </div>
           </main>

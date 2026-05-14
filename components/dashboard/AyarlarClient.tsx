@@ -20,6 +20,7 @@ interface KullaniciProps {
 interface EsnafProps {
   id: number
   isletmeAdi: string
+  bekleyenIsletmeAdi: string | null
   telefon: string
   aciklama: string
   kapakFoto: string
@@ -56,6 +57,15 @@ function maskeleEmail(email: string) {
   return `${yerel.slice(0, 3)}***@${domain}`
 }
 
+// Telefon formatı: 11 rakamı "XXXX XXX XX XX" formatına çevirir
+function telefonFormatla(rakamlar: string): string {
+  const r = rakamlar.replace(/\D/g, '').slice(0, 11)
+  if (r.length <= 4) return r
+  if (r.length <= 7) return `${r.slice(0, 4)} ${r.slice(4)}`
+  if (r.length <= 9) return `${r.slice(0, 4)} ${r.slice(4, 7)} ${r.slice(7)}`
+  return `${r.slice(0, 4)} ${r.slice(4, 7)} ${r.slice(7, 9)} ${r.slice(9)}`
+}
+
 export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps; esnaf: EsnafProps | null }) {
   const { toast } = useToast()
 
@@ -68,12 +78,13 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
   const [isletmeDuzenle, setIsletmeDuzenle] = useState(false)
   const [isletmeForm, setIsletmeForm] = useState({
     isletmeAdi: esnaf?.isletmeAdi ?? '',
-    telefon: esnaf?.telefon ?? '',
+    telefon: telefonFormatla(esnaf?.telefon ?? ''),
     aciklama: esnaf?.aciklama ?? '',
     kapakFoto: esnaf?.kapakFoto ?? '',
     logoUrl: esnaf?.logoUrl ?? '',
   })
   const [isletmeYukleniyor, setIsletmeYukleniyor] = useState(false)
+  const [bekleyenIsletmeAdi, setBekleyenIsletmeAdi] = useState(esnaf?.bekleyenIsletmeAdi ?? null)
 
   async function hesapKaydet() {
     setHesapYukleniyor(true)
@@ -99,13 +110,21 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
     if (!esnaf) return
     setIsletmeYukleniyor(true)
     try {
+      // Telefonu kayıt öncesi boşluksuz gönder
+      const telefonHam = isletmeForm.telefon.replace(/\s/g, '')
       const res = await fetch(`/api/esnaf/${esnaf.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isletmeForm),
+        body: JSON.stringify({ ...isletmeForm, telefon: telefonHam }),
       })
       if (res.ok) {
-        toast('İşletme bilgileri güncellendi!', 'success')
+        const data = await res.json()
+        if (data?.data?.bekleyenIsletmeAdi) {
+          setBekleyenIsletmeAdi(data.data.bekleyenIsletmeAdi)
+          toast('İşletme adı değişikliği onay için gönderildi.', 'success')
+        } else {
+          toast('İşletme bilgileri güncellendi!', 'success')
+        }
         setIsletmeDuzenle(false)
       } else {
         toast('Bir hata oluştu.', 'error')
@@ -113,6 +132,11 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
     } finally {
       setIsletmeYukleniyor(false)
     }
+  }
+
+  function handleTelefonDegisim(e: React.ChangeEvent<HTMLInputElement>) {
+    const formatted = telefonFormatla(e.target.value)
+    setIsletmeForm((p) => ({ ...p, telefon: formatted }))
   }
 
   return (
@@ -140,9 +164,13 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
                   onChange={(e) => setHesapForm((p) => ({ ...p, soyad: e.target.value }))}
                 />
               </div>
+              {/* E-posta — altyapı hazır, UI şimdilik disabled */}
               <div className="flex items-center justify-between text-sm py-1">
                 <span className="text-[var(--color-text-secondary)]">E-posta</span>
-                <span className="font-medium text-[var(--color-text-secondary)]">{maskeleEmail(kullanici.email)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-[var(--color-text-secondary)]">{maskeleEmail(kullanici.email)}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">🔒 Yakında</span>
+                </div>
               </div>
               <div className="flex gap-3 pt-1">
                 <Button onClick={hesapKaydet} loading={hesapYukleniyor} className="flex-1">Kaydet</Button>
@@ -153,11 +181,15 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-[var(--color-text-secondary)]">Ad Soyad</span>
-                <span className="font-medium">{kullanici.ad} {kullanici.soyad}</span>
+                {/* Madde 1 fix: hesapForm state'inden göster, prop'tan değil */}
+                <span className="font-medium">{hesapForm.ad} {hesapForm.soyad}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--color-text-secondary)]">E-posta</span>
-                <span className="font-medium">{maskeleEmail(kullanici.email)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{maskeleEmail(kullanici.email)}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">🔒 Yakında</span>
+                </div>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--color-text-secondary)]">Plan</span>
@@ -180,16 +212,25 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
           <CardBody>
             {isletmeDuzenle ? (
               <div className="space-y-4">
-                <Input
-                  label="İşletme Adı"
-                  value={isletmeForm.isletmeAdi}
-                  onChange={(e) => setIsletmeForm((p) => ({ ...p, isletmeAdi: e.target.value }))}
-                />
-                <Input
-                  label="Telefon"
-                  value={isletmeForm.telefon}
-                  onChange={(e) => setIsletmeForm((p) => ({ ...p, telefon: e.target.value }))}
-                />
+                <div>
+                  <Input
+                    label="İşletme Adı"
+                    value={isletmeForm.isletmeAdi}
+                    onChange={(e) => setIsletmeForm((p) => ({ ...p, isletmeAdi: e.target.value }))}
+                  />
+                  <p className="text-xs text-amber-600 mt-1">⚠️ İşletme adı değişikliği Süper Admin onayı gerektirir.</p>
+                </div>
+                <div>
+                  <Input
+                    label="Telefon"
+                    value={isletmeForm.telefon}
+                    placeholder="0533 045 00 92"
+                    maxLength={14}
+                    onChange={handleTelefonDegisim}
+                    inputMode="numeric"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">En fazla 11 haneli numara giriniz.</p>
+                </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium">Açıklama</label>
                   <textarea
@@ -214,14 +255,36 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
                 />
                 <div className="flex gap-3 pt-1">
                   <Button onClick={isletmeKaydet} loading={isletmeYukleniyor} className="flex-1">Kaydet</Button>
-                  <Button variant="secondary" onClick={() => { setIsletmeDuzenle(false); setIsletmeForm({ isletmeAdi: esnaf.isletmeAdi, telefon: esnaf.telefon, aciklama: esnaf.aciklama, kapakFoto: esnaf.kapakFoto, logoUrl: esnaf.logoUrl }) }} className="flex-1">İptal</Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setIsletmeDuzenle(false)
+                      setIsletmeForm({
+                        isletmeAdi: esnaf.isletmeAdi,
+                        telefon: telefonFormatla(esnaf.telefon),
+                        aciklama: esnaf.aciklama,
+                        kapakFoto: esnaf.kapakFoto,
+                        logoUrl: esnaf.logoUrl,
+                      })
+                    }}
+                    className="flex-1"
+                  >
+                    İptal
+                  </Button>
                 </div>
               </div>
             ) : (
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-[var(--color-text-secondary)]">İşletme Adı</span>
-                  <span className="font-medium">{isletmeForm.isletmeAdi || '—'}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{isletmeForm.isletmeAdi || '—'}</span>
+                    {bekleyenIsletmeAdi && bekleyenIsletmeAdi !== isletmeForm.isletmeAdi && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                        Onay bekleniyor: {bekleyenIsletmeAdi}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--color-text-secondary)]">Telefon</span>

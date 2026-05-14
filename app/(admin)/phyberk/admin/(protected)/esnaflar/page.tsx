@@ -50,6 +50,7 @@ export default async function EsnaflarPage() {
                   esnaf={{
                     id: e.id,
                     isletmeAdi: e.isletmeAdi,
+                    bekleyenIsletmeAdi: e.bekleyenIsletmeAdi ?? null,
                     slug: e.slug,
                     sehir: e.sehir,
                     ilce: e.ilce,
