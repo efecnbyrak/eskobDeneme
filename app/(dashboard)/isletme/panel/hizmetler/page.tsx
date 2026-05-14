@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { TopBar } from '@/components/dashboard/TopBar'
 import { HizmetForm } from '@/components/dashboard/HizmetForm'
 import { Button } from '@/components/ui/Button'
@@ -10,6 +11,7 @@ import { formatFiyat, formatSure } from '@/lib/utils'
 import type { Hizmet } from '@/types'
 
 export default function HizmetlerSayfasi() {
+  const router = useRouter()
   const [hizmetler, setHizmetler] = useState<Hizmet[]>([])
   const [esnafId, setEsnafId] = useState(0)
   const [modalAcik, setModalAcik] = useState(false)
@@ -18,9 +20,11 @@ export default function HizmetlerSayfasi() {
   useEffect(() => {
     fetch('/api/hizmet')
       .then((r) => r.json())
-      .then((data) => {
-        setHizmetler(data.hizmetler || [])
-        setEsnafId(data.esnafId || 0)
+      .then((json) => {
+        // basari() veriyi { success: true, data: {...} } içine sarar
+        const sonuc = json?.data ?? json
+        setHizmetler(sonuc?.hizmetler || [])
+        setEsnafId(sonuc?.esnafId || 0)
       })
   }, [])
 
@@ -30,6 +34,7 @@ export default function HizmetlerSayfasi() {
     )
     setModalAcik(false)
     setDuzenle(null)
+    router.refresh()
   }
 
   async function sil(id: number) {

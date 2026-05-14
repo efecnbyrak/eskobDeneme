@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Sidebar />
         </div>
 
-        <div className="flex-1 min-w-0 overflow-auto">
+        <div className="flex-1 min-w-0 overflow-auto flex flex-col">
           {/* Mobile TopBar */}
           <div className="lg:hidden sticky top-0 z-30 bg-white border-b border-[var(--color-border)] px-4 h-14 flex items-center justify-between">
             <span className="font-bold text-[var(--color-primary)] font-display flex items-center gap-2">
@@ -50,8 +50,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </nav>
           </div>
 
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
-            {children}
+          <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 lg:py-8 flex-1 flex flex-col">
+            <div className="flex-1">
+              {children}
+            </div>
             <Footer />
           </div>
         </div>
