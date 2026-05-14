@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Card, CardBody } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -25,6 +25,63 @@ interface EsnafProps {
   aciklama: string
   kapakFoto: string
   logoUrl: string
+}
+
+function FotoYukle({ label, deger, onDegis }: { label: string; deger: string; onDegis: (url: string) => void }) {
+  const { toast } = useToast()
+  const [yukleniyor, setYukleniyor] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function handleDosya(e: React.ChangeEvent<HTMLInputElement>) {
+    const dosya = e.target.files?.[0]
+    if (!dosya) return
+    setYukleniyor(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', dosya)
+      const res = await fetch('/api/upload', { method: 'POST', body: fd })
+      if (res.ok) {
+        const data = await res.json()
+        onDegis(data.url)
+        toast(`${label} yüklendi!`, 'success')
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast(err?.error || 'Yükleme başarısız.', 'error')
+      }
+    } finally {
+      setYukleniyor(false)
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium">{label}</label>
+      <div className="flex items-center gap-3">
+        {deger && (
+          <img src={deger} alt={label} className="w-12 h-12 rounded-lg object-cover border border-[var(--color-border)] shrink-0" />
+        )}
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={yukleniyor}
+          className="px-4 py-2 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] hover:bg-[var(--color-bg-muted)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {yukleniyor ? 'Yükleniyor...' : 'Dosya Seç'}
+        </button>
+        {deger && (
+          <span className="text-xs text-[var(--color-text-secondary)] truncate max-w-[120px]" title={deger}>Fotoğraf eklendi</span>
+        )}
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleDosya}
+        />
+      </div>
+    </div>
+  )
 }
 
 const PLAN_ADI: Record<Plan, string> = { UCRETSIZ: 'Silver', STARTER: 'Gold', PRO: 'Premium' }
@@ -241,17 +298,15 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
                     onChange={(e) => setIsletmeForm((p) => ({ ...p, aciklama: e.target.value }))}
                   />
                 </div>
-                <Input
-                  label="Kapak Fotoğrafı URL"
-                  value={isletmeForm.kapakFoto}
-                  placeholder="https://example.com/kapak.jpg"
-                  onChange={(e) => setIsletmeForm((p) => ({ ...p, kapakFoto: e.target.value }))}
+                <FotoYukle
+                  label="Kapak Fotoğrafı"
+                  deger={isletmeForm.kapakFoto}
+                  onDegis={(url) => setIsletmeForm((p) => ({ ...p, kapakFoto: url }))}
                 />
-                <Input
-                  label="Logo URL"
-                  value={isletmeForm.logoUrl}
-                  placeholder="https://example.com/logo.png"
-                  onChange={(e) => setIsletmeForm((p) => ({ ...p, logoUrl: e.target.value }))}
+                <FotoYukle
+                  label="Logo"
+                  deger={isletmeForm.logoUrl}
+                  onDegis={(url) => setIsletmeForm((p) => ({ ...p, logoUrl: url }))}
                 />
                 <div className="flex gap-3 pt-1">
                   <Button onClick={isletmeKaydet} loading={isletmeYukleniyor} className="flex-1">Kaydet</Button>

@@ -7,6 +7,7 @@ import { HizmetForm } from '@/components/dashboard/HizmetForm'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Card, CardBody } from '@/components/ui/Card'
+import { Loader } from '@/components/ui/Loader'
 import { formatFiyat, formatSure } from '@/lib/utils'
 import type { Hizmet } from '@/types'
 
@@ -16,16 +17,17 @@ export default function HizmetlerSayfasi() {
   const [esnafId, setEsnafId] = useState(0)
   const [modalAcik, setModalAcik] = useState(false)
   const [duzenle, setDuzenle] = useState<Hizmet | null>(null)
+  const [yukleniyor, setYukleniyor] = useState(true)
 
   useEffect(() => {
     fetch('/api/hizmet')
       .then((r) => r.json())
       .then((json) => {
-        // basari() veriyi { success: true, data: {...} } içine sarar
         const sonuc = json?.data ?? json
         setHizmetler(sonuc?.hizmetler || [])
         setEsnafId(sonuc?.esnafId || 0)
       })
+      .finally(() => setYukleniyor(false))
   }, [])
 
   function onKayit(hizmet: Hizmet) {
@@ -54,7 +56,9 @@ export default function HizmetlerSayfasi() {
         }
       />
 
-      {hizmetler.length === 0 ? (
+      {yukleniyor ? (
+        <div className="py-16 flex justify-center"><Loader /></div>
+      ) : hizmetler.length === 0 ? (
         <div className="text-center py-16 text-[var(--color-text-secondary)]">
           <p className="text-4xl mb-3">🛠</p>
           <p className="font-medium mb-1">Henüz hizmet eklenmedi</p>

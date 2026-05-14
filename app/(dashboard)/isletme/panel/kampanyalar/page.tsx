@@ -6,6 +6,7 @@ import { Card, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { useToast } from '@/components/ui/Toast'
+import { Loader } from '@/components/ui/Loader'
 import { formatFiyat } from '@/lib/utils'
 import type { Hizmet } from '@/types'
 
@@ -156,16 +157,18 @@ function KampanyaForm({
 export default function KampanyalarSayfasi() {
   const [hizmetler, setHizmetler] = useState<HizmetWithIndirim[]>([])
   const [acikForm, setAcikForm] = useState<number | null>(null)
+  const [yukleniyor, setYukleniyor] = useState(true)
 
   useEffect(() => {
     fetch('/api/hizmet')
       .then((r) => r.json())
-      .then((d) => setHizmetler(d.hizmetler || []))
+      .then((d) => setHizmetler(d.data?.hizmetler || []))
+      .finally(() => setYukleniyor(false))
   }, [])
 
   const simdiki = new Date()
 
-  function aktifKampanyaMi(h: HizmetWithIndirim) {
+  const aktifKampanyaMi = (h: HizmetWithIndirim) => {
     if (!h.indirimYuzde || !h.indirimBitis) return false
     return new Date(h.indirimBitis) > simdiki
   }
@@ -177,7 +180,9 @@ export default function KampanyalarSayfasi() {
         aciklama="Hizmetlerinize geçici indirim kampanyaları tanımlayın"
       />
 
-      {hizmetler.length === 0 ? (
+      {yukleniyor ? (
+        <div className="py-16 flex justify-center"><Loader /></div>
+      ) : hizmetler.length === 0 ? (
         <div className="text-center py-16 text-[var(--color-text-secondary)]">
           <p className="text-4xl mb-3">🏷️</p>
           <p className="font-medium mb-1">Henüz hizmet eklenmedi</p>
