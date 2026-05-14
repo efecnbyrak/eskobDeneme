@@ -323,7 +323,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 sm:mt-16 lg:mt-20 pt-8 sm:pt-10 border-t border-[#1F333D] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-xs sm:text-sm text-[#7A9AA6]">
-          <p className="text-center sm:text-left">© {new Date().getFullYear()} {isIsletme ? 'İşletme Vitrini' : 'Müşteri Vitrin'}. Tüm hakları saklıdır.</p>
+          <p className="text-center sm:text-left">© 2026 ESKOB. Tüm hakları saklıdır.</p>
           <div className="flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
             <Link href={gizlilikHref} className="hover:text-white transition-colors">Gizlilik Politikası</Link>
             <Link href={kullanimHref} className="hover:text-white transition-colors">Kullanım Şartları</Link>

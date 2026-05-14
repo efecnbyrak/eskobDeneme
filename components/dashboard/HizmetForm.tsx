@@ -34,7 +34,7 @@ export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProp
         body: JSON.stringify({ ...form, esnafId }),
       })
       const data = await res.json()
-      onKayit(data)
+      onKayit(data.data ?? data)
     } finally {
       setYukleniyor(false)
     }
@@ -58,21 +58,30 @@ export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProp
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Fiyat (₺)"
-          type="number"
-          min={0}
-          required
-          value={form.fiyat}
-          onChange={(e) => setForm((p) => ({ ...p, fiyat: Number(e.target.value) }))}
-        />
-        <Input
-          label="Süre (dakika)"
-          type="number"
-          min={5}
-          value={form.sure}
-          onChange={(e) => setForm((p) => ({ ...p, sure: Number(e.target.value) }))}
-        />
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Fiyat (₺)</label>
+          <input
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            required
+            value={form.fiyat === 0 ? '' : form.fiyat}
+            placeholder="0"
+            onChange={(e) => setForm((p) => ({ ...p, fiyat: e.target.value === '' ? 0 : Number(e.target.value) }))}
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Süre (dakika)</label>
+          <input
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            inputMode="numeric"
+            min={5}
+            value={form.sure}
+            onChange={(e) => setForm((p) => ({ ...p, sure: Number(e.target.value) }))}
+          />
+        </div>
       </div>
       <div className="flex gap-3 pt-2">
         <Button type="submit" loading={yukleniyor} className="flex-1">

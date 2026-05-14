@@ -2,7 +2,7 @@
 
 import { signIn, signOut } from 'next-auth/react'
 import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 import { LockCheckbox } from '@/components/ui/LockCheckbox'
@@ -62,7 +62,6 @@ function IsletmeGirisForm() {
   const searchParams = useSearchParams()
   const kayitBasarili = searchParams.get('kayit') === 'basarili'
 
-  const router = useRouter()
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState('')
   const [beniHatirla, setBeniHatirla] = useState(false)
@@ -119,7 +118,7 @@ function IsletmeGirisForm() {
         if (meData.ad) sessionStorage.setItem('hosgeldin', meData.ad)
         else sessionStorage.setItem('hosgeldin', '1')
       }
-      router.push(hedef)
+      window.location.href = hedef
     } catch {
       setHata('Bir hata oluştu. Lütfen tekrar deneyin.')
     } finally {

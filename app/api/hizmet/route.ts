@@ -89,6 +89,12 @@ export async function PUT(req: NextRequest) {
     }
     const veri = parsed.data
 
+    const { indirimYuzde, indirimBaslangic, indirimBitis } = body as {
+      indirimYuzde?: number | null
+      indirimBaslangic?: string | null
+      indirimBitis?: string | null
+    }
+
     const hizmet = await prisma.hizmet.update({
       where: { id: parseInt(id) },
       data: {
@@ -96,6 +102,9 @@ export async function PUT(req: NextRequest) {
         fiyat: veri.fiyat,
         sure: veri.sure,
         aciklama: temizMetinOpsiyonel(veri.aciklama, 500),
+        ...(indirimYuzde !== undefined && { indirimYuzde: indirimYuzde ?? null }),
+        ...(indirimBaslangic !== undefined && { indirimBaslangic: indirimBaslangic ? new Date(indirimBaslangic) : null }),
+        ...(indirimBitis !== undefined && { indirimBitis: indirimBitis ? new Date(indirimBitis) : null }),
       },
     })
 

@@ -4,6 +4,7 @@ import { IsletmeSidebar } from '@/components/isletme/IsletmeSidebar'
 import { IsletmeTopBar } from '@/components/isletme/IsletmeTopBar'
 import { ToastProvider } from '@/components/ui/Toast'
 import { HosgeldinToast } from '@/components/ui/HosgeldinToast'
+import { Footer } from '@/components/ui/Footer'
 
 export default async function IsletmeLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
@@ -27,6 +28,7 @@ export default async function IsletmeLayout({ children }: { children: React.Reac
           <main className="flex-1 overflow-auto">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
               {children}
+              <Footer />
             </div>
           </main>
         </div>

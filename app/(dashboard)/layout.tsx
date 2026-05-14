@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ToastProvider } from '@/components/ui/Toast'
 import { HosgeldinToast } from '@/components/ui/HosgeldinToast'
+import { Footer } from '@/components/ui/Footer'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
@@ -51,6 +52,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
             {children}
+            <Footer />
           </div>
         </div>
       </div>

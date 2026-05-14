@@ -9,15 +9,16 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { QRKodWidget } from '@/components/shared/QRKodWidget'
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard'
-import { formatTarih } from '@/lib/utils'
+import { formatTarih, formatFiyat } from '@/lib/utils'
 
 const HIZLI_EYLEMLER = [
   { href: '/isletme/panel/hizmetler', ikon: '➕', baslik: 'Hizmet Ekle', aciklama: 'Yeni hizmet veya fiyat ekle', renk: '#1A2744' },
-  { href: '/isletme/panel/vitrin', ikon: '🖼️', baslik: 'Vitrin Düzenle', aciklama: 'Fotoğraf ve bilgileri güncelle', renk: '#3b82f6' },
+  { href: '/isletme/panel/vitrin', ikon: '🖼️', baslik: 'Vitrin Düzenle', aciklama: 'Fotoğraf ve görselleri güncelle', renk: '#3b82f6' },
+  { href: '/isletme/panel/kampanyalar', ikon: '🏷️', baslik: 'Kampanyalar', aciklama: 'İndirim kampanyası oluştur', renk: '#f59e0b' },
   { href: '/isletme/panel/randevular', ikon: '📅', baslik: 'Randevular', aciklama: 'Bekleyen randevuları yönet', renk: '#10b981' },
-  { href: '/isletme/panel/musteriler', ikon: '👥', baslik: 'Müşteriler', aciklama: 'Müşteri geçmişini incele', renk: '#f59e0b' },
+  { href: '/isletme/panel/musteriler', ikon: '👥', baslik: 'Müşteriler', aciklama: 'Müşteri geçmişini incele', renk: '#0ea5e9' },
   { href: '/isletme/panel/yorumlar', ikon: '⭐', baslik: 'Yorumlar', aciklama: 'Yorumlara yanıt ver', renk: '#ef4444' },
-  { href: '/isletme/panel/ayarlar', ikon: '⚙️', baslik: 'Ayarlar', aciklama: 'İşletme bilgilerini güncelle', renk: '#8b5cf6' },
+  { href: '/isletme/panel/ayarlar', ikon: '⚙️', baslik: 'Ayarlar', aciklama: 'Hesap ve işletme bilgileri', renk: '#8b5cf6' },
 ]
 
 export default async function PanelSayfasi() {
@@ -32,6 +33,7 @@ export default async function PanelSayfasi() {
           istatistikler: { orderBy: { tarih: 'desc' }, take: 30 },
           randevular: { orderBy: { tarih: 'desc' }, take: 5, include: { hizmet: true } },
           yorumlar: { select: { puan: true } },
+          hizmetler: { where: { aktif: true, indirimYuzde: { gt: 0 } }, orderBy: { sira: 'asc' } },
         },
       },
     },
@@ -63,6 +65,11 @@ export default async function PanelSayfasi() {
   }
 
   const esnaf = kullanici.esnaf
+  const simdiki = new Date()
+  const aktifKampanyalar = esnaf.hizmetler.filter(
+    (h: { indirimYuzde: number | null; indirimBitis: Date | null }) =>
+      h.indirimYuzde && h.indirimBitis && new Date(h.indirimBitis) > simdiki
+  )
   const buAyGoruntulenme = esnaf.istatistikler.reduce((s: number, i: { goruntulenme: number }) => s + i.goruntulenme, 0)
   const toplamRandevu = esnaf.randevular.length
   const ortalamaPuan = esnaf.yorumlar.length
@@ -182,19 +189,57 @@ export default async function PanelSayfasi() {
         </div>
       </div>
 
+      {/* Kampanyalar */}
+      <Card className="mb-6">
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+          <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Aktif Kampanyalar</h3>
+          <Link href="/isletme/panel/kampanyalar">
+            <Button variant="ghost" size="sm">Yönet →</Button>
+          </Link>
+        </div>
+        <CardBody>
+          {aktifKampanyalar.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '32px 24px' }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>🏷️</div>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: 14, marginBottom: 16 }}>Henüz aktif kampanya yok.</p>
+              <Link href="/isletme/panel/kampanyalar">
+                <Button size="sm">Kampanya Oluştur</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {aktifKampanyalar.map((h: { id: number; ad: string; fiyat: { toString: () => string }; indirimYuzde: number; indirimBitis: Date }) => (
+                <div key={h.id} className="flex items-center justify-between gap-4 px-2 py-2 rounded-[var(--radius-md)] hover:bg-[var(--color-bg-muted)] transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium">{h.ad}</span>
+                    <Badge variant="success">%{h.indirimYuzde} İndirim</Badge>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <span className="line-through text-[var(--color-text-secondary)]">{formatFiyat(Number(h.fiyat))}</span>
+                    <span className="font-bold text-green-600">{formatFiyat(Number(h.fiyat) * (1 - h.indirimYuzde / 100))}</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">→ {new Date(h.indirimBitis).toLocaleDateString('tr-TR')}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
       {/* Hızlı Eylemler */}
       <Card>
         <div className="px-6 py-4 border-b border-[var(--color-border)]">
           <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Hızlı Eylemler</h3>
         </div>
         <CardBody>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14 }}>
             {HIZLI_EYLEMLER.map((e) => (
               <QuickActionCard key={e.href} {...e} />
             ))}
           </div>
         </CardBody>
       </Card>
+
     </div>
   )
 }

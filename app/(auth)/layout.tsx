@@ -1,4 +1,5 @@
 import { ToastProvider } from '@/components/ui/Toast'
+import { Footer } from '@/components/ui/Footer'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -33,6 +34,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
         <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 520 }}>
           {children}
+          <Footer />
         </div>
       </div>
     </ToastProvider>
