@@ -22,7 +22,7 @@ export function Loader({ renk }: { renk?: string }) {
         }
         .eskob-loadingspinner div {
           display: inline-block;
-          background: darkorange;
+          background: var(--color-primary, darkorange);
           border: none;
           border-radius: 2px;
           width: var(--square);
