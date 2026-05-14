@@ -35,8 +35,10 @@ export default async function YorumlarSayfasi() {
   if (!kullanici?.esnaf) redirect('/isletme/genel')
 
   const yorumlar = kullanici.esnaf.yorumlar
-  const ortalama = yorumlar.length
-    ? (yorumlar.reduce((s, y) => s + y.puan, 0) / yorumlar.length).toFixed(1)
+  // Ortalama sadece onaylı/görünür yorumlardan hesaplanır
+  const gorunurYorumlar = yorumlar.filter((y) => y.onaylı)
+  const ortalama = gorunurYorumlar.length
+    ? (gorunurYorumlar.reduce((s, y) => s + y.puan, 0) / gorunurYorumlar.length).toFixed(1)
     : null
 
   return (

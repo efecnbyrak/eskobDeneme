@@ -91,15 +91,21 @@ export function YorumlarClient({ yorumlar: baslangicYorumlar, ortalama }: Props)
                       <p className="text-sm text-slate-600">{y.yanitlar}</p>
                     </div>
                   )}
-                  {!y.bildirildi && (
-                    <button
-                      onClick={() => bildir(y.id)}
-                      disabled={bildirYukleniyor === y.id}
-                      className="mt-3 text-xs text-slate-400 hover:text-red-500 transition-colors disabled:opacity-50"
-                    >
-                      {bildirYukleniyor === y.id ? 'Bildiriliyor...' : '⚑ Bildir'}
-                    </button>
-                  )}
+                  <div className="mt-3">
+                    {y.bildirildi ? (
+                      <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-orange-50 text-orange-600 border border-orange-200 font-medium">
+                        ⚑ Bildirildi — İnceleniyor
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => bildir(y.id)}
+                        disabled={bildirYukleniyor === y.id}
+                        className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-500 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                      >
+                        {bildirYukleniyor === y.id ? '⏳ Bildiriliyor...' : '⚑ Yorum Bildir'}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <YildizPuan puan={y.puan} boyut="sm" />
               </div>

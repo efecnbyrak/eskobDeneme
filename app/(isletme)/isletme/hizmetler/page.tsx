@@ -18,9 +18,11 @@ export default function HizmetlerSayfasi() {
   useEffect(() => {
     fetch('/api/hizmet')
       .then((r) => r.json())
-      .then((data) => {
-        setHizmetler(data.hizmetler || [])
-        setEsnafId(data.esnafId || 0)
+      .then((json) => {
+        // API basari() ile sarar: { success: true, data: { hizmetler, esnafId } }
+        const sonuc = json?.data ?? json
+        setHizmetler(sonuc?.hizmetler || [])
+        setEsnafId(sonuc?.esnafId || 0)
       })
   }, [])
 
