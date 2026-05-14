@@ -16,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <ToastProvider>
       <HosgeldinToast />
-      <div className="flex min-h-screen bg-[var(--color-bg)]">
+      <div className="isletme-panel flex min-h-screen bg-[var(--color-bg)]">
         {/* Desktop Sidebar */}
         <div className="hidden lg:flex">
           <Sidebar />

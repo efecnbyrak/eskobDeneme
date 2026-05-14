@@ -46,6 +46,22 @@
 }
 
 /* ──────────────────────────────────────────────
+   İŞLETME PANELİ TEMASI — indigo override
+   ────────────────────────────────────────────── */
+.isletme-panel {
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-light: rgba(79,70,229,0.08);
+  --color-accent: #e0e7ff;
+  --color-bg: #f5f6ff;
+  --color-bg-muted: #eef2ff;
+  --color-border: #e0e7ff;
+  --color-border-focus: #4f46e5;
+  --color-warm: #eef2ff;
+  --color-warm-dark: #e0e7ff;
+}
+
+/* ──────────────────────────────────────────────
    GLOBAL RESET — minimal, does NOT fight Tailwind
    ────────────────────────────────────────────── */
 *,
