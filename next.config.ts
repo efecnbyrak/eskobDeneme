@@ -31,7 +31,7 @@ const corsHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
+  serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg', 'iyzipay'],
   poweredByHeader: false,
   reactStrictMode: true,
   images: {

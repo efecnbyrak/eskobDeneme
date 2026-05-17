@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getIyzipay } from '@/lib/iyzico'
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   const form = await req.formData()
