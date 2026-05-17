@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button'
 import { QRKodWidget } from '@/components/shared/QRKodWidget'
 import { formatTarih } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 const HIZLI_EYLEMLER = [
   { href: '/isletme/hizmetler', ikon: '➕', baslik: 'Hizmet Ekle', aciklama: 'Yeni hizmet veya fiyat ekle', renk: '#4f46e5' },
   { href: '/isletme/ayarlar/vitrin', ikon: '🏪', baslik: 'Vitrin Düzenle', aciklama: 'Fotoğraf ve bilgileri güncelle', renk: '#0891b2' },
@@ -29,7 +31,7 @@ export default async function GenelSayfasi() {
           istatistikler: { orderBy: { tarih: 'desc' }, take: 30 },
           randevular: { orderBy: { tarih: 'desc' }, take: 5, include: { hizmet: true } },
           yorumlar: { select: { puan: true } },
-          _count: { select: { hizmetler: true } },
+          _count: { select: { hizmetler: true, randevular: true } },
         },
       },
     },
@@ -57,7 +59,7 @@ export default async function GenelSayfasi() {
 
   const esnaf = kullanici.esnaf
   const buAyGoruntulenme = esnaf.istatistikler.reduce((s, i) => s + i.goruntulenme, 0)
-  const toplamRandevu = esnaf.randevular.length
+  const toplamRandevu = esnaf._count.randevular
   const ortalamaPuan = esnaf.yorumlar.length
     ? (esnaf.yorumlar.reduce((s, y) => s + y.puan, 0) / esnaf.yorumlar.length).toFixed(1)
     : '—'
@@ -89,11 +91,6 @@ export default async function GenelSayfasi() {
                 Randevuları Gör
               </button>
             </Link>
-            <a href={vitrinUrl} target="_blank" rel="noopener noreferrer">
-              <button className="h-10 px-5 text-sm font-semibold bg-white/15 text-white border border-white/25 rounded-xl hover:bg-white/20 transition-colors">
-                Vitrine Git ↗
-              </button>
-            </a>
           </div>
         </div>
       </div>
@@ -164,14 +161,6 @@ export default async function GenelSayfasi() {
           <div className="p-6 flex flex-col items-center gap-3">
             <QRKodWidget url={vitrinUrl} boyut={120} />
             <p className="text-xs text-slate-400 text-center">Müşterilerinizle paylaşın</p>
-            <a
-              href={vitrinUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-indigo-600 font-semibold hover:underline"
-            >
-              🔗 Vitrine Git ↗
-            </a>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/Toast'
@@ -19,8 +19,9 @@ export function VitrinEditor({ esnaf }: VitrinEditorProps) {
     website: esnaf.website || '',
     fotograflar: esnaf.fotograflar || [],
   })
-  const [yeniFoto, setYeniFoto] = useState('')
   const [fotoModalAcik, setFotoModalAcik] = useState(false)
+  const [dosyaYukleniyor, setDosyaYukleniyor] = useState(false)
+  const dosyaInputRef = useRef<HTMLInputElement>(null)
 
   async function handleKaydet() {
     setYukleniyor(true)
@@ -37,12 +38,44 @@ export function VitrinEditor({ esnaf }: VitrinEditorProps) {
     }
   }
 
-  function fotoEkle() {
-    const url = yeniFoto.trim()
-    if (!url) return
-    setForm((p) => ({ ...p, fotograflar: [...p.fotograflar, url] }))
-    setYeniFoto('')
-    setFotoModalAcik(false)
+  async function handleDosyaSec(e: React.ChangeEvent<HTMLInputElement>) {
+    const dosya = e.target.files?.[0]
+    if (!dosya) return
+
+    const maxBoyut = 5 * 1024 * 1024
+    if (dosya.size > maxBoyut) {
+      toast('Dosya boyutu en fazla 5 MB olabilir.', 'error')
+      e.target.value = ''
+      return
+    }
+
+    const izinliTipler = ['image/jpeg', 'image/png', 'image/webp']
+    if (!izinliTipler.includes(dosya.type)) {
+      toast('Yalnızca JPG, PNG veya WebP dosyaları yüklenebilir.', 'error')
+      e.target.value = ''
+      return
+    }
+
+    setDosyaYukleniyor(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', dosya)
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        toast(d.error || 'Yükleme başarısız oldu.', 'error')
+        return
+      }
+      const { url } = await res.json()
+      setForm((p) => ({ ...p, fotograflar: [...p.fotograflar, url] }))
+      setFotoModalAcik(false)
+      toast('Görsel eklendi!', 'success')
+    } catch {
+      toast('Yükleme sırasında bir hata oluştu.', 'error')
+    } finally {
+      setDosyaYukleniyor(false)
+      e.target.value = ''
+    }
   }
 
   function fotoCikar(idx: number) {
@@ -97,7 +130,7 @@ export function VitrinEditor({ esnaf }: VitrinEditorProps) {
             <div style={{ fontSize: 40, marginBottom: 12 }}>🖼️</div>
             <p className="text-sm font-medium mb-1">Henüz görsel eklenmedi</p>
             <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-              Vitrinize fotoğraf veya video bağlantısı ekleyerek müşterilerin dikkatini çekin.
+              JPG, PNG veya WebP formatında görsel yükleyerek müşterilerin dikkatini çekin.
             </p>
           </div>
         ) : (
@@ -138,33 +171,67 @@ export function VitrinEditor({ esnaf }: VitrinEditorProps) {
         Değişiklikleri Kaydet
       </Button>
 
-      {/* Görsel Ekleme Modalı */}
+      {/* Görsel Yükleme Modalı */}
       {fotoModalAcik && (
         <div
           style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          onClick={() => setFotoModalAcik(false)}
+          onClick={() => !dosyaYukleniyor && setFotoModalAcik(false)}
         >
           <div
             style={{ background: 'white', borderRadius: 20, padding: '32px 28px', maxWidth: 440, width: '90%', boxShadow: '0 24px 64px rgba(0,0,0,0.18)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 20, color: 'var(--color-text)' }}>Görsel URL Ekle</h3>
-            <div className="flex flex-col gap-3">
-              <Input
-                label="Görsel veya Video URL"
-                value={yeniFoto}
-                placeholder="https://example.com/gorsel.jpg"
-                onChange={(e) => setYeniFoto(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && fotoEkle()}
-                autoFocus
-              />
-              <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                Fotoğraf veya video bağlantısını yapıştırın. (JPG, PNG, MP4 desteklenir)
-              </p>
-              <div className="flex gap-3 mt-2">
-                <Button onClick={fotoEkle} className="flex-1">Ekle</Button>
-                <Button variant="secondary" onClick={() => { setFotoModalAcik(false); setYeniFoto('') }} className="flex-1">İptal</Button>
-              </div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: 'var(--color-text)' }}>Görsel Yükle</h3>
+            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 24 }}>
+              JPG, PNG veya WebP formatında, en fazla 5 MB boyutunda dosya seçin.
+            </p>
+
+            {/* Dosya Seçme Alanı */}
+            <div
+              className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+              onClick={() => dosyaInputRef.current?.click()}
+            >
+              {dosyaYukleniyor ? (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-sm text-slate-600 font-medium">Yükleniyor...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center text-2xl">🖼️</div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Dosya seçmek için tıklayın</p>
+                    <p className="text-xs text-slate-400 mt-1">JPG, PNG, WebP — Maks. 5 MB</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <input
+              ref={dosyaInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp"
+              className="hidden"
+              onChange={handleDosyaSec}
+              disabled={dosyaYukleniyor}
+            />
+
+            <div className="flex gap-3 mt-5">
+              <Button
+                variant="secondary"
+                onClick={() => setFotoModalAcik(false)}
+                className="flex-1"
+                disabled={dosyaYukleniyor}
+              >
+                İptal
+              </Button>
+              <Button
+                onClick={() => dosyaInputRef.current?.click()}
+                className="flex-1"
+                disabled={dosyaYukleniyor}
+              >
+                {dosyaYukleniyor ? 'Yükleniyor...' : 'Dosya Seç'}
+              </Button>
             </div>
           </div>
         </div>

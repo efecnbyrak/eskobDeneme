@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const MENU_ITEMS = [
@@ -86,6 +88,15 @@ const MENU_ITEMS = [
         ),
       },
       {
+        href: '/isletme/ayarlar/saatler',
+        label: 'Çalışma Saatleri',
+        ikon: (
+          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        ),
+      },
+      {
         href: '/isletme/ayarlar/kampanya',
         label: 'Kampanya Ayarları',
         ikon: (
@@ -113,6 +124,24 @@ const MENU_ITEMS = [
         ),
       },
       {
+        href: '/isletme/ayarlar/guvenlik',
+        label: 'Güvenlik & Şifre',
+        ikon: (
+          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        ),
+      },
+      {
+        href: '/isletme/ayarlar/hesap',
+        label: 'Hesap Bilgileri',
+        ikon: (
+          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        ),
+      },
+      {
         href: '/isletme/ayarlar/plan',
         label: 'Plan & Abonelik',
         ikon: (
@@ -127,80 +156,129 @@ const MENU_ITEMS = [
 
 export function IsletmeSidebar() {
   const pathname = usePathname()
+  const [cikisModal, setCikisModal] = useState(false)
+  const [cikisYukleniyor, setCikisYukleniyor] = useState(false)
 
   function isAktif(href: string) {
     if (href === '/isletme/genel') return pathname === '/isletme/genel' || pathname === '/isletme'
     return pathname === href || pathname.startsWith(href + '/')
   }
 
+  async function handleCikis() {
+    setCikisYukleniyor(true)
+    await signOut({ callbackUrl: '/isletme/giris' })
+  }
+
   return (
-    <aside className="w-[248px] min-h-screen bg-slate-900 flex flex-col shrink-0">
-      {/* Logo */}
-      <div className="p-5 border-b border-slate-800">
-        <Link href="/isletme/genel" className="flex items-center gap-2.5">
-          <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm font-bold font-display shrink-0">EV</span>
-          <div>
-            <p className="font-bold text-white font-display text-sm leading-tight">Esnaf Vitrin</p>
-            <p className="text-[10px] text-slate-400 font-medium">İşletme Paneli</p>
-          </div>
-        </Link>
-      </div>
+    <>
+      <aside className="w-[248px] h-screen sticky top-0 overflow-y-auto bg-slate-900 flex flex-col shrink-0">
+        {/* Logo */}
+        <div className="p-5 border-b border-slate-800">
+          <Link href="/isletme/genel" className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm font-bold font-display shrink-0">EV</span>
+            <div>
+              <p className="font-bold text-white font-display text-sm leading-tight">Esnaf Vitrin</p>
+              <p className="text-[10px] text-slate-400 font-medium">İşletme Paneli</p>
+            </div>
+          </Link>
+        </div>
 
-      {/* Nav */}
-      <nav className="flex-1 p-3 overflow-y-auto space-y-5">
-        {MENU_ITEMS.map((grup) => (
-          <div key={grup.grup}>
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-3 mb-1.5">
-              {grup.grup}
-            </p>
-            <ul className="space-y-0.5">
-              {grup.items.map((item) => {
-                const aktif = isAktif(item.href)
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
-                        aktif
-                          ? 'bg-indigo-600 text-white font-semibold'
-                          : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-                      )}
-                    >
-                      <span className="shrink-0">{item.ikon}</span>
-                      {item.label}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        ))}
-      </nav>
+        {/* Nav */}
+        <nav className="flex-1 p-3 overflow-y-auto space-y-5">
+          {MENU_ITEMS.map((grup) => (
+            <div key={grup.grup}>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-3 mb-1.5">
+                {grup.grup}
+              </p>
+              <ul className="space-y-0.5">
+                {grup.items.map((item) => {
+                  const aktif = isAktif(item.href)
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
+                          aktif
+                            ? 'bg-indigo-600 text-white font-semibold'
+                            : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                        )}
+                      >
+                        <span className="shrink-0">{item.ikon}</span>
+                        {item.label}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
 
-      {/* Müşteri sitesine git + Çıkış */}
-      <div className="p-3 border-t border-slate-800 space-y-0.5">
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-all px-3 py-2.5 rounded-lg"
+        {/* Çıkış */}
+        <div className="p-3 border-t border-slate-800 space-y-0.5">
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-all px-3 py-2.5 rounded-lg"
+          >
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Müşteri Sitesi
+          </a>
+          <button
+            onClick={() => setCikisModal(true)}
+            className="w-full flex items-center gap-3 text-sm text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-all px-3 py-2.5 rounded-lg"
+          >
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Çıkış Yap
+          </button>
+        </div>
+      </aside>
+
+      {/* Çıkış Onay Modalı */}
+      {cikisModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+          onClick={() => !cikisYukleniyor && setCikisModal(false)}
         >
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-          Müşteri Sitesi
-        </a>
-        <a
-          href="/api/auth/signout"
-          className="flex items-center gap-3 text-sm text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-all px-3 py-2.5 rounded-lg"
-        >
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          Çıkış Yap
-        </a>
-      </div>
-    </aside>
+          <div
+            className="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 mb-1">Çıkış Yapmak İstiyor musunuz?</h3>
+              <p className="text-sm text-slate-500">İşletme panelinizden çıkış yapılacak.</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCikisModal(false)}
+                disabled={cikisYukleniyor}
+                className="flex-1 h-11 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleCikis}
+                disabled={cikisYukleniyor}
+                className="flex-1 h-11 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
+              >
+                {cikisYukleniyor ? 'Çıkılıyor...' : 'Evet, Çıkış Yap'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
