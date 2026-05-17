@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/Toast'
+import { useTema } from '@/components/dashboard/ThemeProvider'
 
 type Plan = 'UCRETSIZ' | 'STARTER' | 'PRO'
 
@@ -123,8 +124,16 @@ function telefonFormatla(rakamlar: string): string {
   return `${r.slice(0, 4)} ${r.slice(4, 7)} ${r.slice(7, 9)} ${r.slice(9)}`
 }
 
+const TEMALAR: { key: 'varsayilan' | 'gece' | 'zumrut' | 'gul'; ad: string; renk: string; ikinci: string }[] = [
+  { key: 'varsayilan', ad: 'Varsayılan', renk: '#4f46e5', ikinci: '#e0e7ff' },
+  { key: 'gece', ad: 'Gece', renk: '#7c3aed', ikinci: '#ede9fe' },
+  { key: 'zumrut', ad: 'Zümrüt', renk: '#059669', ikinci: '#d1fae5' },
+  { key: 'gul', ad: 'Gül', renk: '#e11d48', ikinci: '#ffe4e6' },
+]
+
 export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps; esnaf: EsnafProps | null }) {
   const { toast } = useToast()
+  const { tema, temaDegistir } = useTema()
 
   // Hesap Bilgileri state
   const [hesapDuzenle, setHesapDuzenle] = useState(false)
@@ -203,7 +212,7 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
         <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
           <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Hesap Bilgileri</h3>
           {!hesapDuzenle && (
-            <Button variant="ghost" size="sm" onClick={() => setHesapDuzenle(true)}>Değiştir</Button>
+            <Button variant="secondary" size="sm" onClick={() => setHesapDuzenle(true)}>Değiştir</Button>
           )}
         </div>
         <CardBody>
@@ -263,7 +272,7 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
           <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
             <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>İşletmem</h3>
             {!isletmeDuzenle && (
-              <Button variant="ghost" size="sm" onClick={() => setIsletmeDuzenle(true)}>Değiştir</Button>
+              <Button variant="secondary" size="sm" onClick={() => setIsletmeDuzenle(true)}>Değiştir</Button>
             )}
           </div>
           <CardBody>
@@ -357,6 +366,45 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
         </Card>
       )}
 
+      {/* Görünüm / Renk Teması */}
+      <Card>
+        <div className="px-6 py-4 border-b border-[var(--color-border)]">
+          <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Görünüm</h3>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Panel renk temanızı kişiselleştirin</p>
+        </div>
+        <CardBody>
+          <div className="grid grid-cols-2 gap-3">
+            {TEMALAR.map((t) => {
+              const aktif = tema === t.key
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => temaDegistir(t.key)}
+                  className="flex items-center gap-3 p-3 rounded-[var(--radius-md)] border-2 transition-all text-left"
+                  style={{
+                    borderColor: aktif ? t.renk : 'var(--color-border)',
+                    background: aktif ? t.ikinci : 'transparent',
+                  }}
+                >
+                  <div className="flex gap-1 shrink-0">
+                    <div className="w-4 h-4 rounded-full" style={{ background: t.renk }} />
+                    <div className="w-4 h-4 rounded-full" style={{ background: t.ikinci }} />
+                  </div>
+                  <span className="text-sm font-medium" style={{ color: aktif ? t.renk : 'var(--color-text)' }}>
+                    {t.ad}
+                  </span>
+                  {aktif && (
+                    <svg className="w-4 h-4 ml-auto shrink-0" viewBox="0 0 16 16" fill="none" style={{ color: t.renk }}>
+                      <path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </CardBody>
+      </Card>
+
       {/* Plan Yükselt */}
       <Card>
         <div className="px-6 py-4 border-b border-[var(--color-border)]">
@@ -392,20 +440,26 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
                     </div>
                     <span className="text-lg font-bold">{p.fiyat}</span>
                   </div>
-                  <ul className="space-y-1">
+                  <ul className="space-y-1 mb-3">
                     {p.ozellikler.map((o) => (
                       <li key={o} className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1.5">
                         <span className="text-green-600">✓</span> {o}
                       </li>
                     ))}
                   </ul>
+                  {!aktif && p.key !== 'UCRETSIZ' && (
+                    <a
+                      href={`/isletme/panel/odeme?plan=${p.key}`}
+                      className="block w-full text-center text-xs font-semibold py-2 px-3 rounded-[var(--radius-md)] transition-all"
+                      style={{ background: 'var(--color-primary)', color: '#fff' }}
+                    >
+                      Şimdi Yükselt →
+                    </a>
+                  )}
                 </div>
               )
             })}
           </div>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-4 text-center">
-            Ödeme sistemi yakında aktif olacak.
-          </p>
         </CardBody>
       </Card>
     </div>

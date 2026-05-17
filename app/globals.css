@@ -62,6 +62,52 @@
 }
 
 /* ──────────────────────────────────────────────
+   RENK TEMALARI — kullanıcı tercihi
+   ────────────────────────────────────────────── */
+
+/* Gece: Koyu lacivert/mor */
+.isletme-panel[data-tema="gece"] {
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-primary-light: rgba(124,58,237,0.08);
+  --color-accent: #ede9fe;
+  --color-bg: #f5f3ff;
+  --color-bg-muted: #ede9fe;
+  --color-border: #ddd6fe;
+  --color-border-focus: #7c3aed;
+  --color-warm: #ede9fe;
+  --color-warm-dark: #ddd6fe;
+}
+
+/* Zümrüt: Yeşil/teal */
+.isletme-panel[data-tema="zumrut"] {
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-light: rgba(5,150,105,0.08);
+  --color-accent: #d1fae5;
+  --color-bg: #f0fdf4;
+  --color-bg-muted: #dcfce7;
+  --color-border: #bbf7d0;
+  --color-border-focus: #059669;
+  --color-warm: #dcfce7;
+  --color-warm-dark: #bbf7d0;
+}
+
+/* Gül: Pembe/rose */
+.isletme-panel[data-tema="gul"] {
+  --color-primary: #e11d48;
+  --color-primary-hover: #be123c;
+  --color-primary-light: rgba(225,29,72,0.08);
+  --color-accent: #ffe4e6;
+  --color-bg: #fff1f2;
+  --color-bg-muted: #ffe4e6;
+  --color-border: #fecdd3;
+  --color-border-focus: #e11d48;
+  --color-warm: #ffe4e6;
+  --color-warm-dark: #fecdd3;
+}
+
+/* ──────────────────────────────────────────────
    GLOBAL RESET — minimal, does NOT fight Tailwind
    ────────────────────────────────────────────── */
 *,

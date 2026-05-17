@@ -80,11 +80,11 @@ const MENU_ITEMS = [
   },
 ]
 
-export function Sidebar() {
+export function Sidebar({ plan = 'UCRETSIZ' }: { plan?: string }) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-[240px] min-h-screen bg-white border-r border-[var(--color-border)] flex flex-col shrink-0">
+    <aside className="w-[240px] h-full bg-white border-r border-[var(--color-border)] flex flex-col shrink-0 overflow-y-auto">
       {/* Logo */}
       <div className="p-5 border-b border-[var(--color-border)]">
         <Link href="/" className="flex items-center gap-2.5">
@@ -122,6 +122,26 @@ export function Sidebar() {
           })}
         </ul>
       </nav>
+
+      {/* Upgrade butonu — PRO değilse göster */}
+      {plan !== 'PRO' && (
+        <div className="px-3 pb-2">
+          <Link
+            href={`/isletme/panel/odeme?plan=${plan === 'UCRETSIZ' ? 'PRO' : 'PRO'}`}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-[var(--radius-md)] text-sm font-semibold transition-all"
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)',
+              color: '#fff',
+              boxShadow: '0 2px 8px rgba(249,115,22,0.35)',
+            }}
+          >
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            {plan === 'UCRETSIZ' ? 'Premium\'a Geç ✨' : 'Premium\'a Yükselt ✨'}
+          </Link>
+        </div>
+      )}
 
       {/* Çıkış */}
       <div className="p-3 border-t border-[var(--color-border)]">

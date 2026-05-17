@@ -1,9 +1,11 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ToastProvider } from '@/components/ui/Toast'
 import { HosgeldinToast } from '@/components/ui/HosgeldinToast'
 import { Footer } from '@/components/ui/Footer'
+import { ThemeProvider } from '@/components/dashboard/ThemeProvider'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const oturum = await auth()
@@ -13,13 +15,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (rol === 'USER') redirect('/musteri')
   if (rol === 'SUPER_ADMIN' || rol === 'ADMIN') redirect('/phyberk/admin')
 
+  const kullanici = await prisma.kullanici.findUnique({
+    where: { email: oturum.user.email! },
+    select: { plan: true },
+  })
+  const plan = kullanici?.plan ?? 'UCRETSIZ'
+
   return (
     <ToastProvider>
+      <ThemeProvider>
       <HosgeldinToast />
       <div className="isletme-panel flex min-h-screen bg-[var(--color-bg)]">
         {/* Desktop Sidebar */}
-        <div className="hidden lg:flex">
-          <Sidebar />
+        <div className="hidden lg:flex sticky top-0 h-screen">
+          <Sidebar plan={plan} />
         </div>
 
         <div className="flex-1 min-w-0 overflow-auto flex flex-col">
@@ -58,6 +67,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </div>
       </div>
+      </ThemeProvider>
     </ToastProvider>
   )
 }
