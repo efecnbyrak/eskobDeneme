@@ -17,21 +17,21 @@ export default async function IsletmeLayout({ children }: { children: React.Reac
   return (
     <ToastProvider>
       <HosgeldinToast />
-      <div className="flex h-screen overflow-hidden bg-slate-100">
-        <div className="hidden lg:flex">
+      <div className="min-h-screen bg-slate-100">
+        {/* Sabit Sidebar — sadece desktop */}
+        <div className="hidden lg:block fixed top-0 left-0 h-screen z-20">
           <IsletmeSidebar />
         </div>
 
-        <div className="flex-1 min-w-0 flex flex-col">
+        {/* İçerik — sidebar genişliği kadar sol boşluk */}
+        <div className="lg:pl-[248px] flex flex-col min-h-screen">
           <IsletmeTopBar />
 
-          <main className="flex-1 overflow-auto flex flex-col">
-            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 lg:py-8 flex-1 flex flex-col">
-              <div className="flex-1">
-                {children}
-              </div>
-              <Footer />
+          <main className="flex-1">
+            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 lg:py-8">
+              {children}
             </div>
+            <Footer />
           </main>
         </div>
       </div>

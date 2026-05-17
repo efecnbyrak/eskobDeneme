@@ -171,7 +171,7 @@ export function IsletmeSidebar() {
 
   return (
     <>
-      <aside className="w-[248px] h-screen sticky top-0 overflow-y-auto bg-slate-900 flex flex-col shrink-0">
+      <aside className="w-[248px] h-screen overflow-y-auto bg-slate-900 flex flex-col shrink-0">
         {/* Logo */}
         <div className="p-5 border-b border-slate-800">
           <Link href="/isletme/genel" className="flex items-center gap-2.5">
