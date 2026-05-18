@@ -26,6 +26,11 @@ interface EsnafProps {
   aciklama: string
   kapakFoto: string
   logoUrl: string
+  instagram: string
+  facebook: string
+  tiktok: string
+  youtube: string
+  bildirimAyarlari: Record<string, boolean> | null
 }
 
 function FotoYukle({ label, deger, onDegis }: { label: string; deger: string; onDegis: (url: string) => void }) {
@@ -131,6 +136,12 @@ const TEMALAR: { key: 'varsayilan' | 'gece' | 'zumrut' | 'gul'; ad: string; renk
   { key: 'gul', ad: 'Gül', renk: '#e11d48', ikinci: '#ffe4e6' },
 ]
 
+const BILDIRIMLER = [
+  { key: 'yeniRandevu', label: 'Yeni Randevu', aciklama: 'Yeni randevu alındığında e-posta gönder' },
+  { key: 'randevuIptali', label: 'Randevu İptali', aciklama: 'Randevu iptal edildiğinde e-posta gönder' },
+  { key: 'yeniYorum', label: 'Yeni Yorum', aciklama: 'Yeni müşteri yorumu geldiğinde e-posta gönder' },
+]
+
 export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps; esnaf: EsnafProps | null }) {
   const { toast } = useToast()
   const { tema, temaDegistir } = useTema()
@@ -151,6 +162,32 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
   })
   const [isletmeYukleniyor, setIsletmeYukleniyor] = useState(false)
   const [bekleyenIsletmeAdi, setBekleyenIsletmeAdi] = useState(esnaf?.bekleyenIsletmeAdi ?? null)
+
+  // Şifre Değiştir state
+  const [sifreDuzenle, setSifreDuzenle] = useState(false)
+  const [sifreForm, setSifreForm] = useState({ mevcutSifre: '', yeniSifre: '', tekrarSifre: '' })
+  const [sifreYukleniyor, setSifreYukleniyor] = useState(false)
+
+  // Bildirim Ayarları state
+  const [bildirimForm, setBildirimForm] = useState<Record<string, boolean>>(
+    esnaf?.bildirimAyarlari ?? { yeniRandevu: true, randevuIptali: true, yeniYorum: false }
+  )
+  const [bildirimYukleniyor, setBildirimYukleniyor] = useState(false)
+
+  // Sosyal Medya state
+  const [sosyalDuzenle, setSosyalDuzenle] = useState(false)
+  const [sosyalForm, setSosyalForm] = useState({
+    instagram: esnaf?.instagram ?? '',
+    facebook: esnaf?.facebook ?? '',
+    tiktok: esnaf?.tiktok ?? '',
+    youtube: esnaf?.youtube ?? '',
+  })
+  const [sosyalYukleniyor, setSosyalYukleniyor] = useState(false)
+
+  // Hesap Sil state
+  const [hesapSilModal, setHesapSilModal] = useState(false)
+  const [hesapSilOnay, setHesapSilOnay] = useState('')
+  const [hesapSilYukleniyor, setHesapSilYukleniyor] = useState(false)
 
   async function hesapKaydet() {
     setHesapYukleniyor(true)
@@ -203,6 +240,90 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
   function handleTelefonDegisim(e: React.ChangeEvent<HTMLInputElement>) {
     const formatted = telefonFormatla(e.target.value)
     setIsletmeForm((p) => ({ ...p, telefon: formatted }))
+  }
+
+  async function sifreKaydet() {
+    if (sifreForm.yeniSifre !== sifreForm.tekrarSifre) {
+      toast('Yeni şifreler eşleşmiyor.', 'error')
+      return
+    }
+    if (sifreForm.yeniSifre.length < 6) {
+      toast('Yeni şifre en az 6 karakter olmalıdır.', 'error')
+      return
+    }
+    setSifreYukleniyor(true)
+    try {
+      const res = await fetch('/api/kullanici/sifre', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mevcutSifre: sifreForm.mevcutSifre, yeniSifre: sifreForm.yeniSifre }),
+      })
+      if (res.ok) {
+        toast('Şifre başarıyla güncellendi!', 'success')
+        setSifreForm({ mevcutSifre: '', yeniSifre: '', tekrarSifre: '' })
+        setSifreDuzenle(false)
+      } else {
+        const d = await res.json()
+        toast(d.error || 'Bir hata oluştu.', 'error')
+      }
+    } finally {
+      setSifreYukleniyor(false)
+    }
+  }
+
+  async function bildirimKaydet(yeniDegerler: Record<string, boolean>) {
+    if (!esnaf) return
+    setBildirimYukleniyor(true)
+    try {
+      const res = await fetch(`/api/esnaf/${esnaf.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bildirimAyarlari: yeniDegerler }),
+      })
+      if (res.ok) {
+        toast('Bildirim ayarları kaydedildi.', 'success')
+      } else {
+        toast('Bir hata oluştu.', 'error')
+      }
+    } finally {
+      setBildirimYukleniyor(false)
+    }
+  }
+
+  async function sosyalKaydet() {
+    if (!esnaf) return
+    setSosyalYukleniyor(true)
+    try {
+      const res = await fetch(`/api/esnaf/${esnaf.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sosyalForm),
+      })
+      if (res.ok) {
+        toast('Sosyal medya bağlantıları kaydedildi!', 'success')
+        setSosyalDuzenle(false)
+      } else {
+        toast('Bir hata oluştu.', 'error')
+      }
+    } finally {
+      setSosyalYukleniyor(false)
+    }
+  }
+
+  async function hesapSil() {
+    setHesapSilYukleniyor(true)
+    try {
+      const res = await fetch('/api/kullanici/me', { method: 'DELETE' })
+      if (res.ok) {
+        window.location.href = '/giris'
+      } else {
+        const d = await res.json().catch(() => ({}))
+        toast(d.error || 'Bir hata oluştu.', 'error')
+      }
+    } finally {
+      setHesapSilYukleniyor(false)
+      setHesapSilModal(false)
+    }
   }
 
   return (
@@ -462,6 +583,207 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
           </div>
         </CardBody>
       </Card>
+
+      {/* Şifre Değiştir */}
+      <Card>
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Şifre Değiştir</h3>
+            <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Hesap güvenliğiniz için şifrenizi düzenli değiştirin</p>
+          </div>
+          {!sifreDuzenle && (
+            <Button variant="secondary" size="sm" onClick={() => setSifreDuzenle(true)}>Değiştir</Button>
+          )}
+        </div>
+        <CardBody>
+          {sifreDuzenle ? (
+            <div className="space-y-3">
+              <Input
+                label="Mevcut Şifre"
+                type="password"
+                value={sifreForm.mevcutSifre}
+                onChange={(e) => setSifreForm((p) => ({ ...p, mevcutSifre: e.target.value }))}
+                placeholder="••••••••"
+              />
+              <Input
+                label="Yeni Şifre"
+                type="password"
+                value={sifreForm.yeniSifre}
+                onChange={(e) => setSifreForm((p) => ({ ...p, yeniSifre: e.target.value }))}
+                placeholder="En az 6 karakter"
+              />
+              <Input
+                label="Yeni Şifre Tekrar"
+                type="password"
+                value={sifreForm.tekrarSifre}
+                onChange={(e) => setSifreForm((p) => ({ ...p, tekrarSifre: e.target.value }))}
+                placeholder="••••••••"
+              />
+              <div className="flex gap-3 pt-1">
+                <Button onClick={sifreKaydet} loading={sifreYukleniyor} className="flex-1">Kaydet</Button>
+                <Button variant="secondary" onClick={() => { setSifreDuzenle(false); setSifreForm({ mevcutSifre: '', yeniSifre: '', tekrarSifre: '' }) }} className="flex-1">İptal</Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-[var(--color-text-secondary)]">Şifrenizi değiştirmek için yukarıdaki butona tıklayın.</p>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Bildirim Ayarları */}
+      {esnaf && (
+        <Card>
+          <div className="px-6 py-4 border-b border-[var(--color-border)]">
+            <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Bildirim Ayarları</h3>
+            <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Hangi durumlarda e-posta bildirimi almak istediğinizi seçin</p>
+          </div>
+          <CardBody>
+            <div className="space-y-3">
+              {BILDIRIMLER.map((b) => (
+                <div key={b.key} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{b.label}</p>
+                    <p className="text-xs text-[var(--color-text-secondary)]">{b.aciklama}</p>
+                  </div>
+                  <button
+                    disabled={bildirimYukleniyor}
+                    onClick={async () => {
+                      const yeni = { ...bildirimForm, [b.key]: !bildirimForm[b.key] }
+                      setBildirimForm(yeni)
+                      await bildirimKaydet(yeni)
+                    }}
+                    className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50 ${bildirimForm[b.key] ? 'bg-indigo-500' : 'bg-slate-200'}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${bildirimForm[b.key] ? 'translate-x-5' : 'translate-x-0'}`}
+                    />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </CardBody>
+        </Card>
+      )}
+
+      {/* Sosyal Medya Bağlantıları */}
+      {esnaf && (
+        <Card>
+          <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Sosyal Medya Bağlantıları</h3>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Vitrininizdeki sosyal medya linkleri</p>
+            </div>
+            {!sosyalDuzenle && (
+              <Button variant="secondary" size="sm" onClick={() => setSosyalDuzenle(true)}>Düzenle</Button>
+            )}
+          </div>
+          <CardBody>
+            {sosyalDuzenle ? (
+              <div className="space-y-3">
+                {[
+                  { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/kullanici' },
+                  { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/sayfa' },
+                  { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@kullanici' },
+                  { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@kanal' },
+                ].map((s) => (
+                  <Input
+                    key={s.key}
+                    label={s.label}
+                    value={sosyalForm[s.key as keyof typeof sosyalForm]}
+                    placeholder={s.placeholder}
+                    onChange={(e) => setSosyalForm((p) => ({ ...p, [s.key]: e.target.value }))}
+                  />
+                ))}
+                <div className="flex gap-3 pt-1">
+                  <Button onClick={sosyalKaydet} loading={sosyalYukleniyor} className="flex-1">Kaydet</Button>
+                  <Button variant="secondary" onClick={() => setSosyalDuzenle(false)} className="flex-1">İptal</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2 text-sm">
+                {[
+                  { key: 'instagram', label: 'Instagram' },
+                  { key: 'facebook', label: 'Facebook' },
+                  { key: 'tiktok', label: 'TikTok' },
+                  { key: 'youtube', label: 'YouTube' },
+                ].map((s) => (
+                  <div key={s.key} className="flex justify-between items-center">
+                    <span className="text-[var(--color-text-secondary)]">{s.label}</span>
+                    <span className="font-medium text-xs truncate max-w-[200px]">
+                      {sosyalForm[s.key as keyof typeof sosyalForm] || <span className="text-slate-400">—</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardBody>
+        </Card>
+      )}
+
+      {/* Hesabı Sil */}
+      <Card>
+        <div className="px-6 py-4 border-b border-red-100 bg-red-50 rounded-t-[var(--radius-lg)]">
+          <h3 className="font-semibold text-red-700" style={{ fontFamily: 'var(--font-display)' }}>Tehlikeli Bölge</h3>
+          <p className="text-xs text-red-500 mt-0.5">Bu işlemler geri alınamaz</p>
+        </div>
+        <CardBody>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-red-700">Hesabı Sil</p>
+              <p className="text-xs text-slate-500 mt-0.5">Tüm verileriniz kalıcı olarak silinir.</p>
+            </div>
+            <button
+              onClick={() => setHesapSilModal(true)}
+              className="px-3 py-1.5 text-sm font-medium border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+            >
+              Hesabı Sil
+            </button>
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* Hesap Sil Onay Modalı */}
+      {hesapSilModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+          onClick={() => { setHesapSilModal(false); setHesapSilOnay('') }}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">⚠️</div>
+              <div className="text-center">
+                <p className="font-semibold text-slate-800 text-base">Hesabınızı Silmek İstiyor musunuz?</p>
+                <p className="text-sm text-slate-500 mt-1">Bu işlem geri alınamaz. Devam etmek için aşağıya <strong>HESABIMI SİL</strong> yazın.</p>
+              </div>
+            </div>
+            <input
+              className="w-full px-4 py-2.5 text-sm border border-red-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300 mb-4"
+              placeholder="HESABIMI SİL"
+              value={hesapSilOnay}
+              onChange={(e) => setHesapSilOnay(e.target.value)}
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setHesapSilModal(false); setHesapSilOnay('') }}
+                className="flex-1 px-4 py-2.5 text-sm font-medium border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                İptal
+              </button>
+              <button
+                onClick={hesapSil}
+                disabled={hesapSilOnay !== 'HESABIMI SİL' || hesapSilYukleniyor}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {hesapSilYukleniyor ? 'Siliniyor...' : 'Evet, Sil'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

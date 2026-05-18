@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const MENU_ITEMS = [
@@ -82,6 +84,13 @@ const MENU_ITEMS = [
 
 export function Sidebar({ plan = 'UCRETSIZ' }: { plan?: string }) {
   const pathname = usePathname()
+  const [cikisModal, setCikisModal] = useState(false)
+  const [cikisYukleniyor, setCikisYukleniyor] = useState(false)
+
+  async function handleCikis() {
+    setCikisYukleniyor(true)
+    await signOut({ callbackUrl: '/isletme/giris' })
+  }
 
   return (
     <aside className="w-[240px] h-full bg-white border-r border-[var(--color-border)] flex flex-col shrink-0 overflow-y-auto">
@@ -145,16 +154,58 @@ export function Sidebar({ plan = 'UCRETSIZ' }: { plan?: string }) {
 
       {/* Çıkış */}
       <div className="p-3 border-t border-[var(--color-border)]">
-        <a
-          href="/api/auth/signout"
-          className="flex items-center gap-3 text-sm text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-50 transition-all px-3 py-2.5 rounded-[var(--radius-md)]"
+        <button
+          onClick={() => setCikisModal(true)}
+          className="w-full flex items-center gap-3 text-sm text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-50 transition-all px-3 py-2.5 rounded-[var(--radius-md)]"
         >
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           Çıkış Yap
-        </a>
+        </button>
       </div>
+
+      {/* Çıkış Onay Modalı */}
+      {cikisModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setCikisModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-slate-800 text-base">Çıkış Yapmak İstiyor musunuz?</p>
+                <p className="text-sm text-slate-500 mt-1">Oturumunuz kapatılacak ve giriş sayfasına yönlendirileceksiniz.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCikisModal(false)}
+                disabled={cikisYukleniyor}
+                className="flex-1 px-4 py-2.5 text-sm font-medium border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleCikis}
+                disabled={cikisYukleniyor}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
+              >
+                {cikisYukleniyor ? 'Çıkılıyor...' : 'Evet, Çıkış Yap'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   )
 }

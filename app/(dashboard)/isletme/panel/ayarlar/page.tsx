@@ -34,6 +34,11 @@ export default async function AyarlarSayfasi() {
           aciklama: kullanici.esnaf.aciklama ?? '',
           kapakFoto: kullanici.esnaf.kapakFoto ?? '',
           logoUrl: kullanici.esnaf.logoUrl ?? '',
+          instagram: kullanici.esnaf.instagram ?? '',
+          facebook: (kullanici.esnaf as { facebook?: string | null }).facebook ?? '',
+          tiktok: (kullanici.esnaf as { tiktok?: string | null }).tiktok ?? '',
+          youtube: (kullanici.esnaf as { youtube?: string | null }).youtube ?? '',
+          bildirimAyarlari: (kullanici.esnaf as { bildirimAyarlari?: unknown }).bildirimAyarlari as Record<string, boolean> | null ?? null,
         } : null}
       />
     </div>

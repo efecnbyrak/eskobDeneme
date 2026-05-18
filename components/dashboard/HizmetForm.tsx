@@ -14,20 +14,38 @@ interface HizmetFormProps {
 
 const IKONLAR = ['✂️', '💆', '💅', '🛁', '🧴', '💇', '🏋️', '🍽️', '🚗', '🔧', '📸', '🎨', '🧹', '🐾', '💊']
 
+type HizmetEk = {
+  kategori?: string
+  indirimYuzde?: number
+  onecikar?: boolean
+  sira?: number
+  ikon?: string
+  onlineOdeme?: boolean
+  minOnRezervasyon?: number
+  maksKatilimci?: number
+  etiketler?: string[]
+}
+
 export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProps) {
   const [yukleniyor, setYukleniyor] = useState(false)
+  const h = hizmet as (typeof hizmet & HizmetEk) | undefined
   const [form, setForm] = useState({
-    ad: hizmet?.ad || '',
-    aciklama: hizmet?.aciklama || '',
-    fiyat: hizmet?.fiyat || 0,
-    sure: hizmet?.sure || 60,
-    kategori: (hizmet as { kategori?: string })?.kategori || '',
-    indirimYuzde: (hizmet as { indirimYuzde?: number })?.indirimYuzde || 0,
-    onecikar: (hizmet as { onecikar?: boolean })?.onecikar || false,
-    sira: (hizmet as { sira?: number })?.sira || 0,
-    ikon: (hizmet as { ikon?: string })?.ikon || '',
+    ad: h?.ad || '',
+    aciklama: h?.aciklama || '',
+    fiyat: h?.fiyat || 0,
+    sure: h?.sure || 60,
+    kategori: h?.kategori || '',
+    indirimYuzde: h?.indirimYuzde || 0,
+    onecikar: h?.onecikar || false,
+    sira: h?.sira || 0,
+    ikon: h?.ikon || '',
+    onlineOdeme: h?.onlineOdeme || false,
+    minOnRezervasyon: h?.minOnRezervasyon || 0,
+    maksKatilimci: h?.maksKatilimci || 1,
+    etiketler: h?.etiketler || [] as string[],
   })
   const [ikonSecici, setIkonSecici] = useState(false)
+  const [etiketInput, setEtiketInput] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -201,6 +219,109 @@ export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProp
             className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.onecikar ? 'translate-x-5' : 'translate-x-0'}`}
           />
         </button>
+      </div>
+
+      {/* Online Ödeme Toggle */}
+      <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+        <div>
+          <p className="text-sm font-semibold text-emerald-800">Online Ödeme Mevcut</p>
+          <p className="text-xs text-emerald-600 mt-0.5">Bu hizmet için online ödeme kabul edilir</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setForm((p) => ({ ...p, onlineOdeme: !p.onlineOdeme }))}
+          className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none ${form.onlineOdeme ? 'bg-emerald-500' : 'bg-slate-200'}`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.onlineOdeme ? 'translate-x-5' : 'translate-x-0'}`}
+          />
+        </button>
+      </div>
+
+      {/* Min. Rezervasyon + Maks. Katılımcı */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Min. Ön Rezervasyon (saat)</label>
+          <input
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={form.minOnRezervasyon === 0 ? '' : form.minOnRezervasyon}
+            placeholder="0"
+            onChange={(e) => setForm((p) => ({ ...p, minOnRezervasyon: e.target.value === '' ? 0 : Number(e.target.value) }))}
+          />
+          <p className="text-xs text-slate-400">Randevu en az kaç saat önceden alınabilir</p>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Maks. Katılımcı</label>
+          <input
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            value={form.maksKatilimci}
+            onChange={(e) => setForm((p) => ({ ...p, maksKatilimci: Math.max(1, Number(e.target.value)) }))}
+          />
+          <p className="text-xs text-slate-400">Aynı anda kaç kişi bu hizmeti alabilir</p>
+        </div>
+      </div>
+
+      {/* Etiketler */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium">Hizmet Etiketleri</label>
+        <div className="flex gap-2">
+          <input
+            className="flex-1 px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)]"
+            type="text"
+            value={etiketInput}
+            placeholder="ör. Kadın, Erkek, Çocuk, Vegan..."
+            onChange={(e) => setEtiketInput(e.target.value)}
+            onKeyDown={(e) => {
+              if ((e.key === 'Enter' || e.key === ',') && etiketInput.trim()) {
+                e.preventDefault()
+                const yeni = etiketInput.trim().replace(/,$/, '')
+                if (yeni && !form.etiketler.includes(yeni)) {
+                  setForm((p) => ({ ...p, etiketler: [...p.etiketler, yeni] }))
+                }
+                setEtiketInput('')
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const yeni = etiketInput.trim()
+              if (yeni && !form.etiketler.includes(yeni)) {
+                setForm((p) => ({ ...p, etiketler: [...p.etiketler, yeni] }))
+              }
+              setEtiketInput('')
+            }}
+            className="px-3 py-2 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] hover:bg-slate-50 transition-colors"
+          >
+            Ekle
+          </button>
+        </div>
+        {form.etiketler.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {form.etiketler.map((etiket) => (
+              <span
+                key={etiket}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full"
+              >
+                {etiket}
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, etiketler: p.etiketler.filter((e) => e !== etiket) }))}
+                  className="text-indigo-400 hover:text-indigo-700 leading-none"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="text-xs text-slate-400">Enter veya virgül ile etiket ekleyin</p>
       </div>
 
       <div className="flex gap-3 pt-2">

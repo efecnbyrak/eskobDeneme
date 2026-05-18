@@ -75,15 +75,20 @@ export async function PUT(req: NextRequest, { params }: Props) {
         telefon: temizMetinOpsiyonel(body.telefon, 30),
         whatsapp: temizMetinOpsiyonel(body.whatsapp, 30),
         website: temizMetinOpsiyonel(body.website, 200),
-        instagram: temizMetinOpsiyonel(body.instagram, 60),
+        instagram: temizMetinOpsiyonel(body.instagram, 200),
+        facebook: temizMetinOpsiyonel(body.facebook, 200),
+        tiktok: temizMetinOpsiyonel(body.tiktok, 200),
+        youtube: temizMetinOpsiyonel(body.youtube, 200),
         kapakFoto: temizMetinOpsiyonel(body.kapakFoto, 500),
         logoUrl: temizMetinOpsiyonel(body.logoUrl, 500),
+        bildirimAyarlari: body.bildirimAyarlari ?? undefined,
         calismaS: body.calismaS ?? undefined,
       },
       select: {
         id: true, slug: true, sehir: true, isletmeAdi: true, bekleyenIsletmeAdi: true, aciklama: true,
         telefon: true, whatsapp: true, website: true, instagram: true,
-        kapakFoto: true, logoUrl: true, calismaS: true,
+        facebook: true, tiktok: true, youtube: true,
+        kapakFoto: true, logoUrl: true, calismaS: true, bildirimAyarlari: true,
       },
     })
 

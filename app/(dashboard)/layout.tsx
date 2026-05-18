@@ -25,13 +25,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <ToastProvider>
       <ThemeProvider>
       <HosgeldinToast />
-      <div className="isletme-panel flex min-h-screen bg-[var(--color-bg)]">
+      <div className="isletme-panel flex h-screen overflow-hidden bg-[var(--color-bg)]">
         {/* Desktop Sidebar */}
-        <div className="hidden lg:flex sticky top-0 h-screen">
+        <div className="hidden lg:flex flex-shrink-0 h-screen overflow-y-auto">
           <Sidebar plan={plan} />
         </div>
 
-        <div className="flex-1 min-w-0 overflow-auto flex flex-col">
+        <div className="flex-1 min-w-0 overflow-y-auto flex flex-col">
           {/* Mobile TopBar */}
           <div className="lg:hidden sticky top-0 z-30 bg-white border-b border-[var(--color-border)] px-4 h-14 flex items-center justify-between">
             <span className="font-bold text-indigo-600 font-display flex items-center gap-2">

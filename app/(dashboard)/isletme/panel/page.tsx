@@ -113,11 +113,6 @@ export default async function PanelSayfasi() {
                 Randevuları Gör
               </button>
             </Link>
-            <a href={vitrinUrl} target="_blank" rel="noopener noreferrer">
-              <button style={{ height: 40, padding: '0 20px', fontSize: 14, fontWeight: 600, background: 'rgba(255,255,255,0.15)', color: 'white', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
-                Vitrine Git ↗
-              </button>
-            </a>
           </div>
         </div>
       </div>

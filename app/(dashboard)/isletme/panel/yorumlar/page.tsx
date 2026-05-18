@@ -39,6 +39,13 @@ export default async function YorumlarSayfasi() {
 
   const yorumlar = kullanici.esnaf.yorumlar
 
+  function maskeAd(ad: string): string {
+    return ad
+      .split(' ')
+      .map((kelime) => kelime.length > 1 ? kelime[0] + '*'.repeat(kelime.length - 1) : kelime)
+      .join(' ')
+  }
+
   return (
     <div>
       <TopBar baslik="Yorumlar" aciklama={`Toplam ${yorumlar.length} yorum`} />
@@ -53,7 +60,7 @@ export default async function YorumlarSayfasi() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <p className="font-medium text-sm">{y.musteriAd}</p>
+                      <p className="font-medium text-sm">{maskeAd(y.musteriAd)}</p>
                       <span className="text-xs text-[var(--color-text-secondary)]">
                         {formatTarih(y.olusturmaT.toISOString())}
                       </span>
