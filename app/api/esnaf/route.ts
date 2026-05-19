@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
     const sehir = searchParams.get('sehir')
     const kategori = searchParams.get('kategori')
     const arama = searchParams.get('arama')
+    const kampanyali = searchParams.get('kampanyali') === 'true'
     const sayfa = Math.max(1, parseInt(searchParams.get('sayfa') || '1') || 1)
     const limit = 12
 
@@ -24,7 +25,17 @@ export async function GET(req: NextRequest) {
         OR: [
           { isletmeAdi: { contains: arama, mode: 'insensitive' as const } },
           { aciklama: { contains: arama, mode: 'insensitive' as const } },
+          { kategori: { ad: { contains: arama, mode: 'insensitive' as const } } },
         ],
+      }),
+      ...(kampanyali && {
+        hizmetler: {
+          some: {
+            aktif: true,
+            indirimYuzde: { gt: 0 },
+            indirimBitis: { gte: new Date() },
+          },
+        },
       }),
     }
 

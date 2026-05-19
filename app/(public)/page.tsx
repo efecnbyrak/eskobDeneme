@@ -20,13 +20,6 @@ const PROMO_BANNERLAR = [
   { emoji: '🎨', title: 'Güzellik & Estetik', subtitle: 'Trend tasarımlar' },
 ]
 
-const NEDEN_BIZ = [
-  { icon: '🏪', title: '5.000+', sub: 'Kayıtlı İşletme' },
-  { icon: '📅', title: '100.000+', sub: 'Alınan Randevu' },
-  { icon: '⭐', title: '4.8/5', sub: 'Ortalama Puan' },
-  { icon: '🌆', title: '81', sub: 'İlde Hizmet' },
-]
-
 export default async function AnaSayfa() {
   const session = await auth()
   const userId = session?.user?.id
@@ -38,6 +31,10 @@ export default async function AnaSayfa() {
     recentlyViewed,
     topEsnaf,
     favoriIdleri,
+    kayitliIsletme,
+    alinaniRandevu,
+    puanAggregate,
+    sehirler,
   ] = await Promise.all([
     getCampaignsService({ limit: 8 }),
     getRecommendationsService(userId, { limit: 8 }),
@@ -48,7 +45,23 @@ export default async function AnaSayfa() {
           .findMany({ where: { kullaniciId: Number(userId) }, select: { esnafId: true } })
           .then((rows) => new Set(rows.map((r) => r.esnafId)))
       : Promise.resolve(new Set<number>()),
+    prisma.esnaf.count({ where: { onaylı: true, aktif: true } }),
+    prisma.randevu.count(),
+    prisma.yorum.aggregate({ _avg: { puan: true } }),
+    prisma.esnaf.findMany({ where: { onaylı: true, aktif: true }, select: { sehir: true }, distinct: ['sehir'] }),
   ])
+
+  const ortalamaPuanDegeri = puanAggregate._avg.puan
+    ? puanAggregate._avg.puan.toFixed(1)
+    : '–'
+  const ilSayisi = sehirler.length
+
+  const NEDEN_BIZ = [
+    { icon: '🏪', title: kayitliIsletme.toLocaleString('tr-TR') + '+', sub: 'Kayıtlı İşletme' },
+    { icon: '📅', title: alinaniRandevu.toLocaleString('tr-TR') + '+', sub: 'Alınan Randevu' },
+    { icon: '⭐', title: `${ortalamaPuanDegeri}/5`, sub: 'Ortalama Puan' },
+    { icon: '🌆', title: String(ilSayisi), sub: 'İlde Hizmet' },
+  ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#F5F6F8' }}>
@@ -129,10 +142,16 @@ export default async function AnaSayfa() {
           {authenticated && (
             <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 8 }}>
               <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>Popüler:</span>
-              {['Berber', 'Kafe', 'Kuaför', 'Restoran', 'Oto Servis'].map((tag) => (
+              {[
+                { ad: 'Berber', href: '/ara?kategori=berber' },
+                { ad: 'Kafe', href: '/ara?kategori=kafe' },
+                { ad: 'Kuaför', href: '/ara?kategori=guzellik' },
+                { ad: 'Restoran', href: '/ara?kategori=restoran' },
+                { ad: 'Oto Servis', href: '/ara?arama=Oto+Servis' },
+              ].map((tag) => (
                 <Link
-                  key={tag}
-                  href={`/ara?arama=${encodeURIComponent(tag)}`}
+                  key={tag.ad}
+                  href={tag.href}
                   style={{
                     fontSize: 13, fontWeight: 600, color: 'white',
                     background: 'rgba(255,255,255,0.18)',
@@ -141,7 +160,7 @@ export default async function AnaSayfa() {
                     textDecoration: 'none', transition: 'background 0.2s',
                   }}
                 >
-                  {tag}
+                  {tag.ad}
                 </Link>
               ))}
             </div>

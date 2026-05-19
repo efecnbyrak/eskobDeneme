@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { YildizPuan } from '@/components/shared/YildizPuan'
 import { ortalamaPuan, isletmeAcikMi, formatFiyat } from '@/lib/utils'
@@ -21,8 +20,6 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
   const minFiyat = esnaf.hizmetler?.length
     ? Math.min(...esnaf.hizmetler.map((h) => Number(h.fiyat)))
     : null
-  const fallbackSrc = `https://picsum.photos/seed/${esnaf.id}/400/400`
-  const [imgSrc, setImgSrc] = useState(esnaf.kapakFoto || fallbackSrc)
 
   return (
     <Link
@@ -40,14 +37,35 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
       {/* Image */}
       <div className="relative w-full overflow-hidden" style={{ paddingBottom: '80%' }}>
         <div className="absolute inset-0" style={{ background: 'var(--color-bg-muted)' }}>
-          <Image
-            src={imgSrc}
-            alt={esnaf.isletmeAdi}
-            fill
-            className="object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-            onError={() => setImgSrc(fallbackSrc)}
-          />
+          {esnaf.kapakFoto ? (
+            <Image
+              src={esnaf.kapakFoto}
+              alt={esnaf.isletmeAdi}
+              fill
+              className="object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex flex-col items-center justify-center gap-2 group-hover:scale-[1.03] transition-transform duration-700"
+              style={{
+                background: `linear-gradient(135deg, ${esnaf.kategori.renk}30 0%, ${esnaf.kategori.renk}60 50%, ${esnaf.kategori.renk}20 100%)`,
+              }}
+            >
+              <span style={{ fontSize: 52, lineHeight: 1, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))' }}>
+                {esnaf.kategori.ikon}
+              </span>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'rgba(0,0,0,0.45)',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}>
+                {esnaf.kategori.ad}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent, transparent)' }} />

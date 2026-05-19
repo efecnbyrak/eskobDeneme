@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { EsnafKart } from '@/components/public/EsnafKart'
 import { EsnafKartSkeleton } from '@/components/ui/Skeleton'
 import { Loader } from '@/components/ui/Loader'
@@ -21,11 +22,13 @@ const inputStyle: React.CSSProperties = {
   transition: 'all 0.2s',
 }
 
-export default function AraSayfasi() {
-  const [sehir, setSehir] = useState('')
-  const [ustTur, setUstTur] = useState('')
-  const [kategori, setKategori] = useState('')
-  const [arama, setArama] = useState('')
+function AraSayfasiIc() {
+  const searchParams = useSearchParams()
+  const [sehir, setSehir] = useState(() => searchParams.get('sehir') || '')
+  const [ustTur, setUstTur] = useState(() => searchParams.get('ustKategori') || '')
+  const [kategori, setKategori] = useState(() => searchParams.get('kategori') || '')
+  const [arama, setArama] = useState(() => searchParams.get('arama') || '')
+  const [kampanyali, setKampanyali] = useState(() => searchParams.get('kampanyali') === 'true')
   const [sayfa, setSayfa] = useState(1)
   const [authenticated, setAuthenticated] = useState(false)
   const [favoriIdleri, setFavoriIdleri] = useState<Set<number>>(new Set())
@@ -46,16 +49,17 @@ export default function AraSayfasi() {
   }, [])
 
   const debouncedArama = useDebounce(arama, 400)
-  const { esnaflar, yukleniyor, toplamSayfa } = useEsnaf({ sehir, kategori, arama: debouncedArama, sayfa })
+  const { esnaflar, yukleniyor, toplamSayfa } = useEsnaf({ sehir, kategori, arama: debouncedArama, sayfa, kampanyali })
 
   const altKategoriler = ustTur ? (ALT_KATEGORILER[ustTur] ?? []) : []
-  const filtreAktif = sehir || ustTur || kategori || arama
+  const filtreAktif = sehir || ustTur || kategori || arama || kampanyali
 
   function filtreleriTemizle() {
     setSehir('')
     setUstTur('')
     setKategori('')
     setArama('')
+    setKampanyali(false)
     setSayfa(1)
   }
 
@@ -108,6 +112,29 @@ export default function AraSayfasi() {
             </Button>
           )}
         </div>
+
+        {/* Kampanyalı filtre */}
+        {kampanyali && (
+          <div style={{ marginBottom: 12 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 16px', borderRadius: 24,
+              background: 'linear-gradient(135deg, #F7620A15, #FFB34720)',
+              border: '1.5px solid #F7620A60',
+              color: '#F7620A',
+              fontSize: 13, fontWeight: 700,
+            }}>
+              🏷️ Kampanyalı İşletmeler Gösteriliyor
+              <button
+                type="button"
+                onClick={() => { setKampanyali(false); setSayfa(1) }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#F7620A', padding: 0, lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Üst Tür */}
         <div style={{ marginBottom: 12 }}>
@@ -215,5 +242,13 @@ export default function AraSayfasi() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function AraSayfasi() {
+  return (
+    <Suspense fallback={<div style={{ padding: '80px 0', textAlign: 'center', color: 'var(--color-text-secondary)' }}>Yükleniyor...</div>}>
+      <AraSayfasiIc />
+    </Suspense>
   )
 }

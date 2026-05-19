@@ -20,9 +20,17 @@ export function QRKodWidget({ url, boyut = 128 }: QRKodWidgetProps) {
         height={boyut}
         className="rounded-[var(--radius-sm)]"
       />
-      <p className="text-xs text-[var(--color-text-secondary)] text-center max-w-[140px] truncate">
-        {url}
-      </p>
+      <div style={{
+        border: '1px solid var(--color-border)',
+        borderRadius: 8,
+        padding: '6px 12px',
+        background: 'var(--color-bg-muted)',
+        maxWidth: 200,
+      }}>
+        <p className="text-xs text-[var(--color-text-secondary)] text-center truncate">
+          {url}
+        </p>
+      </div>
     </div>
   )
 }

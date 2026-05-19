@@ -8,6 +8,7 @@ interface EsnafFiltre {
   kategori?: string
   arama?: string
   sayfa?: number
+  kampanyali?: boolean
 }
 
 export function useEsnaf(filtre: EsnafFiltre = {}) {
@@ -22,6 +23,7 @@ export function useEsnaf(filtre: EsnafFiltre = {}) {
     if (filtre.kategori) params.set('kategori', filtre.kategori)
     if (filtre.arama) params.set('arama', filtre.arama)
     if (filtre.sayfa) params.set('sayfa', String(filtre.sayfa))
+    if (filtre.kampanyali) params.set('kampanyali', 'true')
 
     setYukleniyor(true)
     fetch(`/api/esnaf?${params.toString()}`)
@@ -32,7 +34,7 @@ export function useEsnaf(filtre: EsnafFiltre = {}) {
       })
       .catch(() => setHata('Esnaflar yüklenemedi'))
       .finally(() => setYukleniyor(false))
-  }, [filtre.sehir, filtre.kategori, filtre.arama, filtre.sayfa])
+  }, [filtre.sehir, filtre.kategori, filtre.arama, filtre.sayfa, filtre.kampanyali])
 
   return { esnaflar, yukleniyor, hata, toplamSayfa }
 }

@@ -102,10 +102,24 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
           <div style={{
             position: 'absolute', inset: 0,
             background: `linear-gradient(135deg, ${esnaf.kategori.renk}40, ${esnaf.kategori.renk}15)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 80,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 12,
           }}>
-            {esnaf.kategori.ikon}
+            <span style={{ fontSize: 80, lineHeight: 1, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))' }}>
+              {esnaf.kategori.ikon}
+            </span>
+            <span style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'rgba(0,0,0,0.45)',
+              background: 'rgba(255,255,255,0.6)',
+              backdropFilter: 'blur(4px)',
+              padding: '4px 14px',
+              borderRadius: 999,
+              letterSpacing: '0.02em',
+            }}>
+              Bu işletme henüz kapak fotoğrafı eklememiş
+            </span>
           </div>
         )}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)' }} />
