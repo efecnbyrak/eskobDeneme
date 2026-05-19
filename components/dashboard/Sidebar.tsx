@@ -97,8 +97,8 @@ export function Sidebar({ plan = 'UCRETSIZ' }: { plan?: string }) {
       {/* Logo */}
       <div className="p-5 border-b border-[var(--color-border)]">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm font-bold font-display shrink-0">EV</span>
-          <span className="font-bold text-indigo-600 font-display">Esnaf Vitrin</span>
+          <span className="w-8 h-8 rounded-lg text-white flex items-center justify-center text-sm font-bold font-display shrink-0" style={{ background: 'var(--color-primary)' }}>EV</span>
+          <span className="font-bold font-display" style={{ color: 'var(--color-primary)' }}>Esnaf Vitrin</span>
         </Link>
       </div>
 
@@ -117,11 +117,23 @@ export function Sidebar({ plan = 'UCRETSIZ' }: { plan?: string }) {
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] text-sm transition-all',
                     aktif
-                      ? 'bg-indigo-50 text-indigo-600 font-semibold'
-                      : 'text-[var(--color-text-secondary)] hover:bg-indigo-50 hover:text-indigo-600'
+                      ? 'font-semibold'
+                      : 'text-[var(--color-text-secondary)]'
                   )}
+                  style={aktif ? {
+                    background: 'var(--color-accent)',
+                    color: 'var(--color-primary)',
+                  } : undefined}
+                  onMouseEnter={aktif ? undefined : (e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = 'var(--color-accent)'
+                    ;(e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-primary)'
+                  }}
+                  onMouseLeave={aktif ? undefined : (e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = ''
+                    ;(e.currentTarget as HTMLAnchorElement).style.color = ''
+                  }}
                 >
-                  <span className={cn('shrink-0', aktif ? 'text-indigo-600' : '')}>
+                  <span className="shrink-0" style={aktif ? { color: 'var(--color-primary)' } : undefined}>
                     {item.ikon}
                   </span>
                   {item.label}

@@ -327,252 +327,462 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
   }
 
   return (
-    <div className="space-y-6 max-w-lg">
-      {/* Hesap Bilgileri */}
-      <Card>
-        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-          <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Hesap Bilgileri</h3>
-          {!hesapDuzenle && (
-            <Button variant="secondary" size="sm" onClick={() => setHesapDuzenle(true)}>Değiştir</Button>
-          )}
-        </div>
-        <CardBody>
-          {hesapDuzenle ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <Input
-                  label="Ad"
-                  value={hesapForm.ad}
-                  onChange={(e) => setHesapForm((p) => ({ ...p, ad: e.target.value }))}
-                />
-                <Input
-                  label="Soyad"
-                  value={hesapForm.soyad}
-                  onChange={(e) => setHesapForm((p) => ({ ...p, soyad: e.target.value }))}
-                />
-              </div>
-              {/* E-posta — altyapı hazır, UI şimdilik disabled */}
-              <div className="flex items-center justify-between text-sm py-1">
-                <span className="text-[var(--color-text-secondary)]">E-posta</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-[var(--color-text-secondary)]">{maskeleEmail(kullanici.email)}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">🔒 Yakında</span>
-                </div>
-              </div>
-              <div className="flex gap-3 pt-1">
-                <Button onClick={hesapKaydet} loading={hesapYukleniyor} className="flex-1">Kaydet</Button>
-                <Button variant="secondary" onClick={() => { setHesapDuzenle(false); setHesapForm({ ad: kullanici.ad, soyad: kullanici.soyad }) }} className="flex-1">İptal</Button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-secondary)]">Ad Soyad</span>
-                {/* Madde 1 fix: hesapForm state'inden göster, prop'tan değil */}
-                <span className="font-medium">{hesapForm.ad} {hesapForm.soyad}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-secondary)]">E-posta</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{maskeleEmail(kullanici.email)}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">🔒 Yakında</span>
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-secondary)]">Plan</span>
-                <Badge variant={PLAN_RENK[kullanici.plan]}>{PLAN_ADI[kullanici.plan]}</Badge>
-              </div>
-            </div>
-          )}
-        </CardBody>
-      </Card>
+    <div className="space-y-6 w-full">
 
-      {/* İşletmem */}
-      {esnaf && (
-        <Card>
-          <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-            <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>İşletmem</h3>
-            {!isletmeDuzenle && (
-              <Button variant="secondary" size="sm" onClick={() => setIsletmeDuzenle(true)}>Değiştir</Button>
-            )}
-          </div>
-          <CardBody>
-            {isletmeDuzenle ? (
-              <div className="space-y-4">
-                <div>
-                  <Input
-                    label="İşletme Adı"
-                    value={isletmeForm.isletmeAdi}
-                    onChange={(e) => setIsletmeForm((p) => ({ ...p, isletmeAdi: e.target.value }))}
-                  />
-                  <p className="text-xs text-amber-600 mt-1">⚠️ İşletme adı değişikliği Süper Admin onayı gerektirir.</p>
-                </div>
-                <div>
-                  <Input
-                    label="Telefon"
-                    value={isletmeForm.telefon}
-                    placeholder="0533 045 00 92"
-                    maxLength={14}
-                    onChange={handleTelefonDegisim}
-                    inputMode="numeric"
-                  />
-                  <p className="text-xs text-slate-400 mt-1">En fazla 11 haneli numara giriniz.</p>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium">Açıklama</label>
-                  <textarea
-                    className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] resize-none"
-                    rows={3}
-                    maxLength={500}
-                    value={isletmeForm.aciklama}
-                    onChange={(e) => setIsletmeForm((p) => ({ ...p, aciklama: e.target.value }))}
-                  />
-                </div>
-                <FotoYukle
-                  label="Kapak Fotoğrafı"
-                  deger={isletmeForm.kapakFoto}
-                  onDegis={(url) => setIsletmeForm((p) => ({ ...p, kapakFoto: url }))}
-                />
-                <FotoYukle
-                  label="Logo"
-                  deger={isletmeForm.logoUrl}
-                  onDegis={(url) => setIsletmeForm((p) => ({ ...p, logoUrl: url }))}
-                />
-                <div className="flex gap-3 pt-1">
-                  <Button onClick={isletmeKaydet} loading={isletmeYukleniyor} className="flex-1">Kaydet</Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setIsletmeDuzenle(false)
-                      setIsletmeForm({
-                        isletmeAdi: esnaf.isletmeAdi,
-                        telefon: telefonFormatla(esnaf.telefon),
-                        aciklama: esnaf.aciklama,
-                        kapakFoto: esnaf.kapakFoto,
-                        logoUrl: esnaf.logoUrl,
-                      })
-                    }}
-                    className="flex-1"
-                  >
-                    İptal
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-[var(--color-text-secondary)]">İşletme Adı</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{isletmeForm.isletmeAdi || '—'}</span>
-                    {bekleyenIsletmeAdi && bekleyenIsletmeAdi !== isletmeForm.isletmeAdi && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
-                        Onay bekleniyor: {bekleyenIsletmeAdi}
-                      </span>
-                    )}
+      {/* ── Üst Grid: Sol + Sağ sütun ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+        {/* Sol Sütun */}
+        <div className="space-y-6">
+
+          {/* Hesap Bilgileri */}
+          <Card>
+            <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+              <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Hesap Bilgileri</h3>
+              {!hesapDuzenle && (
+                <Button variant="secondary" size="sm" onClick={() => setHesapDuzenle(true)}>Değiştir</Button>
+              )}
+            </div>
+            <CardBody>
+              {hesapDuzenle ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      label="Ad"
+                      value={hesapForm.ad}
+                      onChange={(e) => setHesapForm((p) => ({ ...p, ad: e.target.value }))}
+                    />
+                    <Input
+                      label="Soyad"
+                      value={hesapForm.soyad}
+                      onChange={(e) => setHesapForm((p) => ({ ...p, soyad: e.target.value }))}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-sm py-1">
+                    <span className="text-[var(--color-text-secondary)]">E-posta</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-[var(--color-text-secondary)]">{maskeleEmail(kullanici.email)}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">🔒 Yakında</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 pt-1">
+                    <Button onClick={hesapKaydet} loading={hesapYukleniyor} className="flex-1">Kaydet</Button>
+                    <Button variant="secondary" onClick={() => { setHesapDuzenle(false); setHesapForm({ ad: kullanici.ad, soyad: kullanici.soyad }) }} className="flex-1">İptal</Button>
                   </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--color-text-secondary)]">Telefon</span>
-                  <span className="font-medium">{isletmeForm.telefon || '—'}</span>
-                </div>
-                {isletmeForm.aciklama && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[var(--color-text-secondary)]">Açıklama</span>
-                    <span className="font-medium text-xs leading-relaxed">{isletmeForm.aciklama}</span>
+              ) : (
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--color-text-secondary)]">Ad Soyad</span>
+                    <span className="font-medium">{hesapForm.ad} {hesapForm.soyad}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--color-text-secondary)]">E-posta</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{maskeleEmail(kullanici.email)}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">🔒 Yakında</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--color-text-secondary)]">Plan</span>
+                    <Badge variant={PLAN_RENK[kullanici.plan]}>{PLAN_ADI[kullanici.plan]}</Badge>
+                  </div>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+
+          {/* İşletmem */}
+          {esnaf && (
+            <Card>
+              <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+                <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>İşletmem</h3>
+                {!isletmeDuzenle && (
+                  <Button variant="secondary" size="sm" onClick={() => setIsletmeDuzenle(true)}>Değiştir</Button>
                 )}
               </div>
-            )}
-          </CardBody>
-        </Card>
-      )}
-
-      {/* Görünüm / Renk Teması */}
-      <Card>
-        <div className="px-6 py-4 border-b border-[var(--color-border)]">
-          <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Görünüm</h3>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Panel renk temanızı kişiselleştirin</p>
-        </div>
-        <CardBody>
-          <div className="grid grid-cols-2 gap-3">
-            {TEMALAR.map((t) => {
-              const aktif = tema === t.key
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => temaDegistir(t.key)}
-                  className="flex items-center gap-3 p-3 rounded-[var(--radius-md)] border-2 transition-all text-left"
-                  style={{
-                    borderColor: aktif ? t.renk : 'var(--color-border)',
-                    background: aktif ? t.ikinci : 'transparent',
-                  }}
-                >
-                  <div className="flex gap-1 shrink-0">
-                    <div className="w-4 h-4 rounded-full" style={{ background: t.renk }} />
-                    <div className="w-4 h-4 rounded-full" style={{ background: t.ikinci }} />
+              <CardBody>
+                {isletmeDuzenle ? (
+                  <div className="space-y-4">
+                    <div>
+                      <Input
+                        label="İşletme Adı"
+                        value={isletmeForm.isletmeAdi}
+                        onChange={(e) => setIsletmeForm((p) => ({ ...p, isletmeAdi: e.target.value }))}
+                      />
+                      <p className="text-xs text-amber-600 mt-1">⚠️ İşletme adı değişikliği Süper Admin onayı gerektirir.</p>
+                    </div>
+                    <div>
+                      <Input
+                        label="Telefon"
+                        value={isletmeForm.telefon}
+                        placeholder="0533 045 00 92"
+                        maxLength={14}
+                        onChange={handleTelefonDegisim}
+                        inputMode="numeric"
+                      />
+                      <p className="text-xs text-slate-400 mt-1">En fazla 11 haneli numara giriniz.</p>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-sm font-medium">Açıklama</label>
+                      <textarea
+                        className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] resize-none"
+                        rows={3}
+                        maxLength={500}
+                        value={isletmeForm.aciklama}
+                        onChange={(e) => setIsletmeForm((p) => ({ ...p, aciklama: e.target.value }))}
+                      />
+                    </div>
+                    <FotoYukle
+                      label="Kapak Fotoğrafı"
+                      deger={isletmeForm.kapakFoto}
+                      onDegis={(url) => setIsletmeForm((p) => ({ ...p, kapakFoto: url }))}
+                    />
+                    <FotoYukle
+                      label="Logo"
+                      deger={isletmeForm.logoUrl}
+                      onDegis={(url) => setIsletmeForm((p) => ({ ...p, logoUrl: url }))}
+                    />
+                    <div className="flex gap-3 pt-1">
+                      <Button onClick={isletmeKaydet} loading={isletmeYukleniyor} className="flex-1">Kaydet</Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setIsletmeDuzenle(false)
+                          setIsletmeForm({
+                            isletmeAdi: esnaf.isletmeAdi,
+                            telefon: telefonFormatla(esnaf.telefon),
+                            aciklama: esnaf.aciklama,
+                            kapakFoto: esnaf.kapakFoto,
+                            logoUrl: esnaf.logoUrl,
+                          })
+                        }}
+                        className="flex-1"
+                      >
+                        İptal
+                      </Button>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium" style={{ color: aktif ? t.renk : 'var(--color-text)' }}>
-                    {t.ad}
-                  </span>
-                  {aktif && (
-                    <svg className="w-4 h-4 ml-auto shrink-0" viewBox="0 0 16 16" fill="none" style={{ color: t.renk }}>
-                      <path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </CardBody>
-      </Card>
+                ) : (
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[var(--color-text-secondary)]">İşletme Adı</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{isletmeForm.isletmeAdi || '—'}</span>
+                        {bekleyenIsletmeAdi && bekleyenIsletmeAdi !== isletmeForm.isletmeAdi && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                            Onay bekleniyor: {bekleyenIsletmeAdi}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--color-text-secondary)]">Telefon</span>
+                      <span className="font-medium">{isletmeForm.telefon || '—'}</span>
+                    </div>
+                    {isletmeForm.aciklama && (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[var(--color-text-secondary)]">Açıklama</span>
+                        <span className="font-medium text-xs leading-relaxed">{isletmeForm.aciklama}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          )}
 
-      {/* Plan Yükselt */}
-      <Card>
-        <div className="px-6 py-4 border-b border-[var(--color-border)]">
-          <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Plan Yükselt</h3>
+          {/* Şifre Değiştir */}
+          <Card>
+            <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Şifre Değiştir</h3>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Hesap güvenliğiniz için şifrenizi düzenli değiştirin</p>
+              </div>
+              {!sifreDuzenle && (
+                <Button variant="secondary" size="sm" onClick={() => setSifreDuzenle(true)}>Değiştir</Button>
+              )}
+            </div>
+            <CardBody>
+              {sifreDuzenle ? (
+                <div className="space-y-3">
+                  <Input
+                    label="Mevcut Şifre"
+                    type="password"
+                    value={sifreForm.mevcutSifre}
+                    onChange={(e) => setSifreForm((p) => ({ ...p, mevcutSifre: e.target.value }))}
+                    placeholder="••••••••"
+                  />
+                  <Input
+                    label="Yeni Şifre"
+                    type="password"
+                    value={sifreForm.yeniSifre}
+                    onChange={(e) => setSifreForm((p) => ({ ...p, yeniSifre: e.target.value }))}
+                    placeholder="En az 6 karakter"
+                  />
+                  <Input
+                    label="Yeni Şifre Tekrar"
+                    type="password"
+                    value={sifreForm.tekrarSifre}
+                    onChange={(e) => setSifreForm((p) => ({ ...p, tekrarSifre: e.target.value }))}
+                    placeholder="••••••••"
+                  />
+                  <div className="flex gap-3 pt-1">
+                    <Button onClick={sifreKaydet} loading={sifreYukleniyor} className="flex-1">Kaydet</Button>
+                    <Button variant="secondary" onClick={() => { setSifreDuzenle(false); setSifreForm({ mevcutSifre: '', yeniSifre: '', tekrarSifre: '' }) }} className="flex-1">İptal</Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-[var(--color-text-secondary)]">Şifrenizi değiştirmek için yukarıdaki butona tıklayın.</p>
+              )}
+            </CardBody>
+          </Card>
+
+        </div>{/* /Sol Sütun */}
+
+        {/* Sağ Sütun */}
+        <div className="space-y-6">
+
+          {/* Görünüm / Renk Teması */}
+          <Card>
+            <div className="px-6 py-4 border-b border-[var(--color-border)]">
+              <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Görünüm</h3>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Panel renk temanızı kişiselleştirin</p>
+            </div>
+            <CardBody>
+              <div className="grid grid-cols-2 gap-3">
+                {TEMALAR.map((t) => {
+                  const aktif = tema === t.key
+                  return (
+                    <button
+                      key={t.key}
+                      onClick={() => temaDegistir(t.key)}
+                      className="flex items-center gap-3 p-3 rounded-[var(--radius-md)] border-2 transition-all text-left"
+                      style={{
+                        borderColor: aktif ? t.renk : 'var(--color-border)',
+                        background: aktif ? t.ikinci : 'transparent',
+                      }}
+                    >
+                      <div className="flex gap-1 shrink-0">
+                        <div className="w-4 h-4 rounded-full" style={{ background: t.renk }} />
+                        <div className="w-4 h-4 rounded-full" style={{ background: t.ikinci }} />
+                      </div>
+                      <span className="text-sm font-medium" style={{ color: aktif ? t.renk : 'var(--color-text)' }}>
+                        {t.ad}
+                      </span>
+                      {aktif && (
+                        <svg className="w-4 h-4 ml-auto shrink-0" viewBox="0 0 16 16" fill="none" style={{ color: t.renk }}>
+                          <path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Bildirim Ayarları */}
+          {esnaf && (
+            <Card>
+              <div className="px-6 py-4 border-b border-[var(--color-border)]">
+                <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Bildirim Ayarları</h3>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Hangi durumlarda e-posta bildirimi almak istediğinizi seçin</p>
+              </div>
+              <CardBody>
+                <div className="space-y-3">
+                  {BILDIRIMLER.map((b) => (
+                    <div key={b.key} className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">{b.label}</p>
+                        <p className="text-xs text-[var(--color-text-secondary)]">{b.aciklama}</p>
+                      </div>
+                      <button
+                        disabled={bildirimYukleniyor}
+                        onClick={async () => {
+                          const yeni = { ...bildirimForm, [b.key]: !bildirimForm[b.key] }
+                          setBildirimForm(yeni)
+                          await bildirimKaydet(yeni)
+                        }}
+                        className="relative w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50"
+                        style={{ background: bildirimForm[b.key] ? 'var(--color-primary)' : '#e2e8f0' }}
+                      >
+                        <span
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${bildirimForm[b.key] ? 'translate-x-5' : 'translate-x-0'}`}
+                        />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </CardBody>
+            </Card>
+          )}
+
+          {/* Sosyal Medya Bağlantıları */}
+          {esnaf && (
+            <Card>
+              <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Sosyal Medya Bağlantıları</h3>
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Vitrininizdeki sosyal medya linkleri</p>
+                </div>
+                {!sosyalDuzenle && (
+                  <Button variant="secondary" size="sm" onClick={() => setSosyalDuzenle(true)}>Düzenle</Button>
+                )}
+              </div>
+              <CardBody>
+                {sosyalDuzenle ? (
+                  <div className="space-y-3">
+                    {[
+                      { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/kullanici' },
+                      { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/sayfa' },
+                      { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@kullanici' },
+                      { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@kanal' },
+                    ].map((s) => (
+                      <Input
+                        key={s.key}
+                        label={s.label}
+                        value={sosyalForm[s.key as keyof typeof sosyalForm]}
+                        placeholder={s.placeholder}
+                        onChange={(e) => setSosyalForm((p) => ({ ...p, [s.key]: e.target.value }))}
+                      />
+                    ))}
+                    <div className="flex gap-3 pt-1">
+                      <Button onClick={sosyalKaydet} loading={sosyalYukleniyor} className="flex-1">Kaydet</Button>
+                      <Button variant="secondary" onClick={() => setSosyalDuzenle(false)} className="flex-1">İptal</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2 text-sm">
+                    {[
+                      { key: 'instagram', label: 'Instagram' },
+                      { key: 'facebook', label: 'Facebook' },
+                      { key: 'tiktok', label: 'TikTok' },
+                      { key: 'youtube', label: 'YouTube' },
+                    ].map((s) => (
+                      <div key={s.key} className="flex justify-between items-center">
+                        <span className="text-[var(--color-text-secondary)]">{s.label}</span>
+                        <span className="font-medium text-xs truncate max-w-[200px]">
+                          {sosyalForm[s.key as keyof typeof sosyalForm] || <span className="text-slate-400">—</span>}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          )}
+
+        </div>{/* /Sağ Sütun */}
+      </div>{/* /Üst Grid */}
+
+      {/* ── Plan Yükselt — tam genişlik, modern pricing ── */}
+      <div className="bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden">
+        <div className="px-6 py-5 border-b border-[var(--color-border)]">
+          <h3 className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)' }}>Plan Yükselt</h3>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">İşletmeniz için en uygun planı seçin ve büyümeye başlayın</p>
         </div>
-        <CardBody>
-          <div className="grid grid-cols-1 gap-3">
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {PLANLAR.map((p) => {
               const aktif = kullanici.plan === p.key
+              const populer = p.key === 'STARTER'
+              const premium = p.key === 'PRO'
               return (
                 <div
                   key={p.key}
-                  className="border rounded-[var(--radius-lg)] p-4 transition-all"
+                  className="relative flex flex-col rounded-2xl border-2 p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
                   style={{
-                    borderColor: aktif ? 'var(--color-primary)' : 'var(--color-border)',
-                    background: aktif ? 'rgba(26,39,68,0.04)' : 'transparent',
+                    borderColor: aktif || populer ? 'var(--color-primary)' : 'var(--color-border)',
+                    background: premium ? 'linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-accent) 100%)' : aktif ? 'var(--color-bg-muted)' : 'white',
                   }}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-5 h-5 rounded-full border-2 flex items-center justify-center"
-                        style={{ borderColor: aktif ? 'var(--color-primary)' : 'var(--color-border)', background: aktif ? 'var(--color-primary)' : 'transparent' }}
+                  {populer && (
+                    <div className="absolute -top-3.5 inset-x-0 flex justify-center">
+                      <span
+                        className="text-[11px] font-bold px-3 py-1 rounded-full text-white tracking-wide"
+                        style={{ background: 'var(--color-primary)' }}
                       >
-                        {aktif && (
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                            <path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        )}
-                      </div>
-                      <span className="font-bold text-[var(--color-primary)]">{p.ad}</span>
-                      {aktif && <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: 'var(--color-primary)', color: 'white' }}>Aktif Plan</span>}
+                        EN POPÜLER
+                      </span>
                     </div>
-                    <span className="text-lg font-bold">{p.fiyat}</span>
+                  )}
+                  {aktif && !populer && (
+                    <div className="absolute -top-3.5 inset-x-0 flex justify-center">
+                      <span className="text-[11px] font-bold px-3 py-1 rounded-full text-white tracking-wide bg-emerald-500">
+                        AKTİF PLANIN
+                      </span>
+                    </div>
+                  )}
+
+                  {/* İkon + Plan adı */}
+                  <div className="flex items-center gap-3 mb-4 mt-1">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: aktif || populer ? 'var(--color-primary)' : 'var(--color-bg-muted)' }}
+                    >
+                      {p.key === 'UCRETSIZ' && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={aktif ? 'white' : 'var(--color-primary)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+                        </svg>
+                      )}
+                      {p.key === 'STARTER' && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      )}
+                      {p.key === 'PRO' && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={populer || aktif ? 'white' : 'var(--color-primary)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" /><path d="M5 20h14" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-bold text-base" style={{ color: 'var(--color-text)' }}>{p.ad}</p>
+                      <p className="text-xs text-[var(--color-text-secondary)]">
+                        {p.key === 'UCRETSIZ' ? 'Başlangıç için ideal' : p.key === 'STARTER' ? 'Büyüyen işletmeler için' : 'Profesyonel işletmeler için'}
+                      </p>
+                    </div>
                   </div>
-                  <ul className="space-y-1 mb-3">
+
+                  {/* Fiyat */}
+                  <div className="mb-5 flex items-end gap-1">
+                    <span className="text-4xl font-black leading-none" style={{ color: 'var(--color-primary)' }}>
+                      {p.fiyat.split('/')[0]}
+                    </span>
+                    <span className="text-sm text-[var(--color-text-secondary)] mb-1">/ay</span>
+                  </div>
+
+                  {/* Özellikler */}
+                  <ul className="space-y-2.5 flex-1 mb-6">
                     {p.ozellikler.map((o) => (
-                      <li key={o} className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1.5">
-                        <span className="text-green-600">✓</span> {o}
+                      <li key={o} className="flex items-start gap-2 text-sm text-[var(--color-text)]">
+                        <svg className="w-4 h-4 shrink-0 mt-0.5 text-emerald-500" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="7" fill="#d1fae5" />
+                          <path d="M5 8l2 2 4-4" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {o}
                       </li>
                     ))}
                   </ul>
-                  {!aktif && p.key !== 'UCRETSIZ' && (
+
+                  {/* Buton */}
+                  {aktif ? (
+                    <div className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200">
+                      Aktif Plan ✓
+                    </div>
+                  ) : p.key === 'UCRETSIZ' ? (
+                    <div
+                      className="w-full text-center py-2.5 rounded-xl text-sm font-semibold border"
+                      style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)', background: 'var(--color-bg-muted)' }}
+                    >
+                      Ücretsiz
+                    </div>
+                  ) : (
                     <a
                       href={`/isletme/panel/odeme?plan=${p.key}`}
-                      className="block w-full text-center text-xs font-semibold py-2 px-3 rounded-[var(--radius-md)] transition-all"
-                      style={{ background: 'var(--color-primary)', color: '#fff' }}
+                      className="block w-full text-center py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 hover:shadow-md"
+                      style={{ background: populer ? 'var(--color-primary)' : 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)' }}
                     >
                       Şimdi Yükselt →
                     </a>
@@ -581,146 +791,10 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
               )
             })}
           </div>
-        </CardBody>
-      </Card>
-
-      {/* Şifre Değiştir */}
-      <Card>
-        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Şifre Değiştir</h3>
-            <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Hesap güvenliğiniz için şifrenizi düzenli değiştirin</p>
-          </div>
-          {!sifreDuzenle && (
-            <Button variant="secondary" size="sm" onClick={() => setSifreDuzenle(true)}>Değiştir</Button>
-          )}
         </div>
-        <CardBody>
-          {sifreDuzenle ? (
-            <div className="space-y-3">
-              <Input
-                label="Mevcut Şifre"
-                type="password"
-                value={sifreForm.mevcutSifre}
-                onChange={(e) => setSifreForm((p) => ({ ...p, mevcutSifre: e.target.value }))}
-                placeholder="••••••••"
-              />
-              <Input
-                label="Yeni Şifre"
-                type="password"
-                value={sifreForm.yeniSifre}
-                onChange={(e) => setSifreForm((p) => ({ ...p, yeniSifre: e.target.value }))}
-                placeholder="En az 6 karakter"
-              />
-              <Input
-                label="Yeni Şifre Tekrar"
-                type="password"
-                value={sifreForm.tekrarSifre}
-                onChange={(e) => setSifreForm((p) => ({ ...p, tekrarSifre: e.target.value }))}
-                placeholder="••••••••"
-              />
-              <div className="flex gap-3 pt-1">
-                <Button onClick={sifreKaydet} loading={sifreYukleniyor} className="flex-1">Kaydet</Button>
-                <Button variant="secondary" onClick={() => { setSifreDuzenle(false); setSifreForm({ mevcutSifre: '', yeniSifre: '', tekrarSifre: '' }) }} className="flex-1">İptal</Button>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-[var(--color-text-secondary)]">Şifrenizi değiştirmek için yukarıdaki butona tıklayın.</p>
-          )}
-        </CardBody>
-      </Card>
+      </div>
 
-      {/* Bildirim Ayarları */}
-      {esnaf && (
-        <Card>
-          <div className="px-6 py-4 border-b border-[var(--color-border)]">
-            <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Bildirim Ayarları</h3>
-            <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Hangi durumlarda e-posta bildirimi almak istediğinizi seçin</p>
-          </div>
-          <CardBody>
-            <div className="space-y-3">
-              {BILDIRIMLER.map((b) => (
-                <div key={b.key} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">{b.label}</p>
-                    <p className="text-xs text-[var(--color-text-secondary)]">{b.aciklama}</p>
-                  </div>
-                  <button
-                    disabled={bildirimYukleniyor}
-                    onClick={async () => {
-                      const yeni = { ...bildirimForm, [b.key]: !bildirimForm[b.key] }
-                      setBildirimForm(yeni)
-                      await bildirimKaydet(yeni)
-                    }}
-                    className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50 ${bildirimForm[b.key] ? 'bg-indigo-500' : 'bg-slate-200'}`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${bildirimForm[b.key] ? 'translate-x-5' : 'translate-x-0'}`}
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </CardBody>
-        </Card>
-      )}
-
-      {/* Sosyal Medya Bağlantıları */}
-      {esnaf && (
-        <Card>
-          <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Sosyal Medya Bağlantıları</h3>
-              <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Vitrininizdeki sosyal medya linkleri</p>
-            </div>
-            {!sosyalDuzenle && (
-              <Button variant="secondary" size="sm" onClick={() => setSosyalDuzenle(true)}>Düzenle</Button>
-            )}
-          </div>
-          <CardBody>
-            {sosyalDuzenle ? (
-              <div className="space-y-3">
-                {[
-                  { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/kullanici' },
-                  { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/sayfa' },
-                  { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@kullanici' },
-                  { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@kanal' },
-                ].map((s) => (
-                  <Input
-                    key={s.key}
-                    label={s.label}
-                    value={sosyalForm[s.key as keyof typeof sosyalForm]}
-                    placeholder={s.placeholder}
-                    onChange={(e) => setSosyalForm((p) => ({ ...p, [s.key]: e.target.value }))}
-                  />
-                ))}
-                <div className="flex gap-3 pt-1">
-                  <Button onClick={sosyalKaydet} loading={sosyalYukleniyor} className="flex-1">Kaydet</Button>
-                  <Button variant="secondary" onClick={() => setSosyalDuzenle(false)} className="flex-1">İptal</Button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2 text-sm">
-                {[
-                  { key: 'instagram', label: 'Instagram' },
-                  { key: 'facebook', label: 'Facebook' },
-                  { key: 'tiktok', label: 'TikTok' },
-                  { key: 'youtube', label: 'YouTube' },
-                ].map((s) => (
-                  <div key={s.key} className="flex justify-between items-center">
-                    <span className="text-[var(--color-text-secondary)]">{s.label}</span>
-                    <span className="font-medium text-xs truncate max-w-[200px]">
-                      {sosyalForm[s.key as keyof typeof sosyalForm] || <span className="text-slate-400">—</span>}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardBody>
-        </Card>
-      )}
-
-      {/* Hesabı Sil */}
+      {/* ── Tehlikeli Bölge — tam genişlik ── */}
       <Card>
         <div className="px-6 py-4 border-b border-red-100 bg-red-50 rounded-t-[var(--radius-lg)]">
           <h3 className="font-semibold text-red-700" style={{ fontFamily: 'var(--font-display)' }}>Tehlikeli Bölge</h3>
