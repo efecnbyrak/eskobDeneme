@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const securityHeaders = [
   { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
@@ -13,11 +14,42 @@ const securityHeaders = [
     key: 'Strict-Transport-Security',
     value: 'max-age=63072000; includeSubDomains; preload',
   },
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      // Next.js App Router inline script'leri ve Iyzico ödeme form script'leri için unsafe-inline gerekli
+      "script-src 'self' 'unsafe-inline' https://*.iyzipay.com",
+      "style-src 'self' 'unsafe-inline'",
+      [
+        "img-src 'self' data: blob:",
+        'https://*.public.blob.vercel-storage.com',
+        'https://*.blob.vercel-storage.com',
+        'https://res.cloudinary.com',
+        'https://*.googleusercontent.com',
+        'https://avatars.githubusercontent.com',
+        'https://images.unsplash.com',
+        'https://cdn.jsdelivr.net',
+      ].join(' '),
+      "font-src 'self' data:",
+      "connect-src 'self' https://*.iyzipay.com",
+      "frame-src https://*.iyzipay.com",
+      "frame-ancestors 'self'",
+      "form-action 'self' https://*.iyzipay.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "upgrade-insecure-requests",
+    ].join('; '),
+  },
 ]
 
 // Mobil/native istemcilere ortak API erişimi için CORS
+// Production'da env var set edilmezse boş string → cross-origin istekler reddedilir (güvenli)
+// Development'da '*' → local Expo testi çalışmaya devam eder
 const corsOrigin =
-  process.env.MOBILE_APP_ORIGIN ?? process.env.SITE_URL ?? '*'
+  process.env.MOBILE_APP_ORIGIN ??
+  process.env.SITE_URL ??
+  (process.env.NODE_ENV === 'production' ? '' : '*')
 
 const corsHeaders = [
   { key: 'Access-Control-Allow-Origin', value: corsOrigin },
@@ -72,4 +104,29 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  // Sentry organizasyon ve proje bilgileri — .env.example'daki değişkenlerden okunur
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Build output'unu sessiz tut
+  silent: !process.env.CI,
+
+  // Source map'leri upload sonrası sil (production güvenliği)
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // Client-side bundle boyutunu optimize et
+  widenClientFileUpload: true,
+
+  webpack: {
+    // Sentry debug loglarını tree-shake ile kaldır (disableLogger yerine)
+    treeshake: {
+      removeDebugLogging: true,
+    },
+    // Vercel otomatik monitor — cron monitor'ü manuel yönetiyoruz
+    automaticVercelMonitors: false,
+  },
+})

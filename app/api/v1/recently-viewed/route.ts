@@ -2,8 +2,15 @@ import { NextRequest } from 'next/server'
 import { mobilAuth } from '@/lib/auth'
 import { getRecentlyViewedService, trackRecentlyViewedService } from '@/lib/services/recently-viewed.service'
 import { basari, hata } from '@/lib/api'
+import { rateLimit, istemciKimligi } from '@/lib/rateLimit'
 
 export async function GET(req: NextRequest) {
+  const ip = istemciKimligi(req)
+  const rl = await rateLimit(`v1:gezilen:${ip}`, 60, 60)
+  if (!rl.basarili) {
+    return hata('Çok fazla istek', 429)
+  }
+
   const oturum = await mobilAuth(req)
   if (!oturum?.user?.id) return hata('Unauthorized', 401)
 

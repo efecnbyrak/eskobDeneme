@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { getIyzipay, PLAN_FIYAT } from '@/lib/iyzico'
+import { logger } from '@/lib/logger'
 
 export async function POST(req: NextRequest) {
   const oturum = await auth()
@@ -74,7 +75,8 @@ export async function POST(req: NextRequest) {
   return new Promise<NextResponse>((resolve) => {
     iyzipay.checkoutFormInitialize.create(request, (err: unknown, result: Record<string, unknown>) => {
       if (err || result.status !== 'success') {
-        resolve(NextResponse.json({ error: 'Ödeme formu oluşturulamadı', detay: result }, { status: 500 }))
+        logger.error('odeme.form_olusturulamadi', { hata: String(err), durum: result?.status })
+        resolve(NextResponse.json({ error: 'Ödeme formu oluşturulamadı' }, { status: 500 }))
         return
       }
       resolve(NextResponse.json({
