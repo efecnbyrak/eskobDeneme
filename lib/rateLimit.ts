@@ -1,30 +1,45 @@
-// Basit in-memory rate limiter. Serverless cold start'larda sıfırlanır;
-// tek instance'lı deploy'lar için ilk savunma hattı. Prod ölçeği için
-// Redis (Upstash) ile değiştirin.
+import { Redis } from '@upstash/redis'
 
-type Kayit = { sayi: number; resetT: number }
-const store = new Map<string, Kayit>()
+// Upstash Redis istemcisi — UPSTASH_REDIS_REST_URL ve UPSTASH_REDIS_REST_TOKEN okur.
+// Vercel Dashboard'dan: Settings → Environment Variables → her ikisini de ekle.
+const redis = Redis.fromEnv()
 
-export function rateLimit(
+/**
+ * Redis tabanlı rate limiter (INCR + TTL pipeline).
+ * Vercel serverless cold start'lardan etkilenmez; tüm paralel instance'larda çalışır.
+ * Fonksiyon imzası kasıtlı olarak eski in-memory sürümle uyumlu tutuldu (async hale getirildi).
+ */
+export async function rateLimit(
   anahtar: string,
   limit: number,
   pencereSn: number
-): { basarili: boolean; kalan: number; resetT: number } {
-  const simdi = Date.now()
-  const mevcut = store.get(anahtar)
+): Promise<{ basarili: boolean; kalan: number; resetT: number }> {
+  const now = Date.now()
+  const key = `rl:${anahtar}`
 
-  if (!mevcut || mevcut.resetT < simdi) {
-    const yeni: Kayit = { sayi: 1, resetT: simdi + pencereSn * 1000 }
-    store.set(anahtar, yeni)
-    return { basarili: true, kalan: limit - 1, resetT: yeni.resetT }
+  // Atomic pipeline: tek round-trip'te INCR + TTL
+  const pipe = redis.pipeline()
+  pipe.incr(key)
+  pipe.ttl(key)
+
+  const [count, ttl] = (await pipe.exec()) as [number, number]
+
+  // İlk istek ise pencere süresini ayarla
+  if ((count as number) === 1) {
+    await redis.expire(key, pencereSn)
   }
 
-  if (mevcut.sayi >= limit) {
-    return { basarili: false, kalan: 0, resetT: mevcut.resetT }
+  const resetT = now + (ttl > 0 ? ttl * 1000 : pencereSn * 1000)
+
+  if ((count as number) > limit) {
+    return { basarili: false, kalan: 0, resetT }
   }
 
-  mevcut.sayi++
-  return { basarili: true, kalan: limit - mevcut.sayi, resetT: mevcut.resetT }
+  return {
+    basarili: true,
+    kalan: Math.max(0, limit - (count as number)),
+    resetT,
+  }
 }
 
 export function istemciKimligi(req: Request): string {

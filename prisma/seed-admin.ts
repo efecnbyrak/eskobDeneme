@@ -7,7 +7,16 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  const email = 'phyberk123@gmail.com'
+  const email = process.env.SEED_ADMIN_EMAIL
+  const sifre = process.env.SEED_ADMIN_SIFRE
+
+  if (!email || !sifre) {
+    throw new Error(
+      'SEED_ADMIN_EMAIL ve SEED_ADMIN_SIFRE env değişkenleri zorunludur. ' +
+      '.env.local dosyanıza ekleyin ve tekrar çalıştırın.'
+    )
+  }
+
   const mevcut = await prisma.kullanici.findUnique({ where: { email } })
 
   if (mevcut) {
@@ -15,22 +24,22 @@ async function main() {
       where: { email },
       data: { rol: 'SUPER_ADMIN' },
     })
-    console.log('Admin kullanıcı zaten var, rol SUPER_ADMIN yapıldı.')
+    console.log(`Admin kullanıcı zaten var (${email}), rol SUPER_ADMIN yapıldı.`)
     return
   }
 
-  const sifreHash = await bcrypt.hash('phyberk123', 12)
+  const sifreHash = await bcrypt.hash(sifre, 12)
   await prisma.kullanici.create({
     data: {
       email,
-      ad: 'Phyberk',
-      soyad: 'Admin',
-      kullaniciAdi: 'phyberk',
+      ad: 'Admin',
+      soyad: 'Kullanici',
+      kullaniciAdi: 'admin',
       sifreHash,
       rol: 'SUPER_ADMIN',
     },
   })
-  console.log('Admin kullanıcı oluşturuldu: phyberk123@gmail.com / phyberk123')
+  console.log(`Admin kullanıcı oluşturuldu: ${email}`)
 }
 
 main()

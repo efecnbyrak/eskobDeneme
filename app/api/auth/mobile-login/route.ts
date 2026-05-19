@@ -14,7 +14,7 @@ const GirisSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const ip = istemciKimligi(req)
-  const limit = rateLimit(`mobile-login:${ip}`, 10, 60)
+  const limit = await rateLimit(`mobile-login:${ip}`, 10, 60)
   if (!limit.basarili) {
     return hata('Çok fazla deneme. 1 dakika bekleyin.', 429)
   }

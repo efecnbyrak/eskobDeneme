@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: IP başına saatte 10 kayıt denemesi
     const ip = istemciKimligi(req)
-    const limit = rateLimit(`register:${ip}`, 10, 3600)
+    const limit = await rateLimit(`register:${ip}`, 10, 3600)
     if (!limit.basarili) {
       return NextResponse.json(
         { error: 'Çok fazla kayıt denemesi. Lütfen daha sonra tekrar deneyin.' },

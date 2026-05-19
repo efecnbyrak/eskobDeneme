@@ -52,7 +52,24 @@ export async function DELETE(
   const hedef = await prisma.kullanici.findUnique({ where: { id: parseInt(id) } })
   if (!hedef) return hata('Bulunamadı.', 404)
   if (hedef.rol === 'SUPER_ADMIN') return hata('Süper admin silinemez.', 400)
+  if (hedef.deletedAt) return hata('Kullanıcı zaten silinmiş.', 400)
 
-  await prisma.kullanici.delete({ where: { id: parseInt(id) } })
+  // Hard delete yerine KVKK uyumlu soft delete + audit log
+  await prisma.$transaction(async (tx) => {
+    await tx.kullanici.update({
+      where: { id: parseInt(id) },
+      data: { deletedAt: new Date() },
+    })
+    await tx.kvkkLog.create({
+      data: {
+        kullaniciId: parseInt(id),
+        islem: 'ADMIN_SIL',
+        aciklama: `Admin tarafından hesap silindi. Admin ID: ${oturum.user!.id}`,
+        ipAdres: req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? undefined,
+        userAgent: req.headers.get('user-agent') ?? undefined,
+      },
+    })
+  })
+
   return basari({ ok: true })
 }

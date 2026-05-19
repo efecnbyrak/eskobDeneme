@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
     const oturum = await mobilAuth(req)
     if (!oturum?.user?.id) return hata('Yetkisiz', 401)
 
-    const limit = rateLimit(`upload:${oturum.user.id}`, 20, 60)
+    const limit = await rateLimit(`upload:${oturum.user.id}`, 20, 60)
     if (!limit.basarili) return hata('Çok hızlı yükleme. Bir dakika bekleyin.', 429)
 
-    const ipLimit = rateLimit(`upload:ip:${istemciKimligi(req)}`, 40, 60)
+    const ipLimit = await rateLimit(`upload:ip:${istemciKimligi(req)}`, 40, 60)
     if (!ipLimit.basarili) return hata('Çok hızlı', 429)
 
     const form = await req.formData()

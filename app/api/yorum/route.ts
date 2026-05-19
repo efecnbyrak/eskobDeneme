@@ -36,10 +36,10 @@ export async function POST(req: NextRequest) {
       return hata('Sadece müşteri hesapları yorum yazabilir', 403)
     }
 
-    const limit = rateLimit(`yorum:${oturum.user.id}`, 3, 60)
+    const limit = await rateLimit(`yorum:${oturum.user.id}`, 3, 60)
     if (!limit.basarili) return hata('Çok hızlı yorum denemesi. Lütfen bekleyin.', 429)
 
-    const ipLimit = rateLimit(`yorum:ip:${istemciKimligi(req)}`, 10, 60)
+    const ipLimit = await rateLimit(`yorum:ip:${istemciKimligi(req)}`, 10, 60)
     if (!ipLimit.basarili) return hata('Çok hızlı', 429)
 
     const body = await req.json().catch(() => null)

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     const ip = istemciKimligi(req)
-    const limit = rateLimit(`randevu:post:${ip}`, 5, 60)
+    const limit = await rateLimit(`randevu:post:${ip}`, 5, 60)
     if (!limit.basarili) {
       return hata('Çok hızlı randevu denemesi. Lütfen bir dakika bekleyin.', 429)
     }

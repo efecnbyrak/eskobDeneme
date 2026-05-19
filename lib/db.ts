@@ -22,9 +22,10 @@ function createPrismaClient() {
   const connectionString = sanitizeConnectionString(raw)
   const adapter = new PrismaPg({
     connectionString,
-    max: 1,
+    // max: 1 kaldırıldı — Neon pgBouncer pooled endpoint havuzu kendisi yönetiyor.
+    // DATABASE_URL olarak Neon'un "-pooler" suffix'li URL'ini kullanın.
     idleTimeoutMillis: 10_000,
-    connectionTimeoutMillis: 5_000,
+    connectionTimeoutMillis: 10_000, // 5s → 10s: Neon cold start toleransı için artırıldı
   })
   return new PrismaClient({
     adapter,

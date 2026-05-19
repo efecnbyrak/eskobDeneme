@@ -17,34 +17,51 @@ async function main() {
     })
   }
 
+  // Admin kullanıcısı — credentials env var'lardan okunur, kod içine gömülmez
+  const adminEmail = process.env.SEED_ADMIN_EMAIL
+  const adminSifre = process.env.SEED_ADMIN_SIFRE
+  if (!adminEmail || !adminSifre) {
+    throw new Error(
+      'SEED_ADMIN_EMAIL ve SEED_ADMIN_SIFRE env değişkenleri tanımlı değil. ' +
+      '.env.local dosyanıza ekleyin ve tekrar çalıştırın.'
+    )
+  }
+
   console.log('Süper admin oluşturuluyor...')
-  const sifreHash = await bcrypt.hash('phyberk123', 12)
+  const sifreHash = await bcrypt.hash(adminSifre, 12)
   await prisma.kullanici.upsert({
-    where: { email: 'phyberk123@gmail.com' },
+    where: { email: adminEmail },
     update: { rol: 'SUPER_ADMIN', sifreHash },
     create: {
-      email: 'phyberk123@gmail.com',
+      email: adminEmail,
       sifreHash,
-      ad: 'Phyberk',
-      soyad: 'Admin',
+      ad: 'Admin',
+      soyad: 'Kullanici',
       rol: 'SUPER_ADMIN',
     },
   })
 
-  console.log('Test kullanıcısı oluşturuluyor...')
-  const testSifreHash = await bcrypt.hash('Test123!', 12)
-  await prisma.kullanici.upsert({
-    where: { email: 'test@eskob.com' },
-    update: { sifreHash: testSifreHash },
-    create: {
-      email: 'test@eskob.com',
-      sifreHash: testSifreHash,
-      ad: 'Test',
-      soyad: 'Kullanici',
-      rol: 'USER',
-      kullaniciAdi: 'testkullanici',
-    },
-  })
+  // Test kullanıcısı — sadece non-production ortamda oluştur
+  const testEmail = process.env.SEED_TEST_EMAIL
+  const testSifre = process.env.SEED_TEST_SIFRE
+  if (testEmail && testSifre) {
+    console.log('Test kullanıcısı oluşturuluyor...')
+    const testSifreHash = await bcrypt.hash(testSifre, 12)
+    await prisma.kullanici.upsert({
+      where: { email: testEmail },
+      update: { sifreHash: testSifreHash },
+      create: {
+        email: testEmail,
+        sifreHash: testSifreHash,
+        ad: 'Test',
+        soyad: 'Kullanici',
+        rol: 'USER',
+        kullaniciAdi: 'testkullanici',
+      },
+    })
+  } else {
+    console.log('SEED_TEST_EMAIL / SEED_TEST_SIFRE tanımlı değil, test kullanıcısı atlandı.')
+  }
 
   console.log('✅ Seed tamamlandı!')
 }
