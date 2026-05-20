@@ -103,12 +103,13 @@ model Esnaf {
 
   sahip         Kullanici    @relation(fields: [kullaniciId], references: [id])
   kullaniciId   Int          @unique
-  hizmetler     Hizmet[]
-  randevular    Randevu[]
-  yorumlar      Yorum[]
-  istatistikler Istatistik[]
-  favoriler     Favori[]
-  gezilenler    GezilenEsnaf[]
+  hizmetler          Hizmet[]
+  hizmetKategorileri HizmetKategorisi[]
+  randevular         Randevu[]
+  yorumlar           Yorum[]
+  istatistikler      Istatistik[]
+  favoriler          Favori[]
+  gezilenler         GezilenEsnaf[]
 
   @@index([sehir, kategoriId])
   @@index([slug])
@@ -134,6 +135,25 @@ model Kategori {
   @@map("kategoriler")
 }
 
+model HizmetKategorisi {
+  id         Int      @id @default(autoincrement())
+  ad         String
+  sira       Int      @default(0)
+  olusturmaT DateTime @default(now())
+
+  esnaf      Esnaf    @relation(fields: [esnafId], references: [id], onDelete: Cascade)
+  esnafId    Int
+
+  ustId  Int?
+  ust    HizmetKategorisi?  @relation("HizmetKatHiyerarsi", fields: [ustId], references: [id], onDelete: SetNull)
+  altlar HizmetKategorisi[] @relation("HizmetKatHiyerarsi")
+
+  hizmetler Hizmet[]
+
+  @@index([esnafId])
+  @@map("hizmet_kategorileri")
+}
+
 model Hizmet {
   id         Int      @id @default(autoincrement())
   ad         String
@@ -141,6 +161,9 @@ model Hizmet {
   fiyat      Decimal  @db.Decimal(10, 2)
   sure       Int?
   kategori   String?
+
+  hizmetKategorisiId Int?
+  hizmetKategorisi   HizmetKategorisi? @relation(fields: [hizmetKategorisiId], references: [id], onDelete: SetNull)
   fotoUrl    String?
   aktif      Boolean  @default(true)
   sira       Int      @default(0)

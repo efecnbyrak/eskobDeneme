@@ -2,7 +2,6 @@ import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs'
 
 const securityHeaders = [
-  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
@@ -30,11 +29,12 @@ const securityHeaders = [
         'https://avatars.githubusercontent.com',
         'https://images.unsplash.com',
         'https://cdn.jsdelivr.net',
+        'https://api.qrserver.com',
       ].join(' '),
       "font-src 'self' data:",
       "connect-src 'self' https://*.iyzipay.com",
       "frame-src https://*.iyzipay.com",
-      "frame-ancestors 'self'",
+      "frame-ancestors 'self' https://*.vercel.app",
       "form-action 'self' https://*.iyzipay.com",
       "object-src 'none'",
       "base-uri 'self'",

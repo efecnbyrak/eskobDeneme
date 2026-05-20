@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     const hizmetler = await prisma.hizmet.findMany({
       where: { esnafId: kullanici.esnaf.id },
       orderBy: { sira: 'asc' },
+      include: { hizmetKategorisi: true },
     })
 
     return basari({ hizmetler, esnafId: kullanici.esnaf.id })
@@ -47,6 +48,8 @@ export async function POST(req: NextRequest) {
     }
     const veri = parsed.data
 
+    const hizmetKategorisiId = typeof body?.hizmetKategorisiId === 'number' ? body.hizmetKategorisiId : null
+
     const hizmet = await prisma.hizmet.create({
       data: {
         ad: temizMetin(veri.ad, 120),
@@ -55,6 +58,7 @@ export async function POST(req: NextRequest) {
         aciklama: temizMetinOpsiyonel(veri.aciklama, 500),
         kategori: temizMetinOpsiyonel(veri.kategori, 60),
         esnafId: kullanici.esnaf.id,
+        hizmetKategorisiId,
       },
     })
 
@@ -89,10 +93,11 @@ export async function PUT(req: NextRequest) {
     }
     const veri = parsed.data
 
-    const { indirimYuzde, indirimBaslangic, indirimBitis } = body as {
+    const { indirimYuzde, indirimBaslangic, indirimBitis, hizmetKategorisiId } = body as {
       indirimYuzde?: number | null
       indirimBaslangic?: string | null
       indirimBitis?: string | null
+      hizmetKategorisiId?: number | null
     }
 
     const hizmet = await prisma.hizmet.update({
@@ -105,6 +110,7 @@ export async function PUT(req: NextRequest) {
         ...(indirimYuzde !== undefined && { indirimYuzde: indirimYuzde ?? null }),
         ...(indirimBaslangic !== undefined && { indirimBaslangic: indirimBaslangic ? new Date(indirimBaslangic) : null }),
         ...(indirimBitis !== undefined && { indirimBitis: indirimBitis ? new Date(indirimBitis) : null }),
+        ...(hizmetKategorisiId !== undefined && { hizmetKategorisiId: hizmetKategorisiId ?? null }),
       },
     })
 

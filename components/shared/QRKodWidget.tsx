@@ -11,7 +11,7 @@ export function QRKodWidget({ url, boyut = 128 }: QRKodWidgetProps) {
   const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${boyut}x${boyut}&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=4F6D7A`
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={apiUrl}
@@ -20,17 +20,6 @@ export function QRKodWidget({ url, boyut = 128 }: QRKodWidgetProps) {
         height={boyut}
         className="rounded-[var(--radius-sm)]"
       />
-      <div style={{
-        border: '1px solid var(--color-border)',
-        borderRadius: 8,
-        padding: '6px 12px',
-        background: 'var(--color-bg-muted)',
-        maxWidth: 200,
-      }}>
-        <p className="text-xs text-[var(--color-text-secondary)] text-center truncate">
-          {url}
-        </p>
-      </div>
     </div>
   )
 }

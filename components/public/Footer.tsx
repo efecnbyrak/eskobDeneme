@@ -198,11 +198,6 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/isletme/nasil-calisir" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                      Nasıl Çalışır?
-                    </Link>
-                  </li>
-                  <li>
                     <Link href="/isletme/iletisim" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       İletişim
                     </Link>
@@ -307,11 +302,6 @@ export function Footer() {
                   <li>
                     <Link href="/giris" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
                       Giriş Yap
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/isletme/nasil-calisir" className="text-[#90A8B2] hover:text-white transition-colors text-sm sm:text-[15px] leading-relaxed">
-                      Nasıl Çalışır?
                     </Link>
                   </li>
                 </ul>

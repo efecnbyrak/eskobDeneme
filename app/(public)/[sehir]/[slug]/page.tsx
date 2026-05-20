@@ -332,7 +332,7 @@ export default async function EsnafProfilSayfasi({ params }: Props) {
                 </div>
               )}
 
-              <div style={{ background: 'white', border: '1px solid var(--color-border)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <div style={{ background: 'white', border: '1.5px solid var(--color-border)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, boxShadow: 'var(--shadow-card)' }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>QR Kod ile Paylaş</p>
                 <QRKodWidget url={sayfaUrl} />
               </div>

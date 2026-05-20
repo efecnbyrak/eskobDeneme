@@ -107,7 +107,7 @@ function UserDropdown({ me }: { me: Me }) {
     <>
       {mounted && cikisModal && createPortal(
         <CikisModal
-          onOnayla={() => signOut({ callbackUrl: '/giris' })}
+          onOnayla={() => signOut({ callbackUrl: '/' })}
           onIptal={() => setCikisModal(false)}
         />,
         document.body
@@ -543,7 +543,7 @@ export function Navbar() {
             {/* SEARCH BAR — tam sayfa ortasında, absolute */}
             {!isIsletme && (
               <div
-                className="hidden lg:block"
+                className="hidden xl:block"
                 style={{
                   position: 'absolute',
                   left: '50%',
@@ -576,7 +576,7 @@ export function Navbar() {
 
             {/* İşletme sayfaları için nav linkleri */}
             {isIsletme && (
-              <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 32 }}>
+              <div className="hidden xl:flex" style={{ alignItems: 'center', gap: 4, marginLeft: 32 }}>
                 {isletmeNavLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -595,7 +595,7 @@ export function Navbar() {
             {!isIsletme && <div style={{ flex: 1 }} />}
 
             {/* SAĞ ALAN */}
-            <div className="hidden lg:flex" style={{ alignItems: 'center', gap: 12, flexShrink: 0 }}>
+            <div className="hidden xl:flex" style={{ alignItems: 'center', gap: 12, flexShrink: 0 }}>
               {girisliMi ? (
                 <>
                   <UserDropdown me={me} />
@@ -651,7 +651,7 @@ export function Navbar() {
 
             {/* Mobile burger */}
             <button
-              className="lg:hidden"
+              className="xl:hidden"
               style={{ padding: 10, marginLeft: 'auto', borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               onClick={() => setMenuAcik((p) => !p)}
               aria-label="Menü"
@@ -671,7 +671,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {menuAcik && (
-          <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white', maxHeight: 'calc(100dvh - 72px)', overflowY: 'auto' }}>
+          <div className="xl:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white', maxHeight: 'calc(100dvh - 72px)', overflowY: 'auto' }}>
             <div className="container-main" style={{ padding: '16px 20px 24px' }}>
               {/* Mobile search */}
               {!isIsletme && (
@@ -737,7 +737,7 @@ export function Navbar() {
                         </>
                       )}
                       <button
-                        onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/giris' }) }}
+                        onClick={() => { setMenuAcik(false); signOut({ callbackUrl: '/' }) }}
                         style={{ padding: '13px 14px', fontSize: 15, fontWeight: 600, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: 12 }}
                       >
                         🚪  Hesaptan Çıkış Yap
@@ -765,7 +765,7 @@ export function Navbar() {
 
         {/* Kategori Bar — divider YOK, header'a bağlı */}
         {showKategoriler && !scrolled && (
-          <div className="hidden lg:flex" style={{ background: 'white' }}>
+          <div className="hidden xl:flex" style={{ background: 'white' }}>
             <div className="container-main">
               <div style={{ display: 'flex', alignItems: 'center', gap: 28, height: 44, overflowX: 'auto', scrollbarWidth: 'none', padding: '0 4px' }}>
                 {dbKategoriler.map((k) => (

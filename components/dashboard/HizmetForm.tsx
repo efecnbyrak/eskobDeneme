@@ -5,9 +5,16 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import type { Hizmet } from '@/types'
 
+interface KategoriSeceneği {
+  id: number
+  ad: string
+  altlar?: { id: number; ad: string }[]
+}
+
 interface HizmetFormProps {
   esnafId: number
   hizmet?: Hizmet
+  kategoriler?: KategoriSeceneği[]
   onKayit: (hizmet: Hizmet) => void
   onIptal: () => void
 }
@@ -26,7 +33,7 @@ type HizmetEk = {
   etiketler?: string[]
 }
 
-export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProps) {
+export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal }: HizmetFormProps) {
   const [yukleniyor, setYukleniyor] = useState(false)
   const h = hizmet as (typeof hizmet & HizmetEk) | undefined
   const [form, setForm] = useState({
@@ -35,6 +42,7 @@ export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProp
     fiyat: h?.fiyat || 0,
     sure: h?.sure || 60,
     kategori: h?.kategori || '',
+    hizmetKategorisiId: (h as unknown as { hizmetKategorisiId?: number | null })?.hizmetKategorisiId ?? null as number | null,
     indirimYuzde: h?.indirimYuzde || 0,
     onecikar: h?.onecikar || false,
     sira: h?.sira || 0,
@@ -56,7 +64,7 @@ export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProp
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, esnafId }),
+        body: JSON.stringify({ ...form, esnafId, hizmetKategorisiId: form.hizmetKategorisiId ?? null }),
       })
       const data = await res.json()
       onKayit(data.data ?? data)
@@ -192,17 +200,27 @@ export function HizmetForm({ esnafId, hizmet, onKayit, onIptal }: HizmetFormProp
         </div>
       </div>
 
-      {/* Kategori */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium">Kategori (opsiyonel)</label>
-        <input
-          className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)]"
-          type="text"
-          value={form.kategori}
-          placeholder="ör. Saç, Cilt Bakımı, Masaj..."
-          onChange={(e) => setForm((p) => ({ ...p, kategori: e.target.value }))}
-        />
-      </div>
+      {/* Hizmet Kategorisi */}
+      {kategoriler.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Kategori</label>
+          <select
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] bg-white"
+            value={form.hizmetKategorisiId ?? ''}
+            onChange={(e) => setForm((p) => ({ ...p, hizmetKategorisiId: e.target.value ? Number(e.target.value) : null }))}
+          >
+            <option value="">— Kategori Seçin —</option>
+            {kategoriler.map((k) => (
+              <optgroup key={k.id} label={k.ad}>
+                <option value={k.id}>{k.ad}</option>
+                {k.altlar?.map((a) => (
+                  <option key={a.id} value={a.id}>{'  '}↳ {a.ad}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Öne Çıkar Toggle */}
       <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl">

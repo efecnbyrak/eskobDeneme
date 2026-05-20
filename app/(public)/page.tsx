@@ -69,7 +69,7 @@ export default async function AnaSayfa() {
       {/* HERO */}
       <section style={{
         background: 'linear-gradient(135deg, #F7620A 0%, #F7931E 60%, #FFB347 100%)',
-        padding: authenticated ? '52px 0 56px' : '72px 0 72px',
+        padding: authenticated ? '80px 0 56px' : '100px 0 72px',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -119,23 +119,6 @@ export default async function AnaSayfa() {
                 }}
               >
                 🔍 Hemen Keşfet
-              </Link>
-              <Link
-                href="/isletme/kayit"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  background: 'rgba(255,255,255,0.15)',
-                  border: '2px solid rgba(255,255,255,0.6)',
-                  color: 'white',
-                  fontWeight: 700, fontSize: 15,
-                  padding: '12px 24px', borderRadius: 14,
-                  textDecoration: 'none',
-                  backdropFilter: 'blur(8px)',
-                  transition: 'background 0.2s',
-                  minHeight: 44,
-                }}
-              >
-                🏪 İşletmeni Kayıt Et
               </Link>
             </div>
           )}

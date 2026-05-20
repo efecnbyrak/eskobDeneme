@@ -47,19 +47,39 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
             />
           ) : (
             <div
-              className="w-full h-full flex flex-col items-center justify-center gap-2 group-hover:scale-[1.03] transition-transform duration-700"
+              className="w-full h-full flex flex-col items-center justify-center group-hover:scale-[1.03] transition-transform duration-700"
               style={{
-                background: `linear-gradient(135deg, ${esnaf.kategori.renk}30 0%, ${esnaf.kategori.renk}60 50%, ${esnaf.kategori.renk}20 100%)`,
+                background: `linear-gradient(145deg, ${esnaf.kategori.renk}22 0%, ${esnaf.kategori.renk}55 50%, ${esnaf.kategori.renk}33 100%)`,
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <span style={{ fontSize: 52, lineHeight: 1, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))' }}>
-                {esnaf.kategori.ikon}
-              </span>
+              {/* Arka plan desen */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                backgroundImage: `radial-gradient(circle at 30% 30%, ${esnaf.kategori.renk}30 0%, transparent 60%), radial-gradient(circle at 70% 70%, ${esnaf.kategori.renk}20 0%, transparent 50%)`,
+              }} />
+              {/* İkon */}
+              <div style={{
+                position: 'relative',
+                width: 72, height: 72,
+                borderRadius: '50%',
+                background: `${esnaf.kategori.renk}22`,
+                border: `2px solid ${esnaf.kategori.renk}40`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: `0 8px 24px ${esnaf.kategori.renk}30`,
+              }}>
+                <span style={{ fontSize: 36, lineHeight: 1 }}>
+                  {esnaf.kategori.ikon}
+                </span>
+              </div>
               <span style={{
+                position: 'relative',
+                marginTop: 10,
                 fontSize: 11,
                 fontWeight: 700,
-                color: 'rgba(0,0,0,0.45)',
-                letterSpacing: '0.06em',
+                color: `${esnaf.kategori.renk}cc`,
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}>
                 {esnaf.kategori.ad}
