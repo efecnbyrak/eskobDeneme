@@ -104,7 +104,6 @@ export function IsletmeTopBar() {
             </nav>
           </div>
         </div>
-      </div>
 
       {/* Çıkış Onay Modalı */}
       {cikisModal && (
