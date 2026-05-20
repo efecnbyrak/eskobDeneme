@@ -287,6 +287,40 @@ p {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ──────────────────────────────────────────────
+   MOBİL ÖZEL
+   ────────────────────────────────────────────── */
+
+/* iOS Safari/Chrome: input'a tap yapıldığında otomatik zoom engelle */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Yatay scroll alanları için dokunmatik ekran optimizasyonu */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* iPhone notch / Dynamic Island / Android gesture bar için safe-area */
+.safe-top    { padding-top:    env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-left   { padding-left:   env(safe-area-inset-left); }
+.safe-right  { padding-right:  env(safe-area-inset-right); }
+
+/* Minimum dokunmatik hedef boyutu (WCAG 2.5.5) */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ──────────────────────────────────────────────
    SCROLL REVEAL ANIMATIONS
    ────────────────────────────────────────────── */
 [data-reveal] {

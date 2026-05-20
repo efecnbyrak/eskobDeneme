@@ -519,7 +519,8 @@ export function Navbar() {
     { href: '/isletme/iletisim', label: 'İletişim' },
   ]
 
-  const navbarHeight = showKategoriler && !scrolled ? 116 : 72
+  // Spacer her zaman 72px — kategori bar sadece desktop'ta görünür (hidden lg:flex)
+  const navbarHeight = 72
 
   return (
     <>
@@ -651,7 +652,7 @@ export function Navbar() {
             {/* Mobile burger */}
             <button
               className="lg:hidden"
-              style={{ padding: 10, marginLeft: 'auto', borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ padding: 10, marginLeft: 'auto', borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               onClick={() => setMenuAcik((p) => !p)}
               aria-label="Menü"
             >
@@ -670,7 +671,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {menuAcik && (
-          <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white' }}>
+          <div className="lg:hidden animate-fade-in" style={{ borderTop: '1px solid var(--color-border)', background: 'white', maxHeight: 'calc(100dvh - 72px)', overflowY: 'auto' }}>
             <div className="container-main" style={{ padding: '16px 20px 24px' }}>
               {/* Mobile search */}
               {!isIsletme && (
@@ -695,7 +696,7 @@ export function Navbar() {
                     <div style={{ padding: '10px 14px 6px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
                       Kategoriler
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 4 }}>
                       {dbKategoriler.slice(0, 8).map((k) => (
                         <Link
                           key={k.slug}

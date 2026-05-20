@@ -24,3 +24,15 @@ export function temizMetinOpsiyonel(
   const t = temizMetin(giris, maxUzunluk)
   return t.length > 0 ? t : null
 }
+
+const HTML_ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+}
+
+export function htmlEscape(str: string): string {
+  return str.replace(/[&<>"']/g, (m) => HTML_ESCAPE_MAP[m])
+}

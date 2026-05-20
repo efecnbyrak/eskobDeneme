@@ -43,7 +43,7 @@ export function IsletmeTopBar() {
         </Link>
         <button
           onClick={() => setAcik(!acik)}
-          className="p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-300"
+          className="p-2.5 rounded-lg hover:bg-slate-800 transition-colors text-slate-300 min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Menü"
         >
           {acik ? (
@@ -58,11 +58,13 @@ export function IsletmeTopBar() {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
-      {acik && (
-        <div className="lg:hidden fixed inset-0 z-40">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setAcik(false)} />
-          <div className="absolute left-0 top-0 h-full w-64 bg-slate-900 overflow-y-auto">
+      {/* Mobile Drawer — CSS transform ile smooth slide */}
+      <div className={`lg:hidden fixed inset-0 z-40 transition-all duration-300 ${acik ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+        <div
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${acik ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setAcik(false)}
+        />
+        <div className={`absolute left-0 top-0 h-full w-72 bg-slate-900 overflow-y-auto transition-transform duration-300 ${acik ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="p-4 border-b border-slate-800">
               <span className="font-bold text-white font-display text-sm">Esnaf Vitrin — İşletme</span>
             </div>
@@ -102,7 +104,7 @@ export function IsletmeTopBar() {
             </nav>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Çıkış Onay Modalı */}
       {cikisModal && (

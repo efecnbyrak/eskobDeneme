@@ -54,13 +54,39 @@ async function getEsnaf(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
+  const { slug, sehir } = await params
   const esnaf = await getEsnaf(slug)
   if (!esnaf) return {}
+
+  const title = `${esnaf.isletmeAdi} — ${esnaf.sehir}`
+  const description =
+    esnaf.aciklama?.slice(0, 160) ||
+    `${esnaf.isletmeAdi} ${esnaf.kategori?.ad ?? ''} işletmesi. ${esnaf.ilce ? `${esnaf.ilce}, ` : ''}${esnaf.sehir} konumunda hizmet vermektedir.`
+
+  const ogImages = esnaf.kapakFoto
+    ? [{ url: esnaf.kapakFoto, width: 1200, height: 630, alt: esnaf.isletmeAdi }]
+    : []
+
   return {
-    title: `${esnaf.isletmeAdi} | ${esnaf.sehir}`,
-    description: esnaf.aciklama?.slice(0, 160) || `${esnaf.isletmeAdi} - ${esnaf.sehir}, ${esnaf.ilce}`,
-    openGraph: { images: esnaf.kapakFoto ? [esnaf.kapakFoto] : [] },
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: 'tr_TR',
+      siteName: 'Müşteri Vitrin',
+      images: ogImages,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: esnaf.kapakFoto ? [esnaf.kapakFoto] : [],
+    },
+    alternates: {
+      canonical: `/${sehir}/${slug}`,
+    },
   }
 }
 

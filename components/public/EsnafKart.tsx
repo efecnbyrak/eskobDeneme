@@ -35,7 +35,7 @@ export function EsnafKart({ esnaf, favoriMi = false, authenticated = false }: Es
       }}
     >
       {/* Image */}
-      <div className="relative w-full overflow-hidden" style={{ paddingBottom: '80%' }}>
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/3' }}>
         <div className="absolute inset-0" style={{ background: 'var(--color-bg-muted)' }}>
           {esnaf.kapakFoto ? (
             <Image

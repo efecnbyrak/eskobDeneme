@@ -104,17 +104,18 @@ export default async function AnaSayfa() {
 
           {/* Misafir kullanıcı CTA */}
           {!authenticated && (
-            <div style={{ marginTop: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ marginTop: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', padding: '0 8px' }}>
               <Link
                 href="/ara"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   background: 'white', color: 'var(--color-primary)',
                   fontWeight: 700, fontSize: 15,
-                  padding: '14px 32px', borderRadius: 14,
+                  padding: '12px 24px', borderRadius: 14,
                   textDecoration: 'none',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  minHeight: 44,
                 }}
               >
                 🔍 Hemen Keşfet
@@ -127,10 +128,11 @@ export default async function AnaSayfa() {
                   border: '2px solid rgba(255,255,255,0.6)',
                   color: 'white',
                   fontWeight: 700, fontSize: 15,
-                  padding: '14px 32px', borderRadius: 14,
+                  padding: '12px 24px', borderRadius: 14,
                   textDecoration: 'none',
                   backdropFilter: 'blur(8px)',
                   transition: 'background 0.2s',
+                  minHeight: 44,
                 }}
               >
                 🏪 İşletmeni Kayıt Et
@@ -177,13 +179,13 @@ export default async function AnaSayfa() {
               Tümünü Gör →
             </Link>
           </div>
-          <div style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 4 }}>
+          <div className="scroll-touch" style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 4 }}>
             {PROMO_BANNERLAR.map((banner, i) => (
               <Link
                 key={i}
                 href="/ara?kampanyali=true"
                 style={{
-                  minWidth: 150, width: 150, height: 150, borderRadius: 16,
+                  minWidth: 'clamp(120px, 35vw, 150px)', width: 'clamp(120px, 35vw, 150px)', height: 'clamp(120px, 35vw, 150px)', borderRadius: 16,
                   background: 'white',
                   border: '1px solid #EBEBEB',
                   flexShrink: 0, cursor: 'pointer',
@@ -214,7 +216,7 @@ export default async function AnaSayfa() {
                 Sana Özel Hizmetler <span style={{ fontSize: 22 }}>✨</span>
               </h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))', gap: 16 }}>
               {recommendations.map((e: any) => (
                 <EsnafKart key={`rec-${e.id}`} esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />
               ))}
@@ -239,7 +241,7 @@ export default async function AnaSayfa() {
               Türkiye genelinde binlerce işletme ve müşteri bir arada buluşuyor
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 45%), 1fr))', gap: 16 }}>
             {NEDEN_BIZ.map((s, i) => (
               <div
                 key={i}
@@ -260,7 +262,7 @@ export default async function AnaSayfa() {
           </div>
 
           {/* Özellikler */}
-          <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+          <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: 16 }}>
             {[
               { icon: '📍', title: 'Konuma Göre Keşfet', desc: 'Yakınındaki işletmeleri saniyeler içinde bul, mesafeye göre filtrele.' },
               { icon: '📅', title: 'Anında Randevu Al', desc: 'Müsait saatleri gör, tek tıkla rezervasyon yap, hatırlatıcı al.' },
@@ -297,7 +299,7 @@ export default async function AnaSayfa() {
                 Tüm Fırsatlar →
               </Link>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20, overflow: 'visible' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: 20, overflow: 'visible' }}>
               {kampanyalar.map((kampanya: any) => (
                 <CampaignCard key={`camp-${kampanya.id}`} kampanya={kampanya} />
               ))}
@@ -315,7 +317,7 @@ export default async function AnaSayfa() {
               Tümünü Gör →
             </Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))', gap: 16 }}>
             {topEsnaf.map((e: any) => (
               <EsnafKart key={`top-${e.id}`} esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />
             ))}
@@ -328,9 +330,9 @@ export default async function AnaSayfa() {
         <section style={{ padding: '0 0 64px', position: 'relative', zIndex: 2 }}>
           <div className="container-main">
             <h2 style={{ fontSize: 20, fontWeight: 700, color: '#222', marginBottom: 20 }}>Son Gezdiklerin</h2>
-            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 16 }}>
+            <div className="scroll-touch" style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 16 }}>
               {recentlyViewed.map((e: any) => (
-                <div key={`history-${e.id}`} style={{ minWidth: 260, flexShrink: 0 }}>
+                <div key={`history-${e.id}`} style={{ minWidth: 'min(260px, 80vw)', flexShrink: 0 }}>
                   <EsnafKart esnaf={e} authenticated={authenticated} favoriMi={favoriIdleri.has(e.id)} />
                 </div>
               ))}
@@ -359,15 +361,16 @@ export default async function AnaSayfa() {
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', marginBottom: 36, maxWidth: 440, margin: '0 auto 36px' }}>
               Hesap oluştur, favori işletmelerini kaydet ve randevunu kolayca yönet.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', padding: '0 8px' }}>
               <Link
                 href="/musteri/kayit"
                 style={{
                   background: 'var(--color-primary)', color: 'white',
                   fontWeight: 700, fontSize: 15,
-                  padding: '14px 36px', borderRadius: 14,
+                  padding: '12px 28px', borderRadius: 14,
                   textDecoration: 'none',
                   boxShadow: '0 4px 20px rgba(247,98,10,0.4)',
+                  minHeight: 44, display: 'inline-flex', alignItems: 'center',
                 }}
               >
                 Ücretsiz Hesap Oluştur
@@ -379,8 +382,9 @@ export default async function AnaSayfa() {
                   border: '2px solid rgba(255,255,255,0.4)',
                   color: 'white',
                   fontWeight: 600, fontSize: 15,
-                  padding: '14px 36px', borderRadius: 14,
+                  padding: '12px 28px', borderRadius: 14,
                   textDecoration: 'none',
+                  minHeight: 44, display: 'inline-flex', alignItems: 'center',
                 }}
               >
                 Giriş Yap
