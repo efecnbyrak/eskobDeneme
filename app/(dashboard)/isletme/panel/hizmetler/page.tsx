@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { TopBar } from '@/components/dashboard/TopBar'
 import { HizmetForm } from '@/components/dashboard/HizmetForm'
 import { Button } from '@/components/ui/Button'
@@ -17,7 +16,6 @@ interface UstKat { id: number; ad: string; sira: number; altlar: AltKat[] }
 type HizmetEk = Hizmet & { hizmetKategorisiId?: number | null }
 
 export default function HizmetlerSayfasi() {
-  const router = useRouter()
   const [hizmetler, setHizmetler] = useState<HizmetEk[]>([])
   const [kategoriler, setKategoriler] = useState<UstKat[]>([])
   const [esnafId, setEsnafId] = useState(0)
@@ -34,25 +32,27 @@ export default function HizmetlerSayfasi() {
   const [katDuzenleId, setKatDuzenleId] = useState<number | null>(null)
   const [katDuzenleAd, setKatDuzenleAd] = useState('')
 
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/hizmet').then((r) => r.json()),
-      fetch('/api/hizmet-kategori').then((r) => r.json()),
-    ]).then(([hJson, kJson]) => {
+  async function veriCek() {
+    try {
+      const [hJson, kJson] = await Promise.all([
+        fetch('/api/hizmet').then((r) => r.json()),
+        fetch('/api/hizmet-kategori').then((r) => r.json()),
+      ])
       const sonuc = hJson?.data ?? hJson
       setHizmetler(sonuc?.hizmetler || [])
       setEsnafId(sonuc?.esnafId || 0)
       setKategoriler((kJson?.data ?? kJson)?.kategoriler || [])
-    }).finally(() => setYukleniyor(false))
-  }, [])
+    } finally {
+      setYukleniyor(false)
+    }
+  }
 
-  function onKayit(hizmet: Hizmet) {
-    setHizmetler((prev) =>
-      duzenle ? prev.map((h) => (h.id === hizmet.id ? { ...hizmet } : h)) : [...prev, hizmet]
-    )
+  useEffect(() => { veriCek() }, [])
+
+  async function onKayit() {
     setModalAcik(false)
     setDuzenle(null)
-    router.refresh()
+    await veriCek()
   }
 
   async function sil(id: number) {
@@ -229,17 +229,17 @@ export default function HizmetlerSayfasi() {
       {/* Kategori Yönetimi Modal */}
       <Modal
         acik={katModalAcik}
-        kapat={() => setKatModalAcik(false)}
+        kapat={() => { setKatModalAcik(false); setKatDuzenleId(null); setSeciliUstId(null) }}
         baslik="Kategori Yönetimi"
       >
-        <div className="space-y-6">
-          {/* Yeni üst kategori */}
-          <div>
-            <p className="text-sm font-semibold mb-2">Yeni Üst Kategori</p>
+        <div className="space-y-5">
+          {/* Yeni üst kategori ekleme */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Yeni Kategori Ekle</p>
             <div className="flex gap-2">
               <input
-                className="flex-1 px-3 py-2 text-sm border border-[var(--color-border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                placeholder="ör. Ana Yemek, Saç, Tırnak..."
+                className="flex-1 px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-white transition-all"
+                placeholder="ör. Saç Bakımı, Tırnak, Masaj..."
                 value={yeniKatAd}
                 onChange={(e) => setYeniKatAd(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && katEkle()}
@@ -247,108 +247,176 @@ export default function HizmetlerSayfasi() {
               <button
                 onClick={() => katEkle()}
                 disabled={katYukleniyor || !yeniKatAd.trim()}
-                className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                className="px-4 py-2.5 text-sm font-semibold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#fff', boxShadow: '0 2px 8px rgba(99,102,241,0.35)' }}
               >
-                Ekle
+                {katYukleniyor ? '...' : 'Ekle'}
               </button>
             </div>
           </div>
 
-          {/* Mevcut kategoriler */}
-          {kategoriler.length > 0 && (
-            <div className="space-y-4">
-              <p className="text-sm font-semibold text-[var(--color-text-secondary)]">Mevcut Kategoriler</p>
+          {/* Kategori listesi */}
+          {kategoriler.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-10 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <svg className="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700 text-sm">Henüz kategori yok</p>
+                <p className="text-xs text-slate-400 mt-0.5">Yukarıdan ilk kategorini ekleyerek başla</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Kategoriler <span className="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-600 rounded-md font-bold">{kategoriler.length}</span>
+              </p>
               {kategoriler.map((k) => (
-                <div key={k.id} className="border border-[var(--color-border)] rounded-xl overflow-hidden">
-                  {/* Üst kategori başlık */}
-                  <div className="flex items-center justify-between gap-2 px-4 py-3 bg-[var(--color-bg-muted)]">
+                <div key={k.id} className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                  {/* Üst kategori satırı */}
+                  <div className="flex items-center gap-3 px-4 py-3 bg-white">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
+                      <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                      </svg>
+                    </div>
                     {katDuzenleId === k.id ? (
-                      <div className="flex gap-2 flex-1">
+                      <div className="flex gap-2 flex-1 items-center">
                         <input
                           autoFocus
-                          className="flex-1 px-2 py-1 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                          className="flex-1 px-3 py-1.5 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                           value={katDuzenleAd}
                           onChange={(e) => setKatDuzenleAd(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') katGuncelle(k.id); if (e.key === 'Escape') setKatDuzenleId(null) }}
                         />
-                        <button onClick={() => katGuncelle(k.id)} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Kaydet</button>
-                        <button onClick={() => setKatDuzenleId(null)} className="text-xs text-gray-400 hover:text-gray-600">İptal</button>
+                        <button onClick={() => katGuncelle(k.id)} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded-lg hover:bg-indigo-50 transition-colors">Kaydet</button>
+                        <button onClick={() => setKatDuzenleId(null)} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50 transition-colors">İptal</button>
                       </div>
                     ) : (
                       <>
-                        <span className="font-semibold text-sm">{k.ad}</span>
-                        <div className="flex gap-2">
-                          <button onClick={() => { setKatDuzenleId(k.id); setKatDuzenleAd(k.ad) }} className="text-xs text-indigo-500 hover:text-indigo-700">✏️</button>
-                          <button onClick={() => katSil(k.id)} className="text-xs text-red-400 hover:text-red-600">🗑</button>
+                        <span className="font-semibold text-sm text-slate-800 flex-1">{k.ad}</span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => { setKatDuzenleId(k.id); setKatDuzenleAd(k.ad) }}
+                            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                            title="Düzenle"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => katSil(k.id)}
+                            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            title="Sil"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         </div>
                       </>
                     )}
                   </div>
 
                   {/* Alt kategoriler */}
-                  <div className="px-4 py-2 space-y-1">
-                    {k.altlar.map((a) => (
-                      <div key={a.id} className="flex items-center justify-between gap-2 py-1.5 pl-4 border-l-2 border-indigo-200">
-                        {katDuzenleId === a.id ? (
-                          <div className="flex gap-2 flex-1">
-                            <input
-                              autoFocus
-                              className="flex-1 px-2 py-1 text-sm border border-indigo-300 rounded-lg focus:outline-none"
-                              value={katDuzenleAd}
-                              onChange={(e) => setKatDuzenleAd(e.target.value)}
-                            />
-                            <button onClick={() => katGuncelle(a.id)} className="text-xs font-semibold text-indigo-600">Kaydet</button>
-                            <button onClick={() => setKatDuzenleId(null)} className="text-xs text-gray-400">İptal</button>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="text-sm text-[var(--color-text-secondary)]">↳ {a.ad}</span>
-                            <div className="flex gap-2">
-                              <button onClick={() => { setKatDuzenleId(a.id); setKatDuzenleAd(a.ad) }} className="text-xs text-indigo-500 hover:text-indigo-700">✏️</button>
-                              <button onClick={() => katSil(a.id)} className="text-xs text-red-400 hover:text-red-600">🗑</button>
+                  {(k.altlar.length > 0 || seciliUstId === k.id) && (
+                    <div className="border-t border-slate-100 bg-slate-50 px-4 py-2 space-y-1">
+                      {k.altlar.map((a) => (
+                        <div key={a.id} className="flex items-center gap-2 py-1.5 pl-3 group">
+                          <div className="w-1 h-4 rounded-full bg-indigo-200 shrink-0" />
+                          {katDuzenleId === a.id ? (
+                            <div className="flex gap-2 flex-1 items-center">
+                              <input
+                                autoFocus
+                                className="flex-1 px-2.5 py-1.5 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+                                value={katDuzenleAd}
+                                onChange={(e) => setKatDuzenleAd(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter') katGuncelle(a.id); if (e.key === 'Escape') setKatDuzenleId(null) }}
+                              />
+                              <button onClick={() => katGuncelle(a.id)} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded-lg hover:bg-indigo-50 transition-colors">Kaydet</button>
+                              <button onClick={() => setKatDuzenleId(null)} className="text-xs text-slate-400 hover:text-slate-600">İptal</button>
                             </div>
-                          </>
-                        )}
-                      </div>
-                    ))}
+                          ) : (
+                            <>
+                              <span className="text-sm text-slate-600 flex-1">{a.ad}</span>
+                              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  onClick={() => { setKatDuzenleId(a.id); setKatDuzenleAd(a.ad) }}
+                                  className="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                >
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => katSil(a.id)}
+                                  className="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                >
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
 
-                    {/* Alt kategori ekle */}
-                    {seciliUstId === k.id ? (
-                      <div className="flex gap-2 mt-2 pl-4">
-                        <input
-                          autoFocus
-                          className="flex-1 px-2 py-1.5 text-sm border border-[var(--color-border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                          placeholder="Alt kategori adı..."
-                          value={yeniAltKatAd}
-                          onChange={(e) => setYeniAltKatAd(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && katEkle(k.id)}
-                        />
+                      {/* Alt kategori ekleme */}
+                      {seciliUstId === k.id ? (
+                        <div className="flex gap-2 py-1.5 pl-3 items-center">
+                          <div className="w-1 h-4 rounded-full bg-indigo-400 shrink-0" />
+                          <input
+                            autoFocus
+                            className="flex-1 px-2.5 py-1.5 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+                            placeholder="Alt kategori adı..."
+                            value={yeniAltKatAd}
+                            onChange={(e) => setYeniAltKatAd(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && katEkle(k.id)}
+                          />
+                          <button
+                            onClick={() => katEkle(k.id)}
+                            disabled={katYukleniyor || !yeniAltKatAd.trim()}
+                            className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-40 transition-colors"
+                          >
+                            Ekle
+                          </button>
+                          <button onClick={() => { setSeciliUstId(null); setYeniAltKatAd('') }} className="text-xs text-slate-400 hover:text-slate-600 transition-colors">İptal</button>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() => katEkle(k.id)}
-                          disabled={katYukleniyor || !yeniAltKatAd.trim()}
-                          className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50"
+                          onClick={() => setSeciliUstId(k.id)}
+                          className="flex items-center gap-1.5 py-1.5 pl-3 text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors"
                         >
-                          Ekle
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                          Alt Kategori Ekle
                         </button>
-                        <button onClick={() => { setSeciliUstId(null); setYeniAltKatAd('') }} className="text-xs text-gray-400 hover:text-gray-600">İptal</button>
-                      </div>
-                    ) : (
+                      )}
+                    </div>
+                  )}
+
+                  {/* Alt kategori ekle butonu — alt kategori yoksa */}
+                  {k.altlar.length === 0 && seciliUstId !== k.id && (
+                    <div className="border-t border-slate-100 px-4 py-2">
                       <button
                         onClick={() => setSeciliUstId(k.id)}
-                        className="mt-1 pl-4 text-xs text-indigo-500 hover:text-indigo-700 font-medium"
+                        className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-600 font-medium transition-colors py-1"
                       >
-                        + Alt Kategori Ekle
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Alt Kategori Ekle
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-          )}
-
-          {kategoriler.length === 0 && (
-            <p className="text-sm text-center text-[var(--color-text-secondary)] py-4">
-              Henüz kategori yok. Üst kategori ekleyerek başlayın.
-            </p>
           )}
         </div>
       </Modal>

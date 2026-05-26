@@ -184,11 +184,6 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
   })
   const [sosyalYukleniyor, setSosyalYukleniyor] = useState(false)
 
-  // Hesap Sil state
-  const [hesapSilModal, setHesapSilModal] = useState(false)
-  const [hesapSilOnay, setHesapSilOnay] = useState('')
-  const [hesapSilYukleniyor, setHesapSilYukleniyor] = useState(false)
-
   async function hesapKaydet() {
     setHesapYukleniyor(true)
     try {
@@ -307,22 +302,6 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
       }
     } finally {
       setSosyalYukleniyor(false)
-    }
-  }
-
-  async function hesapSil() {
-    setHesapSilYukleniyor(true)
-    try {
-      const res = await fetch('/api/kullanici/me', { method: 'DELETE' })
-      if (res.ok) {
-        window.location.href = '/giris'
-      } else {
-        const d = await res.json().catch(() => ({}))
-        toast(d.error || 'Bir hata oluştu.', 'error')
-      }
-    } finally {
-      setHesapSilYukleniyor(false)
-      setHesapSilModal(false)
     }
   }
 
@@ -794,70 +773,22 @@ export function AyarlarClient({ kullanici, esnaf }: { kullanici: KullaniciProps;
         </div>
       </div>
 
-      {/* ── Tehlikeli Bölge — tam genişlik ── */}
+      {/* Destek Notu */}
       <Card>
-        <div className="px-6 py-4 border-b border-red-100 bg-red-50 rounded-t-[var(--radius-lg)]">
-          <h3 className="font-semibold text-red-700" style={{ fontFamily: 'var(--font-display)' }}>Tehlikeli Bölge</h3>
-          <p className="text-xs text-red-500 mt-0.5">Bu işlemler geri alınamaz</p>
-        </div>
         <CardBody>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-red-700">Hesabı Sil</p>
-              <p className="text-xs text-slate-500 mt-0.5">Tüm verileriniz kalıcı olarak silinir.</p>
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
+              <svg className="w-4.5 h-4.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <button
-              onClick={() => setHesapSilModal(true)}
-              className="px-3 py-1.5 text-sm font-medium border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-            >
-              Hesabı Sil
-            </button>
+            <div>
+              <p className="text-sm font-semibold text-slate-700">Hesap Kapatma</p>
+              <p className="text-sm text-slate-500 mt-0.5">Hesabınızı kapatmak için destek hattımız üzerinden bizimle iletişime geçin.</p>
+            </div>
           </div>
         </CardBody>
       </Card>
-
-      {/* Hesap Sil Onay Modalı */}
-      {hesapSilModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
-          onClick={() => { setHesapSilModal(false); setHesapSilOnay('') }}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex flex-col items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">⚠️</div>
-              <div className="text-center">
-                <p className="font-semibold text-slate-800 text-base">Hesabınızı Silmek İstiyor musunuz?</p>
-                <p className="text-sm text-slate-500 mt-1">Bu işlem geri alınamaz. Devam etmek için aşağıya <strong>HESABIMI SİL</strong> yazın.</p>
-              </div>
-            </div>
-            <input
-              className="w-full px-4 py-2.5 text-sm border border-red-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300 mb-4"
-              placeholder="HESABIMI SİL"
-              value={hesapSilOnay}
-              onChange={(e) => setHesapSilOnay(e.target.value)}
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setHesapSilModal(false); setHesapSilOnay('') }}
-                className="flex-1 px-4 py-2.5 text-sm font-medium border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                İptal
-              </button>
-              <button
-                onClick={hesapSil}
-                disabled={hesapSilOnay !== 'HESABIMI SİL' || hesapSilYukleniyor}
-                className="flex-1 px-4 py-2.5 text-sm font-semibold bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {hesapSilYukleniyor ? 'Siliniyor...' : 'Evet, Sil'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

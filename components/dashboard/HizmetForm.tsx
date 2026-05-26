@@ -15,7 +15,7 @@ interface HizmetFormProps {
   esnafId: number
   hizmet?: Hizmet
   kategoriler?: KategoriSeceneği[]
-  onKayit: (hizmet: Hizmet) => void
+  onKayit: () => void
   onIptal: () => void
 }
 
@@ -31,10 +31,12 @@ type HizmetEk = {
   minOnRezervasyon?: number
   maksKatilimci?: number
   etiketler?: string[]
+  hizmetKategorisiId?: number | null
 }
 
 export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal }: HizmetFormProps) {
   const [yukleniyor, setYukleniyor] = useState(false)
+  const [hataMesaji, setHataMesaji] = useState<string | null>(null)
   const h = hizmet as (typeof hizmet & HizmetEk) | undefined
   const [form, setForm] = useState({
     ad: h?.ad || '',
@@ -42,14 +44,14 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
     fiyat: h?.fiyat || 0,
     sure: h?.sure || 60,
     kategori: h?.kategori || '',
-    hizmetKategorisiId: (h as unknown as { hizmetKategorisiId?: number | null })?.hizmetKategorisiId ?? null as number | null,
+    hizmetKategorisiId: h?.hizmetKategorisiId ?? null as number | null,
     indirimYuzde: h?.indirimYuzde || 0,
     oneCikan: h?.oneCikan || false,
     sira: h?.sira || 0,
     ikon: h?.ikon || '',
     onlineOdeme: h?.onlineOdeme || false,
-    minOnRezervasyon: h?.minOnRezervasyon || 0,
-    maksKatilimci: h?.maksKatilimci || 1,
+    minOnRezervasyon: h?.minOnRezervasyon ?? null as number | null,
+    maksKatilimci: h?.maksKatilimci || null as number | null,
     etiketler: h?.etiketler || [] as string[],
   })
   const [ikonSecici, setIkonSecici] = useState(false)
@@ -57,6 +59,30 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setHataMesaji(null)
+
+    // Zorunlu alan validasyonu
+    if (!form.ad.trim()) {
+      setHataMesaji('Hizmet adı zorunludur.')
+      return
+    }
+    if (!form.fiyat || form.fiyat <= 0) {
+      setHataMesaji('Fiyat zorunludur ve 0\'dan büyük olmalıdır.')
+      return
+    }
+    if (kategoriler.length > 0 && !form.hizmetKategorisiId) {
+      setHataMesaji('Lütfen bir kategori seçin.')
+      return
+    }
+    if (form.maksKatilimci === null || form.maksKatilimci < 1) {
+      setHataMesaji('Maksimum katılımcı sayısı zorunludur (en az 1).')
+      return
+    }
+    if (form.minOnRezervasyon === null || form.minOnRezervasyon < 0) {
+      setHataMesaji('Minimum ön rezervasyon süresi zorunludur.')
+      return
+    }
+
     setYukleniyor(true)
     try {
       const method = hizmet ? 'PUT' : 'POST'
@@ -66,8 +92,14 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, esnafId, hizmetKategorisiId: form.hizmetKategorisiId ?? null }),
       })
-      const data = await res.json()
-      onKayit(data.data ?? data)
+      if (!res.ok) {
+        const data = await res.json()
+        setHataMesaji(data.error ?? 'Bir hata oluştu.')
+        return
+      }
+      onKayit()
+    } catch {
+      setHataMesaji('Sunucu hatası. Lütfen tekrar deneyin.')
     } finally {
       setYukleniyor(false)
     }
@@ -75,11 +107,18 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Hata mesajı */}
+      {hataMesaji && (
+        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium">
+          {hataMesaji}
+        </div>
+      )}
+
       {/* Hizmet Adı + İkon */}
       <div className="flex gap-3 items-end">
         <div className="flex-1">
           <Input
-            label="Hizmet Adı"
+            label="Hizmet Adı *"
             required
             value={form.ad}
             onChange={(e) => setForm((p) => ({ ...p, ad: e.target.value }))}
@@ -140,7 +179,7 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
       {/* Fiyat + Süre */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Fiyat (₺)</label>
+          <label className="text-sm font-medium">Fiyat (₺) *</label>
           <input
             className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             type="number"
@@ -162,6 +201,65 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
             value={form.sure}
             onChange={(e) => setForm((p) => ({ ...p, sure: Number(e.target.value) }))}
           />
+        </div>
+      </div>
+
+      {/* Hizmet Kategorisi — ZORUNLU */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium">Kategori *</label>
+        {kategoriler.length === 0 ? (
+          <div className="px-4 py-3 bg-amber-50 border border-amber-200 rounded-[var(--radius-md)] text-sm text-amber-700">
+            Önce "Kategoriler" bölümünden bir kategori oluşturun.
+          </div>
+        ) : (
+          <select
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] bg-white"
+            value={form.hizmetKategorisiId ?? ''}
+            required
+            onChange={(e) => setForm((p) => ({ ...p, hizmetKategorisiId: e.target.value ? Number(e.target.value) : null }))}
+          >
+            <option value="">— Kategori Seçin —</option>
+            {kategoriler.map((k) => (
+              <optgroup key={k.id} label={k.ad}>
+                <option value={k.id}>{k.ad}</option>
+                {k.altlar?.map((a) => (
+                  <option key={a.id} value={a.id}>{'  '}↳ {a.ad}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {/* Min. Rezervasyon + Maks. Katılımcı — ZORUNLU */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Min. Ön Rezervasyon (saat) *</label>
+          <input
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            required
+            value={form.minOnRezervasyon === null ? '' : form.minOnRezervasyon}
+            placeholder="ör. 2"
+            onChange={(e) => setForm((p) => ({ ...p, minOnRezervasyon: e.target.value === '' ? null : Number(e.target.value) }))}
+          />
+          <p className="text-xs text-slate-400">Randevu en az kaç saat önceden alınabilir</p>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Maks. Katılımcı *</label>
+          <input
+            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            required
+            value={form.maksKatilimci === null ? '' : form.maksKatilimci}
+            placeholder="ör. 1"
+            onChange={(e) => setForm((p) => ({ ...p, maksKatilimci: e.target.value === '' ? null : Math.max(1, Number(e.target.value)) }))}
+          />
+          <p className="text-xs text-slate-400">Aynı anda kaç kişi bu hizmeti alabilir</p>
         </div>
       </div>
 
@@ -200,28 +298,6 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
         </div>
       </div>
 
-      {/* Hizmet Kategorisi */}
-      {kategoriler.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Kategori</label>
-          <select
-            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] bg-white"
-            value={form.hizmetKategorisiId ?? ''}
-            onChange={(e) => setForm((p) => ({ ...p, hizmetKategorisiId: e.target.value ? Number(e.target.value) : null }))}
-          >
-            <option value="">— Kategori Seçin —</option>
-            {kategoriler.map((k) => (
-              <optgroup key={k.id} label={k.ad}>
-                <option value={k.id}>{k.ad}</option>
-                {k.altlar?.map((a) => (
-                  <option key={a.id} value={a.id}>{'  '}↳ {a.ad}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
-      )}
-
       {/* Öne Çıkar Toggle */}
       <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl">
         <div>
@@ -254,35 +330,6 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
             className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.onlineOdeme ? 'translate-x-5' : 'translate-x-0'}`}
           />
         </button>
-      </div>
-
-      {/* Min. Rezervasyon + Maks. Katılımcı */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Min. Ön Rezervasyon (saat)</label>
-          <input
-            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            value={form.minOnRezervasyon === 0 ? '' : form.minOnRezervasyon}
-            placeholder="0"
-            onChange={(e) => setForm((p) => ({ ...p, minOnRezervasyon: e.target.value === '' ? 0 : Number(e.target.value) }))}
-          />
-          <p className="text-xs text-slate-400">Randevu en az kaç saat önceden alınabilir</p>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Maks. Katılımcı</label>
-          <input
-            className="w-full px-4 py-2.5 text-sm border border-[var(--color-border)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-focus)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            type="number"
-            inputMode="numeric"
-            min={1}
-            value={form.maksKatilimci}
-            onChange={(e) => setForm((p) => ({ ...p, maksKatilimci: Math.max(1, Number(e.target.value)) }))}
-          />
-          <p className="text-xs text-slate-400">Aynı anda kaç kişi bu hizmeti alabilir</p>
-        </div>
       </div>
 
       {/* Etiketler */}
@@ -343,7 +390,7 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" loading={yukleniyor} className="flex-1">
+        <Button type="submit" loading={yukleniyor} className="flex-1" disabled={kategoriler.length === 0}>
           {hizmet ? 'Güncelle' : 'Ekle'}
         </Button>
         <Button type="button" variant="secondary" onClick={onIptal} className="flex-1">
