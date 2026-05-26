@@ -13,6 +13,7 @@ const MOBIL_MENU = [
   { href: '/isletme/musteriler', label: 'Müşteriler', ikon: '👥' },
   { href: '/isletme/yorumlar', label: 'Yorumlar', ikon: '⭐' },
   { href: '/isletme/istatistikler', label: 'İstatistikler', ikon: '📈' },
+  { href: '/isletme/onizleme', label: 'Ön İzleme', ikon: '👁️' },
   { href: '/isletme/ayarlar/vitrin', label: 'Vitrin Ayarları', ikon: '🏪' },
   { href: '/isletme/ayarlar/saatler', label: 'Çalışma Saatleri', ikon: '🕐' },
   { href: '/isletme/ayarlar/kampanya', label: 'Kampanya Ayarları', ikon: '📣' },
@@ -31,7 +32,7 @@ export function IsletmeTopBar() {
 
   async function handleCikis() {
     setCikisYukleniyor(true)
-    await signOut({ callbackUrl: '/isletme/giris' })
+    await signOut({ callbackUrl: '/isletme' })
   }
 
   return (

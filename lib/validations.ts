@@ -100,6 +100,12 @@ export const HizmetSchema = z.object({
   sure: z.number().positive().optional(),
   aciklama: z.string().optional(),
   kategori: z.string().optional(),
+  ikon: z.string().optional(),
+  sira: z.number().int().min(0).optional(),
+  oneCikan: z.boolean().optional(),
+  onlineOdeme: z.boolean().optional(),
+  minOnRezervasyon: z.number().int().min(0).optional(),
+  maksKatilimci: z.number().int().min(1).optional(),
 })
 
 export const RandevuSchema = z.object({

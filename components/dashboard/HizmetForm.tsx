@@ -24,7 +24,7 @@ const IKONLAR = ['✂️', '💆', '💅', '🛁', '🧴', '💇', '🏋️', '�
 type HizmetEk = {
   kategori?: string
   indirimYuzde?: number
-  onecikar?: boolean
+  oneCikan?: boolean
   sira?: number
   ikon?: string
   onlineOdeme?: boolean
@@ -44,7 +44,7 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
     kategori: h?.kategori || '',
     hizmetKategorisiId: (h as unknown as { hizmetKategorisiId?: number | null })?.hizmetKategorisiId ?? null as number | null,
     indirimYuzde: h?.indirimYuzde || 0,
-    onecikar: h?.onecikar || false,
+    oneCikan: h?.oneCikan || false,
     sira: h?.sira || 0,
     ikon: h?.ikon || '',
     onlineOdeme: h?.onlineOdeme || false,
@@ -230,11 +230,11 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
         </div>
         <button
           type="button"
-          onClick={() => setForm((p) => ({ ...p, onecikar: !p.onecikar }))}
-          className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none ${form.onecikar ? 'bg-amber-500' : 'bg-slate-200'}`}
+          onClick={() => setForm((p) => ({ ...p, oneCikan: !p.oneCikan }))}
+          className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none ${form.oneCikan ? 'bg-amber-500' : 'bg-slate-200'}`}
         >
           <span
-            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.onecikar ? 'translate-x-5' : 'translate-x-0'}`}
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.oneCikan ? 'translate-x-5' : 'translate-x-0'}`}
           />
         </button>
       </div>

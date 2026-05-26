@@ -139,12 +139,46 @@ export default async function PlanSayfasi() {
         })}
       </div>
 
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center text-sm text-slate-500">
-        Ödeme sistemi yakında aktif olacak. Sorularınız için{' '}
-        <a href="/isletme/iletisim" className="text-indigo-600 font-medium hover:underline">
-          iletişime geçin
-        </a>
-        .
+      {/* Ödeme Bilgileri Placeholder */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-xl">
+            💳
+          </div>
+          <div>
+            <h2 className="font-semibold text-slate-800">Ödeme Bilgileri</h2>
+            <p className="text-sm text-slate-500">Kredi kartı veya havale ile ödeme</p>
+          </div>
+          <span className="ml-auto text-xs font-semibold text-white bg-amber-500 px-2.5 py-1 rounded-full">
+            Yakında
+          </span>
+        </div>
+
+        <div className="border border-dashed border-slate-200 rounded-xl p-6 text-center space-y-3">
+          <div className="flex justify-center gap-3 mb-4 opacity-50">
+            {/* Kart simgeleri */}
+            <div className="w-12 h-8 rounded bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">VISA</div>
+            <div className="w-12 h-8 rounded bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">MC</div>
+            <div className="w-12 h-8 rounded bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">TR</div>
+          </div>
+          <p className="text-sm text-slate-600 font-medium">
+            Güvenli ödeme sistemi entegrasyonu hazırlanıyor
+          </p>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Iyzico altyapısı ile 256-bit SSL şifreli, PCI-DSS uyumlu ödeme sistemi çok yakında aktif olacak.
+          </p>
+          <div className="pt-2">
+            <a
+              href="mailto:efecanbayrak3557@gmail.com?subject=Plan%20Yükseltme%20Talebi"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 border border-indigo-200 rounded-xl hover:bg-indigo-50 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Plan Yükseltme Talebi Gönder
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   )

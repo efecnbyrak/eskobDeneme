@@ -11,6 +11,13 @@ interface Hizmet {
   fiyat: number
   indirimYuzde: number | null
   indirimBitis: string | null
+  hizmetKategorisiId?: number | null
+}
+
+interface Kategori {
+  id: number
+  ad: string
+  altlar?: { id: number; ad: string }[]
 }
 
 interface IndirimForm {
@@ -27,20 +34,38 @@ function kalanGunHesapla(bitisStr: string | null): number | null {
   return Math.max(0, Math.ceil((bitis.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
-export function KampanyalarClient({ hizmetler: baslangic }: { hizmetler: Hizmet[] }) {
+export function KampanyalarClient({
+  hizmetler: baslangic,
+  kategoriler = [],
+}: {
+  hizmetler: Hizmet[]
+  kategoriler?: Kategori[]
+}) {
   const { toast } = useToast()
   const [hizmetler, setHizmetler] = useState(baslangic)
   const [acikForm, setAcikForm] = useState<number | null>(null)
   const [formlar, setFormlar] = useState<Record<number, IndirimForm>>({})
   const [yukleniyor, setYukleniyor] = useState<number | null>(null)
+  const [aktifKategori, setAktifKategori] = useState<number | null>(null)
 
-  const aktifKampanyalar = hizmetler.filter(
+  // Tüm kategori id'leri düz liste
+  const tumKategoriler: { id: number; ad: string }[] = []
+  kategoriler.forEach((k) => {
+    tumKategoriler.push({ id: k.id, ad: k.ad })
+    k.altlar?.forEach((a) => tumKategoriler.push({ id: a.id, ad: a.ad }))
+  })
+
+  const filtreliHizmetler = aktifKategori === null
+    ? hizmetler
+    : hizmetler.filter((h) => h.hizmetKategorisiId === aktifKategori)
+
+  const aktifKampanyalar = filtreliHizmetler.filter(
     (h) => h.indirimYuzde && h.indirimYuzde > 0 && (h.indirimBitis === null || new Date(h.indirimBitis) >= now)
   )
-  const pasifKampanyalar = hizmetler.filter(
+  const pasifKampanyalar = filtreliHizmetler.filter(
     (h) => h.indirimYuzde && h.indirimYuzde > 0 && h.indirimBitis && new Date(h.indirimBitis) < now
   )
-  const kampanyasizHizmetler = hizmetler.filter(
+  const kampanyasizHizmetler = filtreliHizmetler.filter(
     (h) => !h.indirimYuzde || h.indirimYuzde <= 0
   )
 
@@ -133,6 +158,44 @@ export function KampanyalarClient({ hizmetler: baslangic }: { hizmetler: Hizmet[
           </p>
         </div>
       </div>
+
+      {/* Kategori Tab Bar */}
+      {tumKategoriler.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setAktifKategori(null)}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              aktifKategori === null
+                ? 'bg-indigo-600 text-white border-indigo-600'
+                : 'text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            Tümü ({hizmetler.length})
+          </button>
+          {tumKategoriler.map((k) => {
+            const sayac = hizmetler.filter((h) => h.hizmetKategorisiId === k.id).length
+            return (
+              <button
+                key={k.id}
+                onClick={() => setAktifKategori(k.id)}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                  aktifKategori === k.id
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
+                }`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                {k.ad} ({sayac})
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {/* Bilgi Kutusu */}
       <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">

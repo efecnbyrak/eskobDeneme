@@ -84,11 +84,16 @@ export function YorumlarClient({ yorumlar: baslangicYorumlar, ortalama }: Props)
       ) : (
         <div className="space-y-3">
           {yorumlar.map((y) => (
-            <div key={y.id} className="bg-white rounded-xl border border-slate-200 p-5">
+            <div key={y.id} className={`bg-white rounded-xl border p-5 ${y.onaylı ? 'border-slate-200' : 'border-dashed border-slate-300 bg-slate-50/50'}`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <p className="font-semibold text-sm text-slate-800">{maskeleIsim(y.musteriAd)}</p>
+                    {!y.onaylı && (
+                      <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 font-medium">
+                        ⏳ Onay Bekliyor
+                      </span>
+                    )}
                     {y.bildirildi && (
                       <Badge variant="warning">Bildirildi</Badge>
                     )}

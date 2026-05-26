@@ -17,6 +17,12 @@ export default async function KampanyalarSayfasi() {
           hizmetler: {
             where: { aktif: true },
             orderBy: { sira: 'asc' },
+            include: { hizmetKategorisi: true },
+          },
+          hizmetKategorileri: {
+            where: { ustId: null },
+            orderBy: { sira: 'asc' },
+            include: { altlar: { orderBy: { sira: 'asc' } } },
           },
         },
       },
@@ -26,6 +32,7 @@ export default async function KampanyalarSayfasi() {
   if (!kullanici?.esnaf) redirect('/isletme/genel')
 
   const hizmetler = kullanici.esnaf.hizmetler
+  const kategoriler = kullanici.esnaf.hizmetKategorileri
 
   return (
     <KampanyalarClient
@@ -35,6 +42,12 @@ export default async function KampanyalarSayfasi() {
         fiyat: Number(h.fiyat),
         indirimYuzde: h.indirimYuzde,
         indirimBitis: h.indirimBitis?.toISOString() ?? null,
+        hizmetKategorisiId: h.hizmetKategorisiId ?? null,
+      }))}
+      kategoriler={kategoriler.map((k) => ({
+        id: k.id,
+        ad: k.ad,
+        altlar: k.altlar.map((a) => ({ id: a.id, ad: a.ad })),
       }))}
     />
   )
