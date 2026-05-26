@@ -15,7 +15,7 @@ interface HizmetFormProps {
   esnafId: number
   hizmet?: Hizmet
   kategoriler?: KategoriSeceneği[]
-  onKayit: () => void
+  onKayit: (hizmet: Hizmet) => void
   onIptal: () => void
 }
 
@@ -97,7 +97,8 @@ export function HizmetForm({ esnafId, hizmet, kategoriler = [], onKayit, onIptal
         setHataMesaji(data.error ?? 'Bir hata oluştu.')
         return
       }
-      onKayit()
+      const savedHizmet = await res.json()
+      onKayit(savedHizmet)
     } catch {
       setHataMesaji('Sunucu hatası. Lütfen tekrar deneyin.')
     } finally {
